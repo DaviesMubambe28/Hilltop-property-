@@ -1,0 +1,5 @@
+insert into public.property_categories(name,slug) values ('Residential','residential'),('Commercial','commercial'),('Land','land') on conflict do nothing;
+insert into public.property_types(name,slug) values ('House','house'),('Apartment','apartment'),('Estate','estate'),('Plot','plot'),('Office','office') on conflict do nothing;
+insert into public.amenities(name,slug) values ('Swimming pool','swimming-pool'),('Garden','garden'),('Security','security'),('Backup power','backup-power'),('Parking','parking') on conflict do nothing;
+insert into public.branches(name,slug,email,phone,address) values ('Lusaka','lusaka','lusaka@hilltopproperties.co.zm','+260 971 011 019','Lusaka, Zambia'),('Livingstone','livingstone','livingstone@hilltopproperties.co.zm','+260 971 011 019','Livingstone, Zambia') on conflict do nothing;
+insert into public.locations(name,slug,province) values ('Lusaka','lusaka','Lusaka'),('Foxdale','foxdale','Lusaka'),('Kabulonga','kabulonga','Lusaka'),('Ibex Hill','ibex-hill','Lusaka'),('Livingstone','livingstone','Southern'),('Dambwa North','dambwa-north','Southern'),('Highlands','highlands','Southern') on conflict do nothing;
