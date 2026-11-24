@@ -10,5 +10,11 @@ describe('enquiry validation', () => {
     expect(enquirySchema.safeParse({ ...valid, message: 'short' }).success).toBe(false);
     expect(enquirySchema.safeParse({ ...valid, message: 'x'.repeat(4001) }).success).toBe(false);
   });
+  it('rejects a completed spam honeypot', () => expect(enquirySchema.safeParse({ ...valid, website: 'spam.example' }).success).toBe(false));
+  it('requires a property only for property and viewing enquiries', () => {
+    expect(enquirySchema.safeParse({ ...valid, propertyId: undefined }).success).toBe(false);
+    expect(enquirySchema.safeParse({ ...valid, type: 'general' }).success).toBe(false);
+    expect(enquirySchema.safeParse({ ...valid, type: 'general', propertyId: undefined }).success).toBe(true);
+  });
   it('escapes untrusted content', () => expect(safeText('<script>alert("x")</script>')).toBe('&lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt;'));
 });

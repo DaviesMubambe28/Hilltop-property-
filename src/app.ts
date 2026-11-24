@@ -2,10 +2,11 @@ import { config } from './config';
 import { supabase } from './supabase';
 import { currentProfile, resetPassword, signIn, signUp } from './services/auth';
 import { submitEnquiry } from './services/enquiries';
-import { imageUrl, listOptions, listProperties, toggleSaved } from './services/properties';
+import { imageUrl, listOptions, listProperties, recordPropertyView, toggleSaved } from './services/properties';
 import type { ListingType, Property, SearchFilters } from './types';
 import { safeText } from './validation';
 import { initializeAnalytics, track } from './integrations/analytics';
+import { parseSearchFilters } from './search';
 
 const grid = document.querySelector<HTMLElement>('.property-grid');
 const pagination = document.querySelector<HTMLElement>('.catalogue-pagination');
@@ -25,19 +26,15 @@ function notify(message: string) {
 
 function filtersFromPage(): SearchFilters {
   const params = new URLSearchParams(location.search);
-  const price = (document.querySelector<HTMLSelectElement>('#search-price')?.value || params.get('price') || '').split('-');
+  const selectedLocation = document.querySelector<HTMLSelectElement>('#search-location')?.value;
+  const selectedType = document.querySelector<HTMLSelectElement>('#search-type')?.value;
+  const selectedPrice = document.querySelector<HTMLSelectElement>('#search-price')?.value;
+  if (selectedLocation) params.set('location', selectedLocation);
+  if (selectedType) params.set('type', selectedType);
+  if (selectedPrice) params.set('price', selectedPrice);
   const tab = document.querySelector<HTMLButtonElement>('.search-tabs [role="tab"][aria-selected="true"]')?.textContent?.trim().toLowerCase();
   const listingType = ({ buy: 'sale', rent: 'rent', invest: 'investment' } as Record<string, ListingType>)[tab ?? 'buy'];
-  return {
-    query: params.get('q') || undefined,
-    locationId: document.querySelector<HTMLSelectElement>('#search-location')?.value || params.get('location') || undefined,
-    propertyTypeId: document.querySelector<HTMLSelectElement>('#search-type')?.value || params.get('type') || undefined,
-    listingType,
-    minPrice: price[0] ? Number(price[0]) : undefined,
-    maxPrice: price[1] ? Number(price[1]) : undefined,
-    page: Math.max(1, Number(params.get('page') || 1)),
-    pageSize: 8,
-  };
+  return parseSearchFilters(params, listingType ?? 'sale');
 }
 
 function formatPrice(property: Property): string {
@@ -86,12 +83,13 @@ function openProperty(property: Property) {
   const whatsapp = config?.VITE_WHATSAPP_NUMBER ? `https://wa.me/${config.VITE_WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Hilltop, I am interested in ${property.title} (${property.reference}).`)}` : '';
   propertyDetail.innerHTML = `<div class="property-gallery">${gallery}</div><p class="eyebrow">${safeText(property.reference)} · ${safeText(property.listing_type)}</p><h2>${safeText(property.title)}</h2><p class="detail-price">${safeText(formatPrice(property))}</p><p>${safeText(property.description || property.summary)}</p><dl class="detail-meta"><div><dt>Bedrooms</dt><dd>${property.bedrooms ?? '—'}</dd></div><div><dt>Bathrooms</dt><dd>${property.bathrooms ?? '—'}</dd></div><div><dt>Location</dt><dd>${safeText(property.location?.name ?? 'Zambia')}</dd></div></dl><div class="detail-actions"><button class="button button-yellow" data-enquire="${property.id}">Enquire now</button>${whatsapp ? `<a class="button button-dark" href="${whatsapp}" target="_blank" rel="noopener">WhatsApp</a>` : ''}</div><div id="enquiry-slot"></div>`;
   propertyDialog.showModal();
+  void recordPropertyView(property.id).catch(() => undefined);
 }
 
 function showEnquiry(property: Property) {
   const slot = document.querySelector<HTMLElement>('#enquiry-slot');
   if (!slot) return;
-  slot.innerHTML = `<form id="enquiry-form" class="enquiry-form"><h3>Enquire about this property</h3><label>Name<input name="name" autocomplete="name" required minlength="2" maxlength="120" /></label><label>Email<input name="email" type="email" autocomplete="email" required /></label><label>Phone<input name="phone" type="tel" autocomplete="tel" maxlength="30" /></label><label>Message<textarea name="message" required minlength="10" maxlength="4000">I would like more information about ${safeText(property.title)}.</textarea></label><label class="consent"><input name="consent" type="checkbox" required /> I consent to Hilltop contacting me about this enquiry.</label><button class="button button-yellow" type="submit">Send enquiry</button><p role="status"></p></form>`;
+  slot.innerHTML = `<form id="enquiry-form" class="enquiry-form" data-idempotency-key="${crypto.randomUUID()}"><h3>Enquire about this property</h3><label>Name<input name="name" autocomplete="name" required minlength="2" maxlength="120" /></label><label>Email<input name="email" type="email" autocomplete="email" required /></label><label>Phone<input name="phone" type="tel" autocomplete="tel" maxlength="30" /></label><label class="hp-field" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off" /></label><label>Message<textarea name="message" required minlength="10" maxlength="4000">I would like more information about ${safeText(property.title)}.</textarea></label><label class="consent"><input name="consent" type="checkbox" required /> I consent to Hilltop contacting me about this enquiry.</label><button class="button button-yellow" type="submit">Send enquiry</button><p role="status"></p></form>`;
 }
 
 async function setupOptions() {
@@ -156,11 +154,18 @@ document.addEventListener('submit', async (event) => {
   const propertyId = form.closest('#property-detail')?.querySelector<HTMLElement>('[data-enquire]')?.dataset.enquire;
   const data = new FormData(form);
   const status = form.querySelector<HTMLElement>('[role="status"]');
+  const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+  if (submit?.disabled) return;
+  if (submit) { submit.disabled = true; submit.textContent = 'Sending…'; }
   try {
-    const result = await submitEnquiry({ type: 'property', propertyId, name: String(data.get('name')), email: String(data.get('email')), phone: String(data.get('phone') || ''), message: String(data.get('message')), consent: data.get('consent') === 'on', idempotencyKey: crypto.randomUUID() });
+    const result = await submitEnquiry({ type: 'property', propertyId, name: String(data.get('name')), email: String(data.get('email')), phone: String(data.get('phone') || ''), message: String(data.get('message')), consent: data.get('consent') === 'on', idempotencyKey: form.dataset.idempotencyKey ?? crypto.randomUUID(), website: String(data.get('website') || '') });
     track('generate_lead', { property_id: propertyId ?? 'general' });
     form.reset(); if (status) status.textContent = `Thank you. Your enquiry reference is ${result.id.slice(0, 8)}.`;
-  } catch (error) { if (status) status.textContent = error instanceof Error ? error.message : 'Unable to submit your enquiry.'; }
+    if (submit) submit.textContent = 'Enquiry sent';
+  } catch (error) {
+    if (status) status.textContent = error instanceof Error ? error.message : 'Unable to submit your enquiry.';
+    if (submit) { submit.disabled = false; submit.textContent = 'Send enquiry'; }
+  }
 });
 
 document.querySelector('#auth-mode')?.addEventListener('click', () => { authMode = authMode === 'signin' ? 'signup' : 'signin'; const title = document.querySelector('#auth-title'); if (title) title.textContent = authMode === 'signup' ? 'Create an account' : 'Sign in'; document.querySelector<HTMLElement>('#auth-name')?.parentElement?.classList.toggle('hidden', authMode === 'signin'); });

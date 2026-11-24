@@ -50,3 +50,8 @@ export async function toggleSaved(propertyId: string): Promise<boolean> {
   if (error) throw new Error(error.message);
   return true;
 }
+
+export async function recordPropertyView(propertyId: string): Promise<void> {
+  const { error } = await requireSupabase().functions.invoke('track-property-view', { body: { propertyId } });
+  if (error) throw new Error(error.message);
+}

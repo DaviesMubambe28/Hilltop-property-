@@ -1,3 +1,5 @@
+import { calculateMortgage } from './src/calculators.ts';
+
 const menuButton = document.querySelector('.menu-button');
 const mobileMenu = document.querySelector('#mobile-menu');
 
@@ -8,7 +10,6 @@ menuButton.addEventListener('click', () => {
   mobileMenu.hidden = isOpen;
   document.body.classList.toggle('menu-open', !isOpen);
 });
-
 mobileMenu.querySelectorAll('a').forEach((link) => {
   link.addEventListener('click', () => {
     menuButton.setAttribute('aria-expanded', 'false');
@@ -58,15 +59,9 @@ document.querySelector('#property-search').addEventListener('submit', (event) =>
   showToast('Showing properties that match your search');
 });
 
-document.querySelector('#newsletter-form').addEventListener('submit', (event) => {
-  event.preventDefault();
-  showToast('Your property alert has been created');
-  event.currentTarget.reset();
-});
-
 const dialog = document.querySelector('#tool-dialog');
 const dialogTitle = document.querySelector('#dialog-title');
-const toolNames = { mortgage: 'Mortgage calculator', affordability: 'Affordability calculator', rental: 'Rental yield calculator', cost: 'Buying cost estimator' };
+const toolNames = { mortgage: 'Mortgage calculator' };
 
 document.querySelectorAll('[data-tool]').forEach((button) => {
   button.addEventListener('click', () => {
@@ -84,10 +79,13 @@ document.querySelector('#calculator-form').addEventListener('submit', (event) =>
   event.preventDefault();
   const price = Number(document.querySelector('#property-price').value);
   const deposit = Number(document.querySelector('#deposit').value);
+  const annualInterestRate = Number(document.querySelector('#interest-rate').value);
   const years = Number(document.querySelector('#loan-term').value);
-  const principal = Math.max(0, price - deposit);
-  const monthlyRate = 0.15 / 12;
-  const payments = years * 12;
-  const repayment = principal * monthlyRate * (1 + monthlyRate) ** payments / ((1 + monthlyRate) ** payments - 1);
-  document.querySelector('#calculator-result').textContent = `Estimated monthly repayment: K${Math.round(repayment).toLocaleString()}`;
+  const output = document.querySelector('#calculator-result');
+  try {
+    const result = calculateMortgage({ propertyPrice: price, deposit, annualInterestRate, termYears: years });
+    output.textContent = `Estimated monthly repayment: K${Math.round(result.monthlyRepayment).toLocaleString()}. This illustration assumes a ${annualInterestRate}% annual interest rate; lender fees and insurance are excluded.`;
+  } catch (error) {
+    output.textContent = error instanceof Error ? error.message : 'Check the values and try again.';
+  }
 });

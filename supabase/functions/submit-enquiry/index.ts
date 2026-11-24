@@ -1,5 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { z } from 'npm:zod@4.1.12';
+import { consumeRateLimit, hmac, originAllowed, requestIp } from '../_shared/security.ts';
 
 const inputSchema = z.object({
   type: z.enum(['property', 'general', 'viewing', 'valuation']),
@@ -11,6 +12,14 @@ const inputSchema = z.object({
   preferredDate: z.string().datetime().optional(),
   consent: z.literal(true),
   idempotencyKey: z.string().uuid(),
+  website: z.string().max(0).optional(),
+}).superRefine((input, context) => {
+  if (['property', 'viewing'].includes(input.type) && !input.propertyId) {
+    context.addIssue({ code: 'custom', path: ['propertyId'], message: 'A property is required.' });
+  }
+  if (!['property', 'viewing'].includes(input.type) && input.propertyId) {
+    context.addIssue({ code: 'custom', path: ['propertyId'], message: 'This enquiry type cannot reference a property.' });
+  }
 });
 
 const allowedOrigin = Deno.env.get('SITE_URL') ?? 'http://localhost:4173';
@@ -20,6 +29,7 @@ const response = (body: unknown, status = 200) => new Response(JSON.stringify(bo
 Deno.serve(async (request) => {
   if (request.method === 'OPTIONS') return new Response('ok', { headers });
   if (request.method !== 'POST') return response({ error: { code: 'METHOD_NOT_ALLOWED', message: 'POST is required.' } }, 405);
+  if (!originAllowed(request, allowedOrigin)) return response({ error: { code: 'FORBIDDEN_ORIGIN', message: 'This origin is not allowed.' } }, 403);
   const contentLength = Number(request.headers.get('content-length') ?? 0);
   if (contentLength > 20_000) return response({ error: { code: 'PAYLOAD_TOO_LARGE', message: 'The request is too large.' } }, 413);
 
@@ -30,9 +40,23 @@ Deno.serve(async (request) => {
     const client = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
     const existing = await client.from('enquiries').select('id').eq('idempotency_key', input.idempotencyKey).maybeSingle();
     if (existing.data) return response({ id: existing.data.id, duplicate: true });
-    const since = new Date(Date.now() - 10 * 60_000).toISOString();
-    const recent = await client.from('enquiries').select('id', { count: 'exact', head: true }).eq('email', input.email.toLowerCase()).gte('created_at', since);
-    if ((recent.count ?? 0) >= 5) return response({ error: { code: 'RATE_LIMITED', message: 'Too many enquiries. Please try again later.' } }, 429);
+
+    const rateLimitSecret = Deno.env.get('RATE_LIMIT_SECRET');
+    if (!rateLimitSecret || rateLimitSecret.length < 32) throw new Error('rate_limit_secret_not_configured');
+    const ip = requestIp(request);
+    const ipHash = await hmac(`enquiry-ip:${ip}`, rateLimitSecret);
+    const addressHash = await hmac(`enquiry-address:${ip}:${input.email.toLowerCase()}`, rateLimitSecret);
+    const [ipAllowed, addressAllowed] = await Promise.all([
+      consumeRateLimit(client, 'enquiry-ip', ipHash, 20, 3600),
+      consumeRateLimit(client, 'enquiry-address', addressHash, 5, 600),
+    ]);
+    if (!ipAllowed || !addressAllowed) return response({ error: { code: 'RATE_LIMITED', message: 'Too many enquiries. Please try again later.' } }, 429);
+
+    if (input.propertyId && ['property', 'viewing'].includes(input.type)) {
+      const property = await client.from('properties').select('id').eq('id', input.propertyId).eq('status', 'published').eq('is_available', true).maybeSingle();
+      if (property.error) throw property.error;
+      if (!property.data) return response({ error: { code: 'INVALID_PROPERTY', message: 'This property is not available for enquiries.' } }, 422);
+    }
     const authHeader = request.headers.get('authorization');
     let customerId: string | null = null;
     if (authHeader) {

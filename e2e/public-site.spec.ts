@@ -26,3 +26,18 @@ test('calculator produces a repayment estimate', async ({ page }) => {
   await page.getByRole('button', { name: 'Calculate estimate' }).click();
   await expect(page.locator('#calculator-result')).toContainText('Estimated monthly repayment');
 });
+
+test('calculator rejects a deposit greater than the property price', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Mortgage calculator' }).click();
+  await page.locator('#property-price').fill('100000');
+  await page.locator('#deposit').fill('100001');
+  await page.getByRole('button', { name: 'Calculate estimate' }).click();
+  await expect(page.locator('#calculator-result')).toContainText('Deposit must be less than the property price');
+});
+
+test('does not claim that unavailable property alerts can be created', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByText('Property alerts are being prepared.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Create property alert' })).toHaveCount(0);
+});

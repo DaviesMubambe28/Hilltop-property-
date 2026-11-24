@@ -10,6 +10,14 @@ export const enquirySchema = z.object({
   preferredDate: z.string().datetime().optional(),
   consent: z.literal(true),
   idempotencyKey: z.string().uuid(),
+  website: z.string().max(0).optional(),
+}).superRefine((input, context) => {
+  if (['property', 'viewing'].includes(input.type) && !input.propertyId) {
+    context.addIssue({ code: 'custom', path: ['propertyId'], message: 'A property is required for this enquiry.' });
+  }
+  if (!['property', 'viewing'].includes(input.type) && input.propertyId) {
+    context.addIssue({ code: 'custom', path: ['propertyId'], message: 'This enquiry type cannot be linked to a property.' });
+  }
 });
 
 export function safeText(value: unknown): string {

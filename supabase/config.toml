@@ -25,3 +25,6 @@ file_size_limit = "10MiB"
 [functions.submit-enquiry]
 verify_jwt = false
 
+[functions.track-property-view]
+verify_jwt = false
+

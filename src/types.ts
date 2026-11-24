@@ -46,4 +46,5 @@ export interface EnquiryInput {
   preferredDate?: string;
   consent: boolean;
   idempotencyKey: string;
+  website?: string;
 }
