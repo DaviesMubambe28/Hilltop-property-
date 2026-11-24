@@ -102,3 +102,8 @@ dialog{border:0;border-radius:10px;padding:30px;box-shadow:0 30px 80px rgba(0,0,
 #property-action form { display: grid; gap: 0.75rem; max-width: 40rem; padding: 1rem; margin-block: 1rem; background: var(--cream); }
 #property-action input, #property-action select, #property-action textarea { display: block; width: 100%; min-height: 2.75rem; margin-top: 0.25rem; }
 @media (max-width: 720px) { .property-page .property-gallery { grid-template-columns: 1fr; } .property-page .property-gallery img, .property-page .property-gallery img:first-child { height: 16rem; grid-row: auto; } }
+.comparison-scroll { overflow-x: auto; }
+.comparison-table { width: 100%; min-width: 48rem; border-collapse: collapse; }
+.comparison-table th, .comparison-table td { padding: 0.85rem; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+.comparison-table thead th { background: var(--navy); color: white; }
+.comparison-table tbody th { background: var(--cream); }

@@ -82,3 +82,11 @@ test('friendly property URLs load the dedicated property page', async ({ page })
   await expect(page).toHaveURL(/\/property\/example-listing/);
   expect(errors).toEqual([]);
 });
+
+test('comparison page fails safely without deployment credentials', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto('/compare.html?properties=one,two');
+  await expect(page.getByText('Comparison requires a configured Supabase project.')).toBeVisible();
+  expect(errors).toEqual([]);
+});

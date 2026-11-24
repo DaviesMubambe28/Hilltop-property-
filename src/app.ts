@@ -7,6 +7,7 @@ import type { ListingType, Property, SearchFilters } from './types';
 import { safeText } from './validation';
 import { initializeAnalytics, track } from './integrations/analytics';
 import { parseSearchFilters, searchParamsFromFilters } from './search';
+import { parseComparisonSlugs, toggleComparisonSlug } from './comparison';
 
 const grid = document.querySelector<HTMLElement>('.property-grid');
 const pagination = document.querySelector<HTMLElement>('.catalogue-pagination');
@@ -23,6 +24,8 @@ function notify(message: string) {
   toast.classList.add('visible');
   window.setTimeout(() => toast.classList.remove('visible'), 3000);
 }
+
+function updateComparisonLink(){const selected=parseComparisonSlugs(new URLSearchParams(location.search).get('compare'));const link=document.querySelector<HTMLAnchorElement>('#comparison-link');if(!link)return;link.hidden=!selected.length;link.href=`/compare.html?properties=${encodeURIComponent(selected.join(','))}`;link.textContent=`Compare selected properties (${selected.length}/4)`;}
 
 function filtersFromPage(): SearchFilters {
   const params = new URLSearchParams(location.search);
@@ -43,7 +46,7 @@ function card(property: Property): string {
     <div class="property-image" ${background}><span>${safeText(property.listing_type)}${property.verification_status === 'verified' ? ' · Verified' : ''}</span><button data-save="${property.id}" aria-label="Save ${safeText(property.title)}">♡</button></div>
     <div class="property-body"><p class="price">${safeText(formatPrice(property))}</p><h3>${safeText(property.title)}</h3>
     <p>⌖ ${safeText(property.location?.name ?? 'Zambia')}</p><div class="meta"><span>⌂ ${property.bedrooms ?? '—'} bedrooms</span><span>◫ ${property.bathrooms ?? '—'} bathrooms</span></div>
-    <a class="property-link" href="/property/${safeText(property.slug)}">View property →</a></div></article>`;
+    <a class="property-link" href="/property/${safeText(property.slug)}">View property →</a><button class="link-button" data-compare="${safeText(property.slug)}">Compare</button></div></article>`;
 }
 
 async function loadCatalogue() {
@@ -200,11 +203,13 @@ document.addEventListener('click', async (event) => {
   const details = target.closest<HTMLElement>('[data-details]');
   const save = target.closest<HTMLElement>('[data-save]');
   const page = target.closest<HTMLElement>('[data-page]');
+  const compare = target.closest<HTMLElement>('[data-compare]');
   if (target.closest('[data-retry]')) void loadCatalogue();
   if (target.closest('[data-clear-search]')) { history.pushState(null, '', `${location.pathname}#properties`); syncSearchForm(); void loadCatalogue(); }
   if (details) { const property = properties.get(details.dataset.details ?? ''); if (property) openProperty(property); }
   if (save) { try { const saved = await toggleSaved(save.dataset.save ?? ''); save.textContent = saved ? '♥' : '♡'; notify(saved ? 'Property saved.' : 'Property removed.'); } catch (error) { notify(error instanceof Error ? error.message : 'Unable to save.'); } }
   if (page) { const params = new URLSearchParams(location.search); params.set('page', page.dataset.page ?? '1'); history.pushState(null, '', `?${params}#properties`); void loadCatalogue(); }
+  if(compare){try{const params=new URLSearchParams(location.search);const selected=toggleComparisonSlug(parseComparisonSlugs(params.get('compare')),compare.dataset.compare!);if(selected.length)params.set('compare',selected.join(','));else params.delete('compare');history.replaceState(null,'',`${location.pathname}?${params}#properties`);updateComparisonLink();notify(selected.length?`${selected.length} propert${selected.length===1?'y':'ies'} selected for comparison.`:'Comparison cleared.');}catch(error){notify(error instanceof Error?error.message:'Unable to compare.');}}
   const enquire = target.closest<HTMLElement>('[data-enquire]');
   if (enquire) { const property = properties.get(enquire.dataset.enquire ?? ''); if (property) showEnquiry(property); }
   const viewing = target.closest<HTMLElement>('[data-viewing]');
@@ -248,4 +253,5 @@ document.querySelector('#auth-form')?.addEventListener('submit', async (event) =
 
 initializeAnalytics();
 syncSearchForm();
+updateComparisonLink();
 void Promise.all([setupOptions(), setupAccount(), loadCatalogue()]);

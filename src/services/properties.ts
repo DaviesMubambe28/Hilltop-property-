@@ -77,3 +77,12 @@ export async function listSimilarProperties(property: Property): Promise<Propert
   if (result.error) throw new Error(result.error.message);
   return (result.data ?? []) as unknown as Property[];
 }
+
+export async function getPropertiesBySlugs(slugs: string[]): Promise<Property[]> {
+  if (!slugs.length) return [];
+  const result = await requireSupabase().from('properties').select(select).in('slug', slugs).eq('status', 'published').eq('is_available', true);
+  if (result.error) throw new Error(result.error.message);
+  const rows = (result.data ?? []) as unknown as Property[];
+  const bySlug = new Map(rows.map((property) => [property.slug, property]));
+  return slugs.map((slug) => bySlug.get(slug)).filter((property): property is Property => Boolean(property));
+}
