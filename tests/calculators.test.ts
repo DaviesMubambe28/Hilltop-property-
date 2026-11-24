@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calculateMortgage } from '../src/calculators';
+import { calculateAffordability, calculateBuyingCosts, calculateMortgage, calculateRentalYield } from '../src/calculators';
 
 describe('mortgage calculator', () => {
   it('calculates an amortised monthly repayment', () => {
@@ -19,5 +19,38 @@ describe('mortgage calculator', () => {
     { propertyPrice: 100, deposit: 0, annualInterestRate: 15, termYears: 0 },
   ])('rejects invalid inputs: %o', (input) => {
     expect(() => calculateMortgage(input)).toThrow();
+  });
+});
+
+describe('affordability calculator', () => {
+  it('derives an affordable property value from a configurable repayment ratio', () => {
+    const result = calculateAffordability({ monthlyIncome: 30_000, monthlyObligations: 3_000, deposit: 200_000, annualInterestRate: 15, termYears: 20, repaymentRatio: 0.3 });
+    expect(result.maximumMonthlyRepayment).toBe(6_000);
+    expect(result.affordablePropertyPrice).toBeGreaterThan(650_000);
+    expect(result.repaymentToIncomeRatio).toBeCloseTo(0.2);
+  });
+
+  it('rejects obligations that consume the configured repayment capacity', () => {
+    expect(() => calculateAffordability({ monthlyIncome: 10_000, monthlyObligations: 4_000, deposit: 0, annualInterestRate: 15, termYears: 20, repaymentRatio: 0.3 })).toThrow('obligations');
+  });
+});
+
+describe('rental yield calculator', () => {
+  it('calculates annual income, gross yield and net yield', () => {
+    expect(calculateRentalYield({ purchasePrice: 1_200_000, monthlyRent: 12_000, annualExpenses: 24_000 })).toEqual({ annualIncome: 144_000, grossYield: 12, netYield: 10 });
+  });
+
+  it('rejects expenses greater than annual rental income', () => {
+    expect(() => calculateRentalYield({ purchasePrice: 1_000_000, monthlyRent: 5_000, annualExpenses: 60_001 })).toThrow('expenses');
+  });
+});
+
+describe('buying cost estimator', () => {
+  it('totals only the costs supplied by the customer', () => {
+    expect(calculateBuyingCosts({ purchasePrice: 1_000_000, legalCosts: 20_000, taxesAndStatutoryFees: 15_000, transferAndRegistration: 10_000, otherCosts: 5_000 })).toEqual({ additionalCosts: 50_000, estimatedTotal: 1_050_000 });
+  });
+
+  it('rejects negative cost inputs', () => {
+    expect(() => calculateBuyingCosts({ purchasePrice: 1_000_000, legalCosts: -1, taxesAndStatutoryFees: 0, transferAndRegistration: 0, otherCosts: 0 })).toThrow();
   });
 });

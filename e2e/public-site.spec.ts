@@ -24,7 +24,18 @@ test('calculator produces a repayment estimate', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Mortgage calculator' }).click();
   await page.getByRole('button', { name: 'Calculate estimate' }).click();
-  await expect(page.locator('#calculator-result')).toContainText('Estimated monthly repayment');
+  await expect(page.locator('#calculator-result')).toContainText('Monthly repayment');
+});
+
+test('financial tools use distinct inputs and calculations', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Rental yield calculator' }).click();
+  await page.getByLabel('Purchase price (K)').fill('1200000');
+  await page.getByLabel('Monthly rental income (K)').fill('12000');
+  await page.getByLabel('Annual expenses (K)').fill('24000');
+  await page.getByRole('button', { name: 'Calculate estimate' }).click();
+  await expect(page.locator('#calculator-result')).toContainText('Gross yield: 12.00%');
+  await expect(page.locator('#calculator-result')).toContainText('Net yield: 10.00%');
 });
 
 test('calculator rejects a deposit greater than the property price', async ({ page }) => {
