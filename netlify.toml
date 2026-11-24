@@ -1,0 +1,17 @@
+[build]
+command = "npm run build"
+publish = "dist"
+
+[[headers]]
+for = "/*"
+[headers.values]
+X-Content-Type-Options = "nosniff"
+X-Frame-Options = "DENY"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Permissions-Policy = "camera=(), microphone=(), geolocation=(self)"
+Content-Security-Policy = "default-src 'self'; img-src 'self' data: https://*.supabase.co; script-src 'self' https://www.googletagmanager.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; frame-src https://www.openstreetmap.org; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+
+[[redirects]]
+from = "/property/*"
+to = "/index.html"
+status = 200

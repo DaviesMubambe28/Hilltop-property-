@@ -1,0 +1,171 @@
+import { config } from './config';
+import { supabase } from './supabase';
+import { currentProfile, resetPassword, signIn, signUp } from './services/auth';
+import { submitEnquiry } from './services/enquiries';
+import { imageUrl, listOptions, listProperties, toggleSaved } from './services/properties';
+import type { ListingType, Property, SearchFilters } from './types';
+import { safeText } from './validation';
+import { initializeAnalytics, track } from './integrations/analytics';
+
+const grid = document.querySelector<HTMLElement>('.property-grid');
+const pagination = document.querySelector<HTMLElement>('.catalogue-pagination');
+const propertyDialog = document.querySelector<HTMLDialogElement>('#property-dialog');
+const propertyDetail = document.querySelector<HTMLElement>('#property-detail');
+const authDialog = document.querySelector<HTMLDialogElement>('#auth-dialog');
+const properties = new Map<string, Property>();
+let authMode: 'signin' | 'signup' = 'signin';
+
+function notify(message: string) {
+  const toast = document.querySelector<HTMLElement>('.toast');
+  if (!toast) return;
+  toast.textContent = message;
+  toast.classList.add('visible');
+  window.setTimeout(() => toast.classList.remove('visible'), 3000);
+}
+
+function filtersFromPage(): SearchFilters {
+  const params = new URLSearchParams(location.search);
+  const price = (document.querySelector<HTMLSelectElement>('#search-price')?.value || params.get('price') || '').split('-');
+  const tab = document.querySelector<HTMLButtonElement>('.search-tabs [role="tab"][aria-selected="true"]')?.textContent?.trim().toLowerCase();
+  const listingType = ({ buy: 'sale', rent: 'rent', invest: 'investment' } as Record<string, ListingType>)[tab ?? 'buy'];
+  return {
+    query: params.get('q') || undefined,
+    locationId: document.querySelector<HTMLSelectElement>('#search-location')?.value || params.get('location') || undefined,
+    propertyTypeId: document.querySelector<HTMLSelectElement>('#search-type')?.value || params.get('type') || undefined,
+    listingType,
+    minPrice: price[0] ? Number(price[0]) : undefined,
+    maxPrice: price[1] ? Number(price[1]) : undefined,
+    page: Math.max(1, Number(params.get('page') || 1)),
+    pageSize: 8,
+  };
+}
+
+function formatPrice(property: Property): string {
+  if (property.price === null) return 'Price on enquiry';
+  const value = new Intl.NumberFormat('en-ZM', { style: 'currency', currency: property.currency, maximumFractionDigits: 0 }).format(property.price);
+  return property.price_period && property.price_period !== 'once' ? `${value} / ${property.price_period}` : value;
+}
+
+function card(property: Property): string {
+  const primary = [...property.images].sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.position - b.position)[0];
+  const background = primary ? `style="background-image:linear-gradient(180deg,transparent 60%,rgba(2,31,51,.2)),url('${safeText(imageUrl(primary.storage_path))}')"` : '';
+  return `<article class="property-card" data-property-id="${property.id}">
+    <div class="property-image" ${background}><span>${safeText(property.listing_type)}</span><button data-save="${property.id}" aria-label="Save ${safeText(property.title)}">♡</button></div>
+    <div class="property-body"><p class="price">${safeText(formatPrice(property))}</p><h3>${safeText(property.title)}</h3>
+    <p>⌖ ${safeText(property.location?.name ?? 'Zambia')}</p><div class="meta"><span>⌂ ${property.bedrooms ?? '—'} bedrooms</span><span>◫ ${property.bathrooms ?? '—'} bathrooms</span></div>
+    <button class="property-link" data-details="${property.id}">View property →</button></div></article>`;
+}
+
+async function loadCatalogue() {
+  if (!grid || !pagination) return;
+  if (!config || !supabase) {
+    grid.innerHTML = '<div class="catalogue-state"><h3>Catalogue configuration required</h3><p>Connect this deployment to Supabase using the public environment variables in <code>.env.example</code>.</p></div>';
+    return;
+  }
+  grid.setAttribute('aria-busy', 'true');
+  grid.innerHTML = '<p class="catalogue-state">Loading available properties…</p>';
+  try {
+    const filters = filtersFromPage();
+    const result = await listProperties(filters);
+    properties.clear();
+    result.data.forEach((property) => properties.set(property.id, property));
+    grid.innerHTML = result.data.length ? result.data.map(card).join('') : '<div class="catalogue-state"><h3>No matching properties</h3><p>Try a different location, price range or listing type.</p></div>';
+    const pages = Math.ceil(result.total / filters.pageSize);
+    pagination.innerHTML = pages > 1 ? Array.from({ length: pages }, (_, index) => `<button data-page="${index + 1}" ${index + 1 === filters.page ? 'aria-current="page"' : ''}>${index + 1}</button>`).join('') : '';
+  } catch (error) {
+    grid.innerHTML = `<div class="catalogue-state"><h3>Properties are temporarily unavailable</h3><p>${safeText(error instanceof Error ? error.message : 'Please try again.')}</p><button class="button button-dark" data-retry>Retry</button></div>`;
+  } finally {
+    grid.removeAttribute('aria-busy');
+  }
+}
+
+function openProperty(property: Property) {
+  if (!propertyDialog || !propertyDetail) return;
+  const images = property.images.sort((a, b) => a.position - b.position);
+  const gallery = images.length ? images.map((image) => `<img src="${safeText(imageUrl(image.storage_path))}" alt="${safeText(image.alt_text)}" loading="lazy" />`).join('') : '<div class="property-placeholder">Image coming soon</div>';
+  const whatsapp = config?.VITE_WHATSAPP_NUMBER ? `https://wa.me/${config.VITE_WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Hilltop, I am interested in ${property.title} (${property.reference}).`)}` : '';
+  propertyDetail.innerHTML = `<div class="property-gallery">${gallery}</div><p class="eyebrow">${safeText(property.reference)} · ${safeText(property.listing_type)}</p><h2>${safeText(property.title)}</h2><p class="detail-price">${safeText(formatPrice(property))}</p><p>${safeText(property.description || property.summary)}</p><dl class="detail-meta"><div><dt>Bedrooms</dt><dd>${property.bedrooms ?? '—'}</dd></div><div><dt>Bathrooms</dt><dd>${property.bathrooms ?? '—'}</dd></div><div><dt>Location</dt><dd>${safeText(property.location?.name ?? 'Zambia')}</dd></div></dl><div class="detail-actions"><button class="button button-yellow" data-enquire="${property.id}">Enquire now</button>${whatsapp ? `<a class="button button-dark" href="${whatsapp}" target="_blank" rel="noopener">WhatsApp</a>` : ''}</div><div id="enquiry-slot"></div>`;
+  propertyDialog.showModal();
+}
+
+function showEnquiry(property: Property) {
+  const slot = document.querySelector<HTMLElement>('#enquiry-slot');
+  if (!slot) return;
+  slot.innerHTML = `<form id="enquiry-form" class="enquiry-form"><h3>Enquire about this property</h3><label>Name<input name="name" autocomplete="name" required minlength="2" maxlength="120" /></label><label>Email<input name="email" type="email" autocomplete="email" required /></label><label>Phone<input name="phone" type="tel" autocomplete="tel" maxlength="30" /></label><label>Message<textarea name="message" required minlength="10" maxlength="4000">I would like more information about ${safeText(property.title)}.</textarea></label><label class="consent"><input name="consent" type="checkbox" required /> I consent to Hilltop contacting me about this enquiry.</label><button class="button button-yellow" type="submit">Send enquiry</button><p role="status"></p></form>`;
+}
+
+async function setupOptions() {
+  if (!supabase) return;
+  try {
+    const { locations, types } = await listOptions();
+    const location = document.querySelector<HTMLSelectElement>('#search-location');
+    const type = document.querySelector<HTMLSelectElement>('#search-type');
+    locations?.forEach((item) => location?.insertAdjacentHTML('beforeend', `<option value="${item.id}">${safeText(item.name)}</option>`));
+    types?.forEach((item) => type?.insertAdjacentHTML('beforeend', `<option value="${item.id}">${safeText(item.name)}</option>`));
+  } catch { notify('Search options could not be loaded.'); }
+}
+
+async function setupAccount() {
+  const actions = document.querySelector('.nav-actions');
+  if (!actions) return;
+  const account = document.createElement('button');
+  account.className = 'account-button';
+  account.textContent = 'Account';
+  actions.insertBefore(account, actions.querySelector('.header-cta'));
+  if (!supabase) account.disabled = true;
+  const profile = supabase ? await currentProfile().catch(() => null) : null;
+  account.textContent = profile ? profile.profile.full_name || 'My account' : 'Sign in';
+  account.addEventListener('click', async () => {
+    if (profile) { location.href='/account.html'; }
+    else authDialog?.showModal();
+  });
+}
+
+document.querySelector('#property-search')?.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const filters = filtersFromPage();
+  const params = new URLSearchParams();
+  if (filters.locationId) params.set('location', filters.locationId);
+  if (filters.propertyTypeId) params.set('type', filters.propertyTypeId);
+  const price = document.querySelector<HTMLSelectElement>('#search-price')?.value;
+  if (price) params.set('price', price);
+  history.replaceState(null, '', `${location.pathname}?${params}#properties`);
+  void loadCatalogue();
+});
+
+document.addEventListener('click', async (event) => {
+  const target = event.target as HTMLElement;
+  const details = target.closest<HTMLElement>('[data-details]');
+  const save = target.closest<HTMLElement>('[data-save]');
+  const page = target.closest<HTMLElement>('[data-page]');
+  if (target.closest('[data-retry]')) void loadCatalogue();
+  if (details) { const property = properties.get(details.dataset.details ?? ''); if (property) openProperty(property); }
+  if (save) { try { const saved = await toggleSaved(save.dataset.save ?? ''); save.textContent = saved ? '♥' : '♡'; notify(saved ? 'Property saved.' : 'Property removed.'); } catch (error) { notify(error instanceof Error ? error.message : 'Unable to save.'); } }
+  if (page) { const params = new URLSearchParams(location.search); params.set('page', page.dataset.page ?? '1'); history.replaceState(null, '', `?${params}#properties`); void loadCatalogue(); }
+  const enquire = target.closest<HTMLElement>('[data-enquire]');
+  if (enquire) { const property = properties.get(enquire.dataset.enquire ?? ''); if (property) showEnquiry(property); }
+  const close = target.closest<HTMLElement>('[data-close]');
+  if (close?.dataset.close === 'property') propertyDialog?.close();
+  if (close?.dataset.close === 'auth') authDialog?.close();
+});
+
+document.addEventListener('submit', async (event) => {
+  const form = event.target as HTMLFormElement;
+  if (form.id !== 'enquiry-form') return;
+  event.preventDefault();
+  const propertyId = form.closest('#property-detail')?.querySelector<HTMLElement>('[data-enquire]')?.dataset.enquire;
+  const data = new FormData(form);
+  const status = form.querySelector<HTMLElement>('[role="status"]');
+  try {
+    const result = await submitEnquiry({ type: 'property', propertyId, name: String(data.get('name')), email: String(data.get('email')), phone: String(data.get('phone') || ''), message: String(data.get('message')), consent: data.get('consent') === 'on', idempotencyKey: crypto.randomUUID() });
+    track('generate_lead', { property_id: propertyId ?? 'general' });
+    form.reset(); if (status) status.textContent = `Thank you. Your enquiry reference is ${result.id.slice(0, 8)}.`;
+  } catch (error) { if (status) status.textContent = error instanceof Error ? error.message : 'Unable to submit your enquiry.'; }
+});
+
+document.querySelector('#auth-mode')?.addEventListener('click', () => { authMode = authMode === 'signin' ? 'signup' : 'signin'; const title = document.querySelector('#auth-title'); if (title) title.textContent = authMode === 'signup' ? 'Create an account' : 'Sign in'; document.querySelector<HTMLElement>('#auth-name')?.parentElement?.classList.toggle('hidden', authMode === 'signin'); });
+document.querySelector('#auth-reset')?.addEventListener('click', async () => { const email = document.querySelector<HTMLInputElement>('#auth-email')?.value; if (email) { await resetPassword(email); notify('Password recovery email requested.'); } });
+document.querySelector('#auth-form')?.addEventListener('submit', async (event) => { event.preventDefault(); const email = document.querySelector<HTMLInputElement>('#auth-email')?.value ?? ''; const password = document.querySelector<HTMLInputElement>('#auth-password')?.value ?? ''; const name = document.querySelector<HTMLInputElement>('#auth-name')?.value ?? ''; const result = authMode === 'signup' ? await signUp(email, password, name) : await signIn(email, password); const feedback = document.querySelector('#auth-feedback'); if (result.error) { if (feedback) feedback.textContent = result.error.message; } else location.reload(); });
+
+initializeAnalytics();
+void Promise.all([setupOptions(), setupAccount(), loadCatalogue()]);

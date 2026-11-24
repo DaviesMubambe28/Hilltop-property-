@@ -1,0 +1,33 @@
+{
+  "name": "hilltop-properties-zambia",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run --config vitest.config.ts",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src tests vite.config.ts",
+    "ci": "npm run lint && npm run typecheck && npm test && npm run build",
+    "test:e2e": "playwright test",
+    "db:types": "supabase gen types typescript --local > src/types/database.ts",
+    "test:db": "supabase test db"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.47.10",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@playwright/test": "^1.49.1",
+    "@types/node": "^22.10.2",
+    "eslint": "^9.17.0",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.1",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.1"
+  }
+}

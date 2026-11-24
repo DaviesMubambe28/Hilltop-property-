@@ -2,4 +2,9 @@ node_modules/
 dist/
 .env
 .env.local
+.env.*.local
+playwright-report/
+test-results/
+coverage/
+.supabase/
 .DS_Store
