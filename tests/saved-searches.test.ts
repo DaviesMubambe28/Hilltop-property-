@@ -1,0 +1,2 @@
+import{describe,expect,it}from'vitest';import{persistedSearchFilters,savedSearchName}from'../src/saved-searches';
+describe('saved searches',()=>{it('stores criteria without transient pagination',()=>expect(persistedSearchFilters({listingType:'rent',page:4,pageSize:8})).toEqual({listingType:'rent'}));it('normalises and validates names',()=>{expect(savedSearchName('  Lusaka rentals ')).toBe('Lusaka rentals');expect(()=>savedSearchName('x')).toThrow(/between/);});});

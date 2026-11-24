@@ -2,7 +2,7 @@ import { config } from './config';
 import { supabase } from './supabase';
 import { currentProfile, resetPassword, signIn, signUp } from './services/auth';
 import { submitEnquiry, submitViewingRequest } from './services/enquiries';
-import { imageUrl, listOptions, listProperties, recordPropertyView, toggleSaved } from './services/properties';
+import { imageUrl, listOptions, listProperties, recordPropertyView, savePropertySearch, toggleSaved } from './services/properties';
 import type { ListingType, Property, SearchFilters } from './types';
 import { safeText } from './validation';
 import { initializeAnalytics, track } from './integrations/analytics';
@@ -212,6 +212,7 @@ document.addEventListener('click', async (event) => {
   if (save) { try { const saved = await toggleSaved(save.dataset.save ?? ''); save.textContent = saved ? '♥' : '♡'; notify(saved ? 'Property saved.' : 'Property removed.'); } catch (error) { notify(error instanceof Error ? error.message : 'Unable to save.'); } }
   if (page) { const params = new URLSearchParams(location.search); params.set('page', page.dataset.page ?? '1'); history.pushState(null, '', `?${params}#properties`); void loadCatalogue(); }
   if(compare){try{const params=new URLSearchParams(location.search);const selected=toggleComparisonSlug(parseComparisonSlugs(params.get('compare')),compare.dataset.compare!);if(selected.length)params.set('compare',selected.join(','));else params.delete('compare');history.replaceState(null,'',`${location.pathname}?${params}#properties`);updateComparisonLink();notify(selected.length?`${selected.length} propert${selected.length===1?'y':'ies'} selected for comparison.`:'Comparison cleared.');}catch(error){notify(error instanceof Error?error.message:'Unable to compare.');}}
+  if(target.closest('[data-save-search]')){const name=window.prompt('Name this property search');if(name!==null){try{await savePropertySearch(name,filtersFromPage());notify('Search saved. Alerts are enabled for new matching listings.');}catch(error){notify(error instanceof Error?error.message:'Unable to save this search.');}}}
   const enquire = target.closest<HTMLElement>('[data-enquire]');
   if (enquire) { const property = properties.get(enquire.dataset.enquire ?? ''); if (property) showEnquiry(property); }
   const viewing = target.closest<HTMLElement>('[data-viewing]');

@@ -1,5 +1,6 @@
 import { requireSupabase } from '../supabase';
 import type { Property, SearchFilters } from '../types';
+import { persistedSearchFilters, savedSearchName } from '../saved-searches';
 
 const select = `id,reference,slug,title,summary,description,listing_type,price,price_period,currency,bedrooms,bathrooms,land_size,land_unit,floor_size,furnished_status,condition,verification_status,is_available,latitude,longitude,address,is_featured,
   location:locations(name,slug),property_type:property_types(name,slug),agent:agents(name,phone,email),images:property_images(storage_path,alt_text,is_primary,position),amenities:property_amenities(amenity:amenities(name,slug))`;
@@ -85,4 +86,9 @@ export async function getPropertiesBySlugs(slugs: string[]): Promise<Property[]>
   const rows = (result.data ?? []) as unknown as Property[];
   const bySlug = new Map(rows.map((property) => [property.slug, property]));
   return slugs.map((slug) => bySlug.get(slug)).filter((property): property is Property => Boolean(property));
+}
+
+export async function savePropertySearch(name:string,filters:SearchFilters):Promise<void>{
+  const client=requireSupabase();const{data:{user}}=await client.auth.getUser();if(!user)throw new Error('Sign in to save this search.');
+  const{error}=await client.from('saved_searches').insert({user_id:user.id,name:savedSearchName(name),filters:persistedSearchFilters(filters),alert_enabled:true,last_checked_at:new Date().toISOString()});if(error)throw new Error(error.message);
 }

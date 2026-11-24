@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(19);
+select plan(22);
 
 insert into public.properties(reference,slug,title,listing_type,status,description,is_available)
 values
@@ -38,6 +38,9 @@ select throws_ok($$insert into public.viewing_appointments(property_id,name,emai
 select is((select count(*)::integer from public.property_verification_requests),0,'anonymous users cannot read verification requests');
 select is((select count(*)::integer from public.property_verification_documents),0,'anonymous users cannot read verification documents');
 select throws_ok($$insert into public.property_verification_requests(property_id,requested_by) values(gen_random_uuid(),gen_random_uuid())$$,'42501',null,'anonymous users cannot create verification requests');
+select is((select count(*)::integer from public.property_alert_matches),0,'anonymous users cannot read property alert matches');
+select is((select count(*)::integer from public.system_notifications),0,'anonymous users cannot read customer notifications');
+select throws_ok($$insert into public.property_alert_matches(saved_search_id,property_id) values(gen_random_uuid(),gen_random_uuid())$$,'42501',null,'anonymous users cannot create property alert matches');
 
 select * from finish();
 rollback;

@@ -31,3 +31,6 @@ verify_jwt = false
 [functions.submit-viewing]
 verify_jwt = false
 
+[functions.process-property-alerts]
+verify_jwt = false
+
