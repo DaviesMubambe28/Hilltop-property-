@@ -73,3 +73,12 @@ test('advanced search state is shareable and restored by browser navigation', as
   await expect(page.getByLabel('Minimum bedrooms')).toHaveValue('3');
   await expect(page.getByLabel('Solar')).toBeChecked();
 });
+
+test('friendly property URLs load the dedicated property page', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto('/property/example-listing');
+  await expect(page.getByRole('heading', { name: 'Property service unavailable' })).toBeVisible();
+  await expect(page).toHaveURL(/\/property\/example-listing/);
+  expect(errors).toEqual([]);
+});

@@ -63,3 +63,17 @@ export async function recordPropertyView(propertyId: string): Promise<void> {
   const { error } = await requireSupabase().functions.invoke('track-property-view', { body: { propertyId } });
   if (error) throw new Error(error.message);
 }
+
+export async function getPropertyBySlug(slug: string): Promise<Property | null> {
+  const result = await requireSupabase().from('properties').select(select).eq('slug', slug).eq('status', 'published').eq('is_available', true).maybeSingle();
+  if (result.error) throw new Error(result.error.message);
+  return result.data as unknown as Property | null;
+}
+
+export async function listSimilarProperties(property: Property): Promise<Property[]> {
+  let query = requireSupabase().from('properties').select(select).eq('status', 'published').eq('is_available', true).neq('id', property.id).eq('listing_type', property.listing_type);
+  if (property.property_type?.slug) query = query.eq('property_types.slug', property.property_type.slug);
+  const result = await query.limit(3);
+  if (result.error) throw new Error(result.error.message);
+  return (result.data ?? []) as unknown as Property[];
+}

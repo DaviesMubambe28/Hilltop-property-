@@ -43,7 +43,7 @@ function card(property: Property): string {
     <div class="property-image" ${background}><span>${safeText(property.listing_type)}${property.verification_status === 'verified' ? ' · Verified' : ''}</span><button data-save="${property.id}" aria-label="Save ${safeText(property.title)}">♡</button></div>
     <div class="property-body"><p class="price">${safeText(formatPrice(property))}</p><h3>${safeText(property.title)}</h3>
     <p>⌖ ${safeText(property.location?.name ?? 'Zambia')}</p><div class="meta"><span>⌂ ${property.bedrooms ?? '—'} bedrooms</span><span>◫ ${property.bathrooms ?? '—'} bathrooms</span></div>
-    <button class="property-link" data-details="${property.id}">View property →</button></div></article>`;
+    <a class="property-link" href="/property/${safeText(property.slug)}">View property →</a></div></article>`;
 }
 
 async function loadCatalogue() {

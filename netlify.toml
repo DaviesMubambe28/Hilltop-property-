@@ -13,5 +13,5 @@ Content-Security-Policy = "default-src 'self'; img-src 'self' data: https://*.su
 
 [[redirects]]
 from = "/property/*"
-to = "/index.html"
+to = "/property.html"
 status = 200
