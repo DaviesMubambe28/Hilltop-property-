@@ -41,3 +41,24 @@ test('does not claim that unavailable property alerts can be created', async ({ 
   await expect(page.getByText('Property alerts are being prepared.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Create property alert' })).toHaveCount(0);
 });
+
+test('advanced search state is shareable and restored by browser navigation', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('tab', { name: 'Rent' }).click();
+  await page.getByRole('button', { name: /Advanced search/ }).click();
+  await page.getByLabel('Keywords').fill('family home');
+  await page.getByLabel('Minimum price (K)').fill('2500');
+  await page.getByLabel('Minimum bedrooms').fill('3');
+  await page.getByLabel('Solar').check();
+  await page.getByRole('button', { name: /Find properties/ }).click();
+  await expect(page).toHaveURL(/listing=rent/);
+  await expect(page).toHaveURL(/q=family\+home/);
+  await expect(page).toHaveURL(/amenities=solar/);
+
+  await page.getByRole('button', { name: 'Clear filters' }).click();
+  await expect(page).not.toHaveURL(/q=family/);
+  await page.goBack();
+  await expect(page.getByLabel('Keywords')).toHaveValue('family home');
+  await expect(page.getByLabel('Minimum bedrooms')).toHaveValue('3');
+  await expect(page.getByLabel('Solar')).toBeChecked();
+});

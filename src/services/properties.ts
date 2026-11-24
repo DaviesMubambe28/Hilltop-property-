@@ -1,30 +1,38 @@
 import { requireSupabase } from '../supabase';
 import type { Property, SearchFilters } from '../types';
 
-const select = `id,reference,slug,title,summary,description,listing_type,price,price_period,currency,bedrooms,bathrooms,land_size,land_unit,address,is_featured,
-  location:locations(name,slug),property_type:property_types(name,slug),agent:agents(name,phone,email),images:property_images(storage_path,alt_text,is_primary,position)`;
+const select = `id,reference,slug,title,summary,description,listing_type,price,price_period,currency,bedrooms,bathrooms,land_size,land_unit,floor_size,furnished_status,condition,verification_status,is_available,latitude,longitude,address,is_featured,
+  location:locations(name,slug),property_type:property_types(name,slug),agent:agents(name,phone,email),images:property_images(storage_path,alt_text,is_primary,position),amenities:property_amenities(amenity:amenities(name,slug))`;
 
 export async function listProperties(filters: SearchFilters): Promise<{ data: Property[]; total: number }> {
   const client = requireSupabase();
-  const from = (filters.page - 1) * filters.pageSize;
-  let query = client.from('properties').select(select, { count: 'exact' }).eq('status', 'published').eq('is_available', true);
-  if (filters.query) query = query.textSearch('search_document', filters.query, { type: 'websearch' });
-  if (filters.locationId) query = query.eq('location_id', filters.locationId);
-  if (filters.propertyTypeId) query = query.eq('property_type_id', filters.propertyTypeId);
-  if (filters.listingType) query = query.eq('listing_type', filters.listingType);
-  if (filters.minPrice !== undefined) query = query.gte('price', filters.minPrice);
-  if (filters.maxPrice !== undefined) query = query.lte('price', filters.maxPrice);
-  if (filters.bedrooms !== undefined) query = query.gte('bedrooms', filters.bedrooms);
-  query = filters.sort === 'priceAsc' ? query.order('price') : filters.sort === 'priceDesc' ? query.order('price', { ascending: false }) : query.order('published_at', { ascending: false });
-  const { data, count, error } = await query.range(from, from + filters.pageSize - 1);
-  if (error) throw new Error(error.message);
-  return { data: (data ?? []) as unknown as Property[], total: count ?? 0 };
+  const offset = (filters.page - 1) * filters.pageSize;
+  const matched = await client.rpc('search_property_ids', {
+    p_query: filters.query ?? null, p_location_id: filters.locationId ?? null, p_province: filters.province ?? null,
+    p_city_id: filters.cityId ?? null, p_neighborhood_id: filters.neighborhoodId ?? null,
+    p_property_type_id: filters.propertyTypeId ?? null, p_listing_type: filters.listingType ?? null,
+    p_min_price: filters.minPrice ?? null, p_max_price: filters.maxPrice ?? null,
+    p_bedrooms: filters.bedrooms ?? null, p_bathrooms: filters.bathrooms ?? null,
+    p_min_land_size: filters.minLandSize ?? null, p_min_floor_size: filters.minFloorSize ?? null,
+    p_furnished_status: filters.furnishedStatus ?? null, p_condition: filters.condition ?? null,
+    p_verification_status: filters.verificationStatus ?? null, p_amenities: filters.amenities ?? [],
+    p_sort: filters.sort ?? 'newest', p_limit: filters.pageSize, p_offset: offset,
+  });
+  if (matched.error) throw new Error(matched.error.message);
+  const rows = (matched.data ?? []) as Array<{ property_id: string; total_count: number }>;
+  if (!rows.length) return { data: [], total: 0 };
+  const ids = rows.map((row) => row.property_id);
+  const result = await client.from('properties').select(select).in('id', ids);
+  if (result.error) throw new Error(result.error.message);
+  const propertyRows = (result.data ?? []) as unknown as Property[];
+  const byId = new Map(propertyRows.map((property) => [property.id, property]));
+  return { data: ids.map((id) => byId.get(id)).filter((property): property is Property => Boolean(property)), total: Number(rows[0].total_count) };
 }
 
 export async function listOptions() {
   const client = requireSupabase();
   const [locations, types] = await Promise.all([
-    client.from('locations').select('id,name').eq('is_published', true).order('name'),
+    client.from('locations').select('id,name,province,parent_id').eq('is_published', true).order('name'),
     client.from('property_types').select('id,name').order('name'),
   ]);
   if (locations.error) throw new Error(locations.error.message);

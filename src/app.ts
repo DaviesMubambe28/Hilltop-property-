@@ -6,7 +6,7 @@ import { imageUrl, listOptions, listProperties, recordPropertyView, toggleSaved 
 import type { ListingType, Property, SearchFilters } from './types';
 import { safeText } from './validation';
 import { initializeAnalytics, track } from './integrations/analytics';
-import { parseSearchFilters } from './search';
+import { parseSearchFilters, searchParamsFromFilters } from './search';
 
 const grid = document.querySelector<HTMLElement>('.property-grid');
 const pagination = document.querySelector<HTMLElement>('.catalogue-pagination');
@@ -26,14 +26,7 @@ function notify(message: string) {
 
 function filtersFromPage(): SearchFilters {
   const params = new URLSearchParams(location.search);
-  const selectedLocation = document.querySelector<HTMLSelectElement>('#search-location')?.value;
-  const selectedType = document.querySelector<HTMLSelectElement>('#search-type')?.value;
-  const selectedPrice = document.querySelector<HTMLSelectElement>('#search-price')?.value;
-  if (selectedLocation) params.set('location', selectedLocation);
-  if (selectedType) params.set('type', selectedType);
-  if (selectedPrice) params.set('price', selectedPrice);
-  const tab = document.querySelector<HTMLButtonElement>('.search-tabs [role="tab"][aria-selected="true"]')?.textContent?.trim().toLowerCase();
-  const listingType = ({ buy: 'sale', rent: 'rent', invest: 'investment' } as Record<string, ListingType>)[tab ?? 'buy'];
+  const listingType = document.querySelector<HTMLButtonElement>('.search-tabs [role="tab"][aria-selected="true"]')?.dataset.listing as ListingType | undefined;
   return parseSearchFilters(params, listingType ?? 'sale');
 }
 
@@ -47,7 +40,7 @@ function card(property: Property): string {
   const primary = [...property.images].sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.position - b.position)[0];
   const background = primary ? `style="background-image:linear-gradient(180deg,transparent 60%,rgba(2,31,51,.2)),url('${safeText(imageUrl(primary.storage_path))}')"` : '';
   return `<article class="property-card" data-property-id="${property.id}">
-    <div class="property-image" ${background}><span>${safeText(property.listing_type)}</span><button data-save="${property.id}" aria-label="Save ${safeText(property.title)}">♡</button></div>
+    <div class="property-image" ${background}><span>${safeText(property.listing_type)}${property.verification_status === 'verified' ? ' · Verified' : ''}</span><button data-save="${property.id}" aria-label="Save ${safeText(property.title)}">♡</button></div>
     <div class="property-body"><p class="price">${safeText(formatPrice(property))}</p><h3>${safeText(property.title)}</h3>
     <p>⌖ ${safeText(property.location?.name ?? 'Zambia')}</p><div class="meta"><span>⌂ ${property.bedrooms ?? '—'} bedrooms</span><span>◫ ${property.bathrooms ?? '—'} bathrooms</span></div>
     <button class="property-link" data-details="${property.id}">View property →</button></div></article>`;
@@ -66,7 +59,7 @@ async function loadCatalogue() {
     const result = await listProperties(filters);
     properties.clear();
     result.data.forEach((property) => properties.set(property.id, property));
-    grid.innerHTML = result.data.length ? result.data.map(card).join('') : '<div class="catalogue-state"><h3>No matching properties</h3><p>Try a different location, price range or listing type.</p></div>';
+    grid.innerHTML = result.data.length ? result.data.map(card).join('') : '<div class="catalogue-state"><h3>No matching properties</h3><p>Try removing one or more filters to see available properties.</p><button class="button button-dark" data-clear-search>Clear search</button></div>';
     const pages = Math.ceil(result.total / filters.pageSize);
     pagination.innerHTML = pages > 1 ? Array.from({ length: pages }, (_, index) => `<button data-page="${index + 1}" ${index + 1 === filters.page ? 'aria-current="page"' : ''}>${index + 1}</button>`).join('') : '';
   } catch (error) {
@@ -96,11 +89,56 @@ async function setupOptions() {
   if (!supabase) return;
   try {
     const { locations, types } = await listOptions();
-    const location = document.querySelector<HTMLSelectElement>('#search-location');
+    const province = document.querySelector<HTMLSelectElement>('#search-province');
+    const city = document.querySelector<HTMLSelectElement>('#search-city');
+    const neighbourhood = document.querySelector<HTMLSelectElement>('#search-neighbourhood');
     const type = document.querySelector<HTMLSelectElement>('#search-type');
-    locations?.forEach((item) => location?.insertAdjacentHTML('beforeend', `<option value="${item.id}">${safeText(item.name)}</option>`));
+    [...new Set((locations ?? []).map((item) => item.province).filter(Boolean))].sort().forEach((name) => province?.insertAdjacentHTML('beforeend', `<option value="${safeText(name)}">${safeText(name)}</option>`));
+    (locations ?? []).filter((item) => !item.parent_id).forEach((item) => city?.insertAdjacentHTML('beforeend', `<option value="${item.id}">${safeText(item.name)}</option>`));
+    const renderNeighbourhoods = () => {
+      if (!neighbourhood) return;
+      const selected = new URLSearchParams(location.search).get('neighbourhood') ?? '';
+      neighbourhood.innerHTML = '<option value="">All neighbourhoods</option>';
+      (locations ?? []).filter((item) => item.parent_id && (!city?.value || item.parent_id === city.value)).forEach((item) => neighbourhood.insertAdjacentHTML('beforeend', `<option value="${item.id}">${safeText(item.name)}</option>`));
+      neighbourhood.value = selected;
+    };
+    city?.addEventListener('change', renderNeighbourhoods);
     types?.forEach((item) => type?.insertAdjacentHTML('beforeend', `<option value="${item.id}">${safeText(item.name)}</option>`));
+    syncSearchForm();
+    renderNeighbourhoods();
   } catch { notify('Search options could not be loaded.'); }
+}
+
+function syncSearchForm() {
+  const params = new URLSearchParams(location.search);
+  const form = document.querySelector<HTMLFormElement>('#property-search');
+  if (!form) return;
+  const values: Record<string, string> = {
+    q: params.get('q') ?? '', province: params.get('province') ?? '', city: params.get('city') ?? '',
+    neighbourhood: params.get('neighbourhood') ?? '', propertyType: params.get('type') ?? '',
+    minPrice: params.get('minPrice') ?? '', maxPrice: params.get('maxPrice') ?? '', bedrooms: params.get('bedrooms') ?? '',
+    bathrooms: params.get('bathrooms') ?? '', minLandSize: params.get('minLandSize') ?? '', minFloorSize: params.get('minFloorSize') ?? '',
+    furnished: params.get('furnished') ?? '', condition: params.get('condition') ?? '', verification: params.get('verification') ?? '', sort: params.get('sort') ?? 'newest',
+  };
+  Object.entries(values).forEach(([name, value]) => { const field = form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | null; if (field) field.value = value; });
+  const amenities = new Set((params.get('amenities') ?? '').split(','));
+  form.querySelectorAll<HTMLInputElement>('input[name="amenity"]').forEach((input) => { input.checked = amenities.has(input.value); });
+  const listing = params.get('listing') ?? 'sale';
+  document.querySelectorAll<HTMLButtonElement>('.search-tabs [data-listing]').forEach((button) => { const active = button.dataset.listing === listing; button.classList.toggle('active', active); button.setAttribute('aria-selected', String(active)); });
+  const advancedKeys = ['city','neighbourhood','minPrice','maxPrice','bedrooms','bathrooms','minLandSize','minFloorSize','furnished','condition','verification','amenities','sort'];
+  const panel = document.querySelector<HTMLElement>('#advanced-search');
+  const advancedButton = document.querySelector<HTMLButtonElement>('.advanced');
+  if (panel && advancedButton && advancedKeys.some((key) => params.has(key))) { panel.hidden = false; advancedButton.setAttribute('aria-expanded', 'true'); }
+}
+
+function filtersFromForm(form: HTMLFormElement): SearchFilters {
+  const data = new FormData(form);
+  const params = new URLSearchParams();
+  for (const [key, value] of data.entries()) if (key !== 'amenity' && String(value).trim()) params.set(key === 'propertyType' ? 'type' : key, String(value));
+  const amenities = data.getAll('amenity').map(String);
+  if (amenities.length) params.set('amenities', amenities.join(','));
+  const listingType = document.querySelector<HTMLButtonElement>('.search-tabs [role="tab"][aria-selected="true"]')?.dataset.listing as ListingType | undefined;
+  return parseSearchFilters(params, listingType ?? 'sale');
 }
 
 async function setupAccount() {
@@ -121,15 +159,35 @@ async function setupAccount() {
 
 document.querySelector('#property-search')?.addEventListener('submit', (event) => {
   event.preventDefault();
-  const filters = filtersFromPage();
-  const params = new URLSearchParams();
-  if (filters.locationId) params.set('location', filters.locationId);
-  if (filters.propertyTypeId) params.set('type', filters.propertyTypeId);
-  const price = document.querySelector<HTMLSelectElement>('#search-price')?.value;
-  if (price) params.set('price', price);
-  history.replaceState(null, '', `${location.pathname}?${params}#properties`);
+  const filters = filtersFromForm(event.currentTarget as HTMLFormElement);
+  const params = searchParamsFromFilters({ ...filters, page: 1 });
+  history.pushState(null, '', `${location.pathname}?${params}#properties`);
   void loadCatalogue();
 });
+
+document.querySelector('.advanced')?.addEventListener('click', (event) => {
+  const button = event.currentTarget as HTMLButtonElement;
+  const panel = document.querySelector<HTMLElement>('#advanced-search');
+  if (!panel) return;
+  panel.hidden = !panel.hidden;
+  button.setAttribute('aria-expanded', String(!panel.hidden));
+});
+
+document.querySelector('.clear-search')?.addEventListener('click', () => {
+  history.pushState(null, '', `${location.pathname}#properties`);
+  syncSearchForm();
+  void loadCatalogue();
+});
+
+document.querySelectorAll<HTMLButtonElement>('.search-tabs [data-listing]').forEach((button) => button.addEventListener('click', () => {
+  const params = new URLSearchParams(location.search);
+  params.set('listing', button.dataset.listing ?? 'sale');
+  params.delete('page');
+  history.pushState(null, '', `${location.pathname}?${params}#properties`);
+  void loadCatalogue();
+}));
+
+window.addEventListener('popstate', () => { syncSearchForm(); void loadCatalogue(); });
 
 document.addEventListener('click', async (event) => {
   const target = event.target as HTMLElement;
@@ -137,9 +195,10 @@ document.addEventListener('click', async (event) => {
   const save = target.closest<HTMLElement>('[data-save]');
   const page = target.closest<HTMLElement>('[data-page]');
   if (target.closest('[data-retry]')) void loadCatalogue();
+  if (target.closest('[data-clear-search]')) { history.pushState(null, '', `${location.pathname}#properties`); syncSearchForm(); void loadCatalogue(); }
   if (details) { const property = properties.get(details.dataset.details ?? ''); if (property) openProperty(property); }
   if (save) { try { const saved = await toggleSaved(save.dataset.save ?? ''); save.textContent = saved ? '♥' : '♡'; notify(saved ? 'Property saved.' : 'Property removed.'); } catch (error) { notify(error instanceof Error ? error.message : 'Unable to save.'); } }
-  if (page) { const params = new URLSearchParams(location.search); params.set('page', page.dataset.page ?? '1'); history.replaceState(null, '', `?${params}#properties`); void loadCatalogue(); }
+  if (page) { const params = new URLSearchParams(location.search); params.set('page', page.dataset.page ?? '1'); history.pushState(null, '', `?${params}#properties`); void loadCatalogue(); }
   const enquire = target.closest<HTMLElement>('[data-enquire]');
   if (enquire) { const property = properties.get(enquire.dataset.enquire ?? ''); if (property) showEnquiry(property); }
   const close = target.closest<HTMLElement>('[data-close]');
@@ -173,4 +232,5 @@ document.querySelector('#auth-reset')?.addEventListener('click', async () => { c
 document.querySelector('#auth-form')?.addEventListener('submit', async (event) => { event.preventDefault(); const email = document.querySelector<HTMLInputElement>('#auth-email')?.value ?? ''; const password = document.querySelector<HTMLInputElement>('#auth-password')?.value ?? ''; const name = document.querySelector<HTMLInputElement>('#auth-name')?.value ?? ''; const result = authMode === 'signup' ? await signUp(email, password, name) : await signIn(email, password); const feedback = document.querySelector('#auth-feedback'); if (result.error) { if (feedback) feedback.textContent = result.error.message; } else location.reload(); });
 
 initializeAnalytics();
+syncSearchForm();
 void Promise.all([setupOptions(), setupAccount(), loadCatalogue()]);

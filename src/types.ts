@@ -15,23 +15,41 @@ export interface Property {
   bathrooms: number | null;
   land_size: number | null;
   land_unit: string | null;
+  floor_size: number | null;
+  furnished_status: 'furnished' | 'unfurnished' | 'part-furnished' | null;
+  condition: 'new' | 'excellent' | 'good' | 'renovation' | null;
+  verification_status: 'unverified' | 'pending' | 'verified' | 'rejected';
+  is_available: boolean;
+  latitude: number | null;
+  longitude: number | null;
   address: string | null;
   is_featured: boolean;
   location: { name: string; slug: string } | null;
   property_type: { name: string; slug: string } | null;
   agent: { name: string; phone: string | null; email: string | null } | null;
   images: Array<{ storage_path: string; alt_text: string; is_primary: boolean; position: number }>;
+  amenities: Array<{ amenity: { name: string; slug: string } | null }>;
 }
 
 export interface SearchFilters {
   query?: string;
   locationId?: string;
+  province?: string;
+  cityId?: string;
+  neighborhoodId?: string;
   propertyTypeId?: string;
   listingType?: ListingType;
   minPrice?: number;
   maxPrice?: number;
   bedrooms?: number;
-  sort?: 'newest' | 'priceAsc' | 'priceDesc';
+  bathrooms?: number;
+  minLandSize?: number;
+  minFloorSize?: number;
+  furnishedStatus?: 'furnished' | 'unfurnished' | 'part-furnished';
+  condition?: 'new' | 'excellent' | 'good' | 'renovation';
+  verificationStatus?: 'unverified' | 'pending' | 'verified';
+  amenities?: string[];
+  sort?: 'newest' | 'priceAsc' | 'priceDesc' | 'sizeDesc';
   page: number;
   pageSize: number;
 }

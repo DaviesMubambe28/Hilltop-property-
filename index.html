@@ -55,14 +55,31 @@
       <section class="search-shell" aria-label="Property search">
         <div class="search-card container">
           <div class="search-tabs">
-            <div role="tablist" aria-label="Listing type"><button class="active" role="tab" aria-selected="true">Buy</button><button role="tab" aria-selected="false">Rent</button><button role="tab" aria-selected="false">Invest</button></div>
-            <button class="advanced" type="button">⚙ Advanced search</button>
+            <div role="tablist" aria-label="Listing type"><button class="active" role="tab" aria-selected="true" data-listing="sale">Buy</button><button role="tab" aria-selected="false" data-listing="rent">Rent</button><button role="tab" aria-selected="false" data-listing="investment">Invest</button></div>
+            <button class="advanced" type="button" aria-expanded="false" aria-controls="advanced-search">⚙ Advanced search</button>
           </div>
           <form class="search-form" id="property-search">
-            <label>Location<select id="search-location" name="location"><option value="">All locations</option></select></label>
+            <label>Keywords<input id="search-query" name="q" type="search" maxlength="120" placeholder="Reference or description" /></label>
+            <label>Province<select id="search-province" name="province"><option value="">All provinces</option></select></label>
             <label>Property type<select id="search-type" name="propertyType"><option value="">All property types</option></select></label>
             <label>Price range<select id="search-price" name="price"><option value="">Any price</option><option value="0-1000000">Under K1,000,000</option><option value="1000000-5000000">K1m – K5m</option><option value="5000000-">K5m+</option></select></label>
             <button class="button button-yellow search-button" type="submit">⌕&nbsp; Find properties</button>
+            <div class="advanced-search" id="advanced-search" hidden>
+              <label>City<select id="search-city" name="city"><option value="">All cities</option></select></label>
+              <label>Neighbourhood<select id="search-neighbourhood" name="neighbourhood"><option value="">All neighbourhoods</option></select></label>
+              <label>Minimum price (K)<input id="search-min-price" name="minPrice" type="number" min="0" step="1" /></label>
+              <label>Maximum price (K)<input id="search-max-price" name="maxPrice" type="number" min="0" step="1" /></label>
+              <label>Minimum bedrooms<input id="search-bedrooms" name="bedrooms" type="number" min="0" max="20" step="1" /></label>
+              <label>Minimum bathrooms<input id="search-bathrooms" name="bathrooms" type="number" min="0" max="20" step="1" /></label>
+              <label>Minimum land size (m²)<input id="search-land-size" name="minLandSize" type="number" min="0" /></label>
+              <label>Minimum property size (m²)<input id="search-floor-size" name="minFloorSize" type="number" min="0" /></label>
+              <label>Furnishing<select id="search-furnished" name="furnished"><option value="">Any</option><option value="furnished">Furnished</option><option value="part-furnished">Part-furnished</option><option value="unfurnished">Unfurnished</option></select></label>
+              <label>Condition<select id="search-condition" name="condition"><option value="">Any</option><option value="new">New</option><option value="excellent">Excellent</option><option value="good">Good</option><option value="renovation">Needs renovation</option></select></label>
+              <label>Verification<select id="search-verification" name="verification"><option value="">Any</option><option value="verified">Verified</option><option value="pending">Pending review</option><option value="unverified">Unverified</option></select></label>
+              <label>Sort results<select id="search-sort" name="sort"><option value="newest">Newest</option><option value="priceAsc">Price: low to high</option><option value="priceDesc">Price: high to low</option><option value="sizeDesc">Largest first</option></select></label>
+              <fieldset class="amenity-filters"><legend>Property features</legend><label><input type="checkbox" name="amenity" value="borehole" /> Borehole</label><label><input type="checkbox" name="amenity" value="solar" /> Solar</label><label><input type="checkbox" name="amenity" value="water-tank" /> Water tank</label><label><input type="checkbox" name="amenity" value="gated-community" /> Gated community</label><label><input type="checkbox" name="amenity" value="road-frontage" /> Road frontage</label><label><input type="checkbox" name="amenity" value="electricity" /> Electricity</label><label><input type="checkbox" name="amenity" value="title-deeds" /> Title deeds</label><label><input type="checkbox" name="amenity" value="serviced-plot" /> Serviced plot</label></fieldset>
+              <button class="link-button clear-search" type="button">Clear filters</button>
+            </div>
           </form>
         </div>
       </section>
