@@ -107,3 +107,9 @@ dialog{border:0;border-radius:10px;padding:30px;box-shadow:0 30px 80px rgba(0,0,
 .comparison-table th, .comparison-table td { padding: 0.85rem; border: 1px solid var(--line); text-align: left; vertical-align: top; }
 .comparison-table thead th { background: var(--navy); color: white; }
 .comparison-table tbody th { background: var(--cream); }
+.catalogue-layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(18rem, 1fr); gap: 1rem; align-items: start; }
+.catalogue-layout .property-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.property-map-panel { position: sticky; top: 5.5rem; min-height: 32rem; }
+#results-map { min-height: 30rem; border: 1px solid var(--line); border-radius: var(--radius); z-index: 1; }
+.map-note { margin-top: 0.5rem; color: var(--muted); font-size: 0.75rem; }
+@media (max-width: 900px) { .catalogue-layout { grid-template-columns: 1fr; } .property-map-panel { position: static; min-height: 22rem; } #results-map { min-height: 20rem; } }

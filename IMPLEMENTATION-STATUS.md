@@ -8,10 +8,10 @@
 | Public catalogue | Search, property pages and comparison implemented; database verification blocked | Indexed search, dedicated property URLs and URL-persisted comparison of up to four RLS-filtered listings are implemented; live Supabase queries await migration execution |
 | Enquiries and CRM | Implemented; awaiting live verification | Edge Function now combines idempotency, honeypot validation, origin checking, published-property validation and persistent HMAC-keyed rate limits; provider/project credentials unavailable |
 | Admin dashboard and CMS | Implemented; awaiting live verification | Staff role gate, statistics, property/media, enquiry, content and staff access management implemented |
-| External integrations | Implemented; blocked by credentials | WhatsApp, OpenStreetMap-compatible coordinates, Resend email and consent-aware GA4 adapters prepared |
+| External integrations | Partially implemented; live verification blocked | Property-specific WhatsApp, lazy-loaded OpenStreetMap results, optional Resend email and consent-aware GA4 are implemented; provider delivery remains unverified |
 | Security and privacy | Implemented; database verification blocked | Stage 1 removes direct view-event inserts, adds a rate-limited tracking function, tightens public RLS, audits staff access changes, and expands pgTAP to 10 policies. Docker image extraction exhausted local disk before tests could run |
 | SEO and performance | Tested | Metadata, structured data, sitemap, robots, optimized images and responsive hero implemented. Lighthouse rerun recorded separately |
-| Quality assurance | Verified locally | 38 unit tests and 17 applicable browser journeys pass; one mobile-only case is skipped on desktop. Database assertions remain blocked by local container capacity |
+| Quality assurance | Verified locally | 40 unit tests and 17 applicable browser journeys pass; one mobile-only case is skipped on desktop. Database assertions remain blocked by local container capacity |
 | Delivery and operations | Prepared; blocked by external access | CI, staging artifact, Netlify configuration, UAT, backup, deployment, rollback and maintenance runbooks added; no hosting or Supabase access supplied |
 
 Statuses are updated only after implementation and executed verification. Live Supabase and production deployment require external project and hosting credentials.

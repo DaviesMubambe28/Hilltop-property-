@@ -8,6 +8,7 @@ import { safeText } from './validation';
 import { initializeAnalytics, track } from './integrations/analytics';
 import { parseSearchFilters, searchParamsFromFilters } from './search';
 import { parseComparisonSlugs, toggleComparisonSlug } from './comparison';
+import { renderPropertyMap } from './property-map';
 
 const grid = document.querySelector<HTMLElement>('.property-grid');
 const pagination = document.querySelector<HTMLElement>('.catalogue-pagination');
@@ -65,6 +66,7 @@ async function loadCatalogue() {
     grid.innerHTML = result.data.length ? result.data.map(card).join('') : '<div class="catalogue-state"><h3>No matching properties</h3><p>Try removing one or more filters to see available properties.</p><button class="button button-dark" data-clear-search>Clear search</button></div>';
     const pages = Math.ceil(result.total / filters.pageSize);
     pagination.innerHTML = pages > 1 ? Array.from({ length: pages }, (_, index) => `<button data-page="${index + 1}" ${index + 1 === filters.page ? 'aria-current="page"' : ''}>${index + 1}</button>`).join('') : '';
+    const mapPanel=document.querySelector<HTMLElement>('#property-map-panel');if(mapPanel)void renderPropertyMap(result.data,mapPanel).catch(()=>{mapPanel.innerHTML='<p>Map tiles are temporarily unavailable.</p>';});
   } catch (error) {
     grid.innerHTML = `<div class="catalogue-state"><h3>Properties are temporarily unavailable</h3><p>${safeText(error instanceof Error ? error.message : 'Please try again.')}</p><button class="button button-dark" data-retry>Retry</button></div>`;
   } finally {
