@@ -176,6 +176,8 @@ document.querySelector('#property-search')?.addEventListener('submit', (event) =
   void loadCatalogue();
 });
 
+document.querySelector('#ai-property-search')?.addEventListener('submit',async(event)=>{event.preventDefault();const form=event.currentTarget as HTMLFormElement;const prompt=String(new FormData(form).get('prompt')??'').trim();const status=form.querySelector<HTMLElement>('[role="status"]');const button=form.querySelector<HTMLButtonElement>('button');if(button)button.disabled=true;if(status)status.textContent='Understanding your search…';try{if(!supabase)throw new Error('Search is not configured.');const{data,error}=await supabase.functions.invoke('ai-property-search',{body:{prompt}});if(error)throw error;const filters=parseSearchFilters(new URLSearchParams(data.params),'sale');const params=searchParamsFromFilters({...filters,page:1});history.pushState(null,'',`${location.pathname}?${params}#properties`);syncSearchForm();await loadCatalogue();if(status)status.textContent='Showing live listings that match your request.';}catch(error){if(status)status.textContent=error instanceof Error?error.message:'Natural-language search is unavailable.';}finally{if(button)button.disabled=false;}});
+
 document.querySelector('.advanced')?.addEventListener('click', (event) => {
   const button = event.currentTarget as HTMLButtonElement;
   const panel = document.querySelector<HTMLElement>('#advanced-search');
