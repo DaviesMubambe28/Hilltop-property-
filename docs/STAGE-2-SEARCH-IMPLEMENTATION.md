@@ -20,7 +20,7 @@ Date: 24 November 2026 (Africa/Lusaka)
 |---|---|
 | ESLint | Passed |
 | TypeScript | Passed |
-| Vitest | 29 passed |
+| Vitest | 32 passed |
 | Production build | Passed |
 | Playwright | 13 passed, one intentionally skipped desktop/mobile-menu case |
 | pgTAP | 13 assertions authored; execution blocked by local Docker capacity |
@@ -32,5 +32,5 @@ Apply `202611240004_advanced_property_search.sql` before deploying the updated f
 ## Outstanding Stage 2 work
 
 - Dedicated property pages and property-specific SEO.
-- Comparison, map, viewing appointments, verification review and persistent alerts.
+- Comparison, map, verification review and persistent alerts.
 - Live Supabase integration testing after migration deployment.

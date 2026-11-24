@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(13);
+select plan(15);
 
 insert into public.properties(reference,slug,title,listing_type,status,description,is_available)
 values
@@ -14,6 +14,8 @@ values ('general','Policy Test','policy@example.com','A private test enquiry',tr
 insert into public.property_amenities(property_id,amenity_id)
 select property.id, amenity.id from public.properties property cross join public.amenities amenity
 where property.reference='TEST-PUBLIC' and amenity.slug in ('solar','borehole');
+insert into public.viewing_appointments(property_id,name,email,mode,preferred_start,consent,idempotency_key)
+select id,'Viewing Test','viewing@example.com','physical',now()+interval '2 days',true,gen_random_uuid() from public.properties where reference='TEST-PUBLIC';
 
 set local role anon;
 select is((select count(*)::integer from public.properties where reference='TEST-DRAFT'),0,'anonymous users cannot read drafts');
@@ -29,6 +31,8 @@ select throws_ok($$select public.consume_rate_limit('test',repeat('a',64),1,60)$
 select is((select count(*)::integer from public.search_property_ids(p_query := 'TEST-PUBLIC')),1,'search finds an available property by exact reference');
 select is((select count(*)::integer from public.search_property_ids(p_amenities := array['solar','borehole'])),1,'combined amenity filters require and match every requested feature');
 select is((select count(*)::integer from public.search_property_ids(p_amenities := array['solar','swimming-pool'])),0,'combined amenity filters reject partial matches');
+select is((select count(*)::integer from public.viewing_appointments),0,'anonymous users cannot read viewing requests');
+select throws_ok($$insert into public.viewing_appointments(property_id,name,email,mode,preferred_start,consent,idempotency_key) select id,'Denied','denied@example.com','physical',now()+interval '1 day',true,gen_random_uuid() from public.properties where reference='TEST-PUBLIC'$$,'42501',null,'anonymous users cannot create viewing requests directly');
 
 select * from finish();
 rollback;

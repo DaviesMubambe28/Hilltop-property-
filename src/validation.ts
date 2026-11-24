@@ -23,3 +23,15 @@ export const enquirySchema = z.object({
 export function safeText(value: unknown): string {
   return String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character] ?? character);
 }
+
+export const viewingRequestSchema = z.object({
+  propertyId: z.string().uuid(),
+  name: z.string().trim().min(2).max(120),
+  email: z.string().trim().email().max(254),
+  phone: z.string().trim().max(30).optional(),
+  preferredStart: z.string().datetime(),
+  mode: z.enum(['physical', 'virtual']),
+  consent: z.literal(true),
+  idempotencyKey: z.string().uuid(),
+  website: z.string().max(0).optional(),
+}).refine((input) => new Date(input.preferredStart).getTime() > Date.now() + 30 * 60_000, { path: ['preferredStart'], message: 'Choose a future viewing time.' });

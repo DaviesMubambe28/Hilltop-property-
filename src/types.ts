@@ -66,3 +66,15 @@ export interface EnquiryInput {
   idempotencyKey: string;
   website?: string;
 }
+
+export interface ViewingRequestInput {
+  propertyId: string;
+  name: string;
+  email: string;
+  phone?: string;
+  preferredStart: string;
+  mode: 'physical' | 'virtual';
+  consent: boolean;
+  idempotencyKey: string;
+  website?: string;
+}

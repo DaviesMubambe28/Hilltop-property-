@@ -1,7 +1,7 @@
 import { config } from './config';
 import { supabase } from './supabase';
 import { currentProfile, resetPassword, signIn, signUp } from './services/auth';
-import { submitEnquiry } from './services/enquiries';
+import { submitEnquiry, submitViewingRequest } from './services/enquiries';
 import { imageUrl, listOptions, listProperties, recordPropertyView, toggleSaved } from './services/properties';
 import type { ListingType, Property, SearchFilters } from './types';
 import { safeText } from './validation';
@@ -74,9 +74,15 @@ function openProperty(property: Property) {
   const images = property.images.sort((a, b) => a.position - b.position);
   const gallery = images.length ? images.map((image) => `<img src="${safeText(imageUrl(image.storage_path))}" alt="${safeText(image.alt_text)}" loading="lazy" />`).join('') : '<div class="property-placeholder">Image coming soon</div>';
   const whatsapp = config?.VITE_WHATSAPP_NUMBER ? `https://wa.me/${config.VITE_WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hello Hilltop, I am interested in ${property.title} (${property.reference}).`)}` : '';
-  propertyDetail.innerHTML = `<div class="property-gallery">${gallery}</div><p class="eyebrow">${safeText(property.reference)} · ${safeText(property.listing_type)}</p><h2>${safeText(property.title)}</h2><p class="detail-price">${safeText(formatPrice(property))}</p><p>${safeText(property.description || property.summary)}</p><dl class="detail-meta"><div><dt>Bedrooms</dt><dd>${property.bedrooms ?? '—'}</dd></div><div><dt>Bathrooms</dt><dd>${property.bathrooms ?? '—'}</dd></div><div><dt>Location</dt><dd>${safeText(property.location?.name ?? 'Zambia')}</dd></div></dl><div class="detail-actions"><button class="button button-yellow" data-enquire="${property.id}">Enquire now</button>${whatsapp ? `<a class="button button-dark" href="${whatsapp}" target="_blank" rel="noopener">WhatsApp</a>` : ''}</div><div id="enquiry-slot"></div>`;
+  propertyDetail.innerHTML = `<div class="property-gallery">${gallery}</div><p class="eyebrow">${safeText(property.reference)} · ${safeText(property.listing_type)}</p><h2>${safeText(property.title)}</h2><p class="detail-price">${safeText(formatPrice(property))}</p><p>${safeText(property.description || property.summary)}</p><dl class="detail-meta"><div><dt>Bedrooms</dt><dd>${property.bedrooms ?? '—'}</dd></div><div><dt>Bathrooms</dt><dd>${property.bathrooms ?? '—'}</dd></div><div><dt>Location</dt><dd>${safeText(property.location?.name ?? 'Zambia')}</dd></div></dl><div class="detail-actions"><button class="button button-yellow" data-enquire="${property.id}">Enquire now</button><button class="button button-dark" data-viewing="${property.id}">Request viewing</button>${whatsapp ? `<a class="button button-dark" href="${whatsapp}" target="_blank" rel="noopener">WhatsApp</a>` : ''}</div><div id="enquiry-slot"></div>`;
   propertyDialog.showModal();
   void recordPropertyView(property.id).catch(() => undefined);
+}
+
+function showViewing(property: Property) {
+  const slot=document.querySelector<HTMLElement>('#enquiry-slot');if(!slot)return;
+  const minimum=new Date(Date.now()+60*60_000);minimum.setMinutes(0,0,0);
+  slot.innerHTML=`<form id="viewing-form" class="enquiry-form" data-property-id="${property.id}" data-idempotency-key="${crypto.randomUUID()}"><h3>Request a viewing</h3><label>Name<input name="name" autocomplete="name" required minlength="2" maxlength="120" /></label><label>Email<input name="email" type="email" autocomplete="email" required /></label><label>Phone<input name="phone" type="tel" autocomplete="tel" maxlength="30" /></label><label>Viewing type<select name="mode"><option value="physical">In person</option><option value="virtual">Virtual viewing</option></select></label><label>Preferred date and time<input name="preferredStart" type="datetime-local" min="${minimum.toISOString().slice(0,16)}" required /></label><label class="hp-field" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off" /></label><label class="consent"><input name="consent" type="checkbox" required /> I consent to Hilltop contacting me about this viewing.</label><button class="button button-yellow" type="submit">Request viewing</button><p role="status"></p></form>`;
 }
 
 function showEnquiry(property: Property) {
@@ -201,6 +207,8 @@ document.addEventListener('click', async (event) => {
   if (page) { const params = new URLSearchParams(location.search); params.set('page', page.dataset.page ?? '1'); history.pushState(null, '', `?${params}#properties`); void loadCatalogue(); }
   const enquire = target.closest<HTMLElement>('[data-enquire]');
   if (enquire) { const property = properties.get(enquire.dataset.enquire ?? ''); if (property) showEnquiry(property); }
+  const viewing = target.closest<HTMLElement>('[data-viewing]');
+  if (viewing) { const property = properties.get(viewing.dataset.viewing ?? ''); if (property) showViewing(property); }
   const close = target.closest<HTMLElement>('[data-close]');
   if (close?.dataset.close === 'property') propertyDialog?.close();
   if (close?.dataset.close === 'auth') authDialog?.close();
@@ -208,6 +216,13 @@ document.addEventListener('click', async (event) => {
 
 document.addEventListener('submit', async (event) => {
   const form = event.target as HTMLFormElement;
+  if (form.id === 'viewing-form') {
+    event.preventDefault();const data=new FormData(form);const status=form.querySelector<HTMLElement>('[role="status"]');const submit=form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if(submit?.disabled)return;if(submit){submit.disabled=true;submit.textContent='Sending…';}
+    try{const preferred=new Date(String(data.get('preferredStart'))).toISOString();const result=await submitViewingRequest({propertyId:form.dataset.propertyId??'',name:String(data.get('name')),email:String(data.get('email')),phone:String(data.get('phone')||''),preferredStart:preferred,mode:String(data.get('mode')) as 'physical'|'virtual',consent:data.get('consent')==='on',idempotencyKey:form.dataset.idempotencyKey??crypto.randomUUID(),website:String(data.get('website')||'')});if(status)status.textContent=`Viewing request ${result.id.slice(0,8)} is ${result.status}. Hilltop will confirm the time.`;if(submit)submit.textContent='Request sent';}
+    catch(error){if(status)status.textContent=error instanceof Error?error.message:'Unable to request a viewing.';if(submit){submit.disabled=false;submit.textContent='Request viewing';}}
+    return;
+  }
   if (form.id !== 'enquiry-form') return;
   event.preventDefault();
   const propertyId = form.closest('#property-detail')?.querySelector<HTMLElement>('[data-enquire]')?.dataset.enquire;

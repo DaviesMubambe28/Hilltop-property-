@@ -28,3 +28,6 @@ verify_jwt = false
 [functions.track-property-view]
 verify_jwt = false
 
+[functions.submit-viewing]
+verify_jwt = false
+

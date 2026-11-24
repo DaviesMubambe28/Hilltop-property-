@@ -11,7 +11,7 @@
 | External integrations | Implemented; blocked by credentials | WhatsApp, OpenStreetMap-compatible coordinates, Resend email and consent-aware GA4 adapters prepared |
 | Security and privacy | Implemented; database verification blocked | Stage 1 removes direct view-event inserts, adds a rate-limited tracking function, tightens public RLS, audits staff access changes, and expands pgTAP to 10 policies. Docker image extraction exhausted local disk before tests could run |
 | SEO and performance | Tested | Metadata, structured data, sitemap, robots, optimized images and responsive hero implemented. Lighthouse rerun recorded separately |
-| Quality assurance | Verified locally | 29 unit tests and 13 applicable browser journeys pass; one mobile-only case is skipped on desktop. Database assertions remain blocked by local container capacity |
+| Quality assurance | Verified locally | 32 unit tests and 13 applicable browser journeys pass; one mobile-only case is skipped on desktop. Database assertions remain blocked by local container capacity |
 | Delivery and operations | Prepared; blocked by external access | CI, staging artifact, Netlify configuration, UAT, backup, deployment, rollback and maintenance runbooks added; no hosting or Supabase access supplied |
 
 Statuses are updated only after implementation and executed verification. Live Supabase and production deployment require external project and hosting credentials.
