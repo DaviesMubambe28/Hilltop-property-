@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(15);
+select plan(19);
 
 insert into public.properties(reference,slug,title,listing_type,status,description,is_available)
 values
@@ -16,6 +16,8 @@ select property.id, amenity.id from public.properties property cross join public
 where property.reference='TEST-PUBLIC' and amenity.slug in ('solar','borehole');
 insert into public.viewing_appointments(property_id,name,email,mode,preferred_start,consent,idempotency_key)
 select id,'Viewing Test','viewing@example.com','physical',now()+interval '2 days',true,gen_random_uuid() from public.properties where reference='TEST-PUBLIC';
+
+select is((select public from storage.buckets where id='verification-documents'),false,'verification document bucket is private');
 
 set local role anon;
 select is((select count(*)::integer from public.properties where reference='TEST-DRAFT'),0,'anonymous users cannot read drafts');
@@ -33,6 +35,9 @@ select is((select count(*)::integer from public.search_property_ids(p_amenities 
 select is((select count(*)::integer from public.search_property_ids(p_amenities := array['solar','swimming-pool'])),0,'combined amenity filters reject partial matches');
 select is((select count(*)::integer from public.viewing_appointments),0,'anonymous users cannot read viewing requests');
 select throws_ok($$insert into public.viewing_appointments(property_id,name,email,mode,preferred_start,consent,idempotency_key) select id,'Denied','denied@example.com','physical',now()+interval '1 day',true,gen_random_uuid() from public.properties where reference='TEST-PUBLIC'$$,'42501',null,'anonymous users cannot create viewing requests directly');
+select is((select count(*)::integer from public.property_verification_requests),0,'anonymous users cannot read verification requests');
+select is((select count(*)::integer from public.property_verification_documents),0,'anonymous users cannot read verification documents');
+select throws_ok($$insert into public.property_verification_requests(property_id,requested_by) values(gen_random_uuid(),gen_random_uuid())$$,'42501',null,'anonymous users cannot create verification requests');
 
 select * from finish();
 rollback;
