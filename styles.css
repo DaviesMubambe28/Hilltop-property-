@@ -226,7 +226,7 @@ dialog{border:0;border-radius:10px;padding:30px;box-shadow:0 30px 80px rgba(0,0,
 }
 @font-face {
   font-family: "Hilltop Serif Fallback";
-  src: local("Georgia");
+  src: local("Georgia"), local("Liberation Serif"), local("Times New Roman");
   size-adjust: 100%;
   ascent-override: 103.6%;
   descent-override: 33.5%;
@@ -388,4 +388,68 @@ footer a:hover { text-decoration: underline; text-underline-offset: 4px; }
   .result-toolbar { gap: .5rem; }
   .result-toolbar label { max-width: 60%; }
   #filter-dialog { height: 100dvh; margin: 0 0 0 auto; width: min(26rem, 100%); }
+}
+/* Property conversion keeps facts and next steps together. */
+.property-page .property-gallery { margin: 0 0 2rem; }
+.property-page .property-gallery img { height: 14rem; }
+.property-page .property-gallery button:first-child img { height: 28.75rem; }
+.property-information { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(18rem, 1fr); gap: 3rem; align-items: start; }
+.property-overview h1 { font-size: clamp(2.25rem, 4vw, 3.75rem); }
+.enquiry-sidebar { position: sticky; top: 6rem; padding: 1.5rem; border: 1px solid var(--line); border-top: 3px solid var(--yellow); background: var(--cream); }
+.enquiry-sidebar h2 { font-size: 1.75rem; }
+.enquiry-sidebar > p:not(.eyebrow) { margin-top: 1rem; font-size: .85rem; color: var(--muted); }
+.enquiry-sidebar .detail-actions { display: grid; grid-template-columns: 1fr; margin-bottom: 0; }
+.enquiry-sidebar .detail-actions .button { border: 1px solid var(--line); }
+#property-action form { padding: 0; margin-block: 1.5rem 0; }
+#property-action label { display: block; color: var(--navy); font-size: .85rem; }
+#property-action input, #property-action select, #property-action textarea { padding: .65rem; border: 1px solid #bcc7cf; border-radius: var(--radius); font: inherit; }
+#property-action input[type="checkbox"] { display: inline; width: auto; min-height: auto; }
+#property-action [role="status"] { margin: .5rem 0; }
+.property-location-section { margin-block: 3rem; }
+.property-location-section h2 { margin-bottom: 1rem; }
+.property-location-section a { text-decoration: underline; text-underline-offset: 3px; }
+@media(max-width:900px) { .property-information { grid-template-columns: 1fr; gap: 2rem; } .enquiry-sidebar { position: static; } }
+@media(max-width:720px) { .property-page .property-gallery img, .property-page .property-gallery button:first-child img { height: 16rem; } .property-page .detail-meta { margin-block: 1.5rem; } .enquiry-sidebar { padding: 1.25rem; } }
+.comparison-differences { display: flex; gap: .75rem; align-items: center; min-height: 44px; margin-bottom: 1rem; font-size: .85rem; }
+.comparison-scroll { box-shadow: none; }
+.comparison-table [data-different="true"] th { border-left: 3px solid var(--yellow); }
+.comparison-table th, .comparison-table td { overflow-wrap: anywhere; }
+.comparison-table thead .link-button { color: white; text-decoration: underline; }
+@media(max-width:720px) {
+  .comparison-pair { min-width: 0; width: 100%; table-layout: fixed; }
+  .comparison-pair thead, .comparison-pair tbody { display: block; }
+  .comparison-pair tr { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .comparison-pair tr[hidden] { display: none; }
+  .comparison-pair thead th { min-width: 0 !important; padding: .75rem; font-size: .8rem; }
+  .comparison-pair thead th:first-child { grid-column: 1/-1; padding-block: .5rem; }
+  .comparison-pair tbody th { grid-column: 1/-1; padding: .6rem .75rem; font-size: .75rem; }
+  .comparison-pair td { padding: .75rem; font-size: .8rem; }
+  .comparison-pair .comparison-image { height: 6rem; width: 100%; object-fit: cover; }
+  .catalogue-page .search-form > label { grid-column: 1 / -1; }
+}
+.saved-link { display: inline-flex; align-items: center; min-height: 44px; font-size: .75rem; white-space: nowrap; }
+.collection-links { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 1.5rem; }
+.collection-links a { min-height: 44px; display: inline-flex; align-items: center; font-size: .85rem; border-bottom: 1px solid var(--line); }
+@media(max-width:1100px) { .desktop-nav { display:none; } .menu-button { display: block; } .nav-actions { margin-left:auto; } }
+@media(max-width:720px) { .saved-link { display:none; } .mobile-menu { overflow-y:auto; padding-top:1rem; } .mobile-menu a { font-size:1.5rem; padding-block:.65rem; } }
+.hilltop-map-marker { display: grid; place-items: center; background: var(--yellow); border: 3px solid white; border-radius: 50%; color: var(--navy); font-weight: 700; }
+.hilltop-map-marker:focus-visible { outline: 3px solid var(--navy); outline-offset: 3px; }
+.property-gallery .no-image { min-height: 16rem; display: grid; place-items: center; }
+.property-gallery > .property-placeholder { grid-column: 1 / -1; }
+@media(min-width:721px) {
+  .property-page .property-gallery:has(button:nth-child(2):last-child) { grid-template-rows: 1fr; }
+  .property-page .property-gallery:has(button:nth-child(2):last-child) button:first-child { grid-row: auto; }
+  .property-page .property-gallery:has(button:nth-child(2):last-child) img { height: 28.75rem; }
+}
+.map-disclosure { margin-block: 1rem; border: 1px solid var(--line); padding: 1rem; }
+.map-disclosure summary { min-height: 44px; cursor: pointer; font-weight: 700; }
+.desktop-nav a:after { display: none; }
+@media(max-width:720px) {
+  /* These fields move into the drawer; hide them before JavaScript to avoid a layout jump. */
+  .catalogue-page .search-form > label:not(:first-child) { display:none !important; }
+}
+@media(max-width:900px) {
+  .catalogue-layout:has(.property-map-panel:not([hidden])) { display:flex; flex-direction:column; }
+  .catalogue-layout:has(.property-map-panel:not([hidden])) > * { width:100%; }
+  .catalogue-layout .property-map-panel:not([hidden]) { order:-1; }
 }

@@ -1,3 +1,4 @@
+import { installPropertyImageFallbacks } from './property-images';
 import { config } from './config';
 import { supabase } from './supabase';
 import { currentProfile, resetPassword, signIn, signUp } from './services/auth';
@@ -74,11 +75,14 @@ async function loadCatalogue() {
     const result = demoPreview ? (await import('./demo-catalogue')).filterDemoProperties((await import('./demo-catalogue')).demoProperties,filters) : await listProperties(filters);
     properties.clear();
     result.data.forEach((property) => properties.set(property.id, property));
+    const homepage = document.body.classList.contains('homepage');
+    const visibleProperties = homepage ? [...result.data].sort((a,b)=>Number(b.is_featured)-Number(a.is_featured)).slice(0,3) : result.data;
+    if(homepage) { const browse=document.querySelector<HTMLAnchorElement>('#properties .section-heading .text-link'); if(browse)browse.href=`/properties.html?${new URLSearchParams(location.search)}`; }
     let summary=document.querySelector<HTMLElement>('#catalogue-summary');if(!summary){summary=document.createElement('p');summary.id='catalogue-summary';summary.className='catalogue-summary';const layout=grid.closest('.catalogue-layout');(layout??grid).before(summary);}summary.innerHTML=demoPreview?`<b>${result.total} demonstration properties</b><span>Development preview — synthetic inventory, not public listings.</span>`:`<b>${result.total} available propert${result.total===1?'y':'ies'}</b>`;
     renderActiveFilters();
-    grid.innerHTML = result.data.length ? result.data.map(property => renderPropertyCard(property, demoPreview)).join('') : '<div class="catalogue-state"><h3>No matching properties</h3><p>Try removing one or more filters to see available properties.</p><button class="button button-dark" data-clear-search>Clear search</button></div>';
+    grid.innerHTML = result.data.length ? visibleProperties.map(property => renderPropertyCard(property, demoPreview)).join('') : '<div class="catalogue-state"><h3>No matching properties</h3><p>Try removing one or more filters to see available properties.</p><button class="button button-dark" data-clear-search>Clear search</button></div>';
     const pages = Math.ceil(result.total / filters.pageSize);
-    pagination.innerHTML = pages > 1 ? Array.from({ length: pages }, (_, index) => `<button data-page="${index + 1}" ${index + 1 === filters.page ? 'aria-current="page"' : ''}>${index + 1}</button>`).join('') : '';
+    pagination.innerHTML = !homepage && pages > 1 ? Array.from({ length: pages }, (_, index) => `<button data-page="${index + 1}" ${index + 1 === filters.page ? 'aria-current="page"' : ''}>${index + 1}</button>`).join('') : '';
     updateComparisonButtons();
     await updateMapView();
   } catch {
@@ -154,7 +158,7 @@ function syncSearchForm() {
   const advancedKeys = ['city','neighbourhood','minPrice','maxPrice','bedrooms','bathrooms','minLandSize','minFloorSize','furnished','condition','verification','amenities','sort'];
   const panel = document.querySelector<HTMLElement>('#advanced-search');
   const advancedButton = document.querySelector<HTMLButtonElement>('.advanced');
-  if (panel && advancedButton && advancedKeys.some((key) => params.has(key))) { panel.hidden = false; advancedButton.setAttribute('aria-expanded', 'true'); }
+  if (panel && advancedButton && !(document.querySelector('#filter-dialog') && matchMedia('(max-width:720px)').matches) && advancedKeys.some((key) => params.has(key))) { panel.hidden = false; advancedButton.setAttribute('aria-expanded', 'true'); }
 }
 
 function filtersFromForm(form: HTMLFormElement): SearchFilters {
@@ -194,6 +198,7 @@ document.querySelector('#property-search')?.addEventListener('submit', (event) =
   if (current.get('compare')) params.set('compare', current.get('compare')!);
   history.pushState(null, '', `${location.pathname}?${params}#properties`);
   filterDialog?.close();
+  syncSearchForm();
   void loadCatalogue();
 });
 
@@ -234,6 +239,7 @@ document.querySelectorAll<HTMLButtonElement>('.search-tabs [data-listing]').forE
   if (current.get('compare')) params.set('compare', current.get('compare')!);
   history.pushState(null, '', `${location.pathname}?${params}#properties`);
   filterDialog?.close();
+  syncSearchForm();
   void loadCatalogue();
 }));
 
@@ -307,3 +313,26 @@ function syncQuickSort() { if (quickSort) quickSort.value = new URLSearchParams(
 syncQuickSort();
 quickSort?.addEventListener('change', () => { const params = new URLSearchParams(location.search); params.set('sort', quickSort.value); params.delete('page'); history.pushState(null, '', `${location.pathname}?${params}#properties`); syncSearchForm(); void loadCatalogue(); });
 window.addEventListener('popstate', () => { syncQuickSort(); updateComparisonButtons(); void updateMapView(); });
+
+// Keep the narrow catalogue focused on quick search; detailed fields stay in the drawer.
+const mobileFilters = matchMedia('(max-width:720px)');
+const quickFields = [...document.querySelectorAll<HTMLElement>('.catalogue-page #property-search > label')].slice(1);
+function arrangeQuickFields() {
+  const panel=document.querySelector<HTMLElement>('#advanced-search');
+  if(!panel)return;
+  if(mobileFilters.matches) { quickFields.forEach(field=>panel.prepend(field)); panel.hidden=true; }
+  else { const button=document.querySelector('#property-search > button'); quickFields.forEach(field=>button?.before(field)); }
+}
+arrangeQuickFields();
+mobileFilters.addEventListener('change', arrangeQuickFields);
+
+installPropertyImageFallbacks();
+
+// Arrow-key navigation keeps listing tabs operable without a pointer.
+const listingTabs=[...document.querySelectorAll<HTMLButtonElement>('.search-tabs [role="tab"]')];
+listingTabs.forEach((tab,index)=>tab.addEventListener('keydown',event=>{
+  if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+  event.preventDefault();
+  const next=event.key==='Home'?0:event.key==='End'?listingTabs.length-1:(index+(event.key==='ArrowRight'?1:-1)+listingTabs.length)%listingTabs.length;
+  listingTabs[next].focus();listingTabs[next].click();
+}));

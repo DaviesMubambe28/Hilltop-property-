@@ -14,7 +14,8 @@
     "ci": "npm run lint && npm run typecheck && npm test && npm run build",
     "test:e2e": "playwright test",
     "db:types": "supabase gen types typescript --local > src/types/database.ts",
-    "test:db": "supabase test db"
+    "test:db": "supabase test db",
+    "test:integration": "playwright test --config playwright.integration.config.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.47.10",

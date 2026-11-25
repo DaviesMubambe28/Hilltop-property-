@@ -9,6 +9,10 @@ const publicPages = [
   '/sell.html',
   '/about.html',
   '/contact.html',
+  '/resources.html',
+  '/properties.html?preview=demo&view=map',
+  '/properties.html?preview=demo',
+  '/compare.html?preview=demo&properties=demo-kabulonga-family-house,demo-foxdale-apartment',
 ];
 
 for (const path of publicPages) {

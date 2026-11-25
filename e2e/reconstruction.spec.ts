@@ -59,3 +59,24 @@ test('preview enquiries and viewings fail honestly without uncaught errors or fa
   await expect(page.getByLabel('Name', { exact: true })).toBeFocused();
   expect(errors).toEqual([]);
 });
+
+test('map mode is explicit, shareable and returns to list', async ({ page }) => {
+  await page.goto('/properties.html?preview=demo');
+  await page.getByRole('button', { name: 'Map', exact: true }).click();
+  await expect(page).toHaveURL(/view=map/);
+  await expect(page.locator('#property-map-panel')).toBeVisible();
+  await expect(page.locator('#property-map-panel')).toContainText('Synthetic coordinates');
+  await page.getByRole('button', { name: 'List', exact: true }).click();
+  await expect(page.locator('#property-map-panel')).toBeHidden();
+  await page.goBack();
+  await expect(page.locator('#property-map-panel')).toBeVisible();
+});
+
+test('catalogue listing tabs support arrow keys and reflect the selected listing', async ({ page }) => {
+  await page.goto('/properties.html?preview=demo');
+  await page.getByRole('tab',{name:'Buy',exact:true}).focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(page.getByRole('tab',{name:'Rent',exact:true})).toHaveAttribute('aria-selected','true');
+  await expect(page).toHaveURL(/listing=rent/);
+  await expect(page.locator('.property-card')).toHaveCount(2);
+});

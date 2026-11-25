@@ -20,7 +20,7 @@ test('about and comparison journeys provide clear recovery paths', async ({ page
   await expect(page.getByRole('link', { name: 'Explore properties' })).toHaveAttribute('href', '/properties.html');
 
   await page.goto('/compare.html');
-  await expect(page.getByRole('heading', { name: 'Connect the property catalogue.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Comparison is temporarily unavailable.' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Browse properties' })).toHaveAttribute('href', '/properties.html');
 });
 
@@ -184,6 +184,6 @@ test('comparison page fails safely without deployment credentials', async ({ pag
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/compare.html?properties=one,two');
-  await expect(page.getByRole('heading', { name: 'Connect the property catalogue.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Comparison is temporarily unavailable.' })).toBeVisible();
   expect(errors).toEqual([]);
 });

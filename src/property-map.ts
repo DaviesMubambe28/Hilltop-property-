@@ -19,8 +19,9 @@ export async function renderPropertyMap(properties: Property[], container: HTMLE
   container.innerHTML = '<div id="results-map" aria-label="Map of matching properties"></div><p class="map-note">Markers show approximate locations for privacy. Listings without approved coordinates are omitted.</p>';
   const L = await import('leaflet'); await import('leaflet/dist/leaflet.css');
   const map = L.map('results-map', { scrollWheelZoom: false }); activeMap = map;
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors', maxZoom: 18 }).addTo(map);
+  const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors', maxZoom: 18 }).addTo(map);
+  tiles.on('tileerror', () => { const note=container.querySelector<HTMLElement>('.map-note'); if(note) { note.setAttribute('role','status'); note.textContent='Map imagery is temporarily unavailable. Continue browsing the property list, or switch to List above.'; } });
   const bounds = L.latLngBounds([]);
-  mapped.forEach(({ property, coordinates }) => { bounds.extend(coordinates); const marker=L.marker(coordinates).addTo(map); marker.bindPopup(`<b>${safeText(property.title)}</b><br>${safeText(property.location?.name ?? 'Zambia')}<br><a href="/property/${safeText(property.slug)}">View property</a>`); marker.on('click',()=>document.querySelector(`[data-property-id="${property.id}"]`)?.scrollIntoView({behavior:'smooth',block:'center'})); });
+  mapped.forEach(({ property, coordinates }, index) => { bounds.extend(coordinates); const marker=L.marker(coordinates, {title:property.title, icon:L.divIcon({className:'hilltop-map-marker',html:`<span>${index+1}</span>`,iconSize:[36,36],iconAnchor:[18,18]})}).addTo(map); marker.bindPopup(`<b>${safeText(property.title)}</b><br>${safeText(property.location?.name ?? 'Zambia')}<br><a href="/property/${safeText(property.slug)}">View property</a>`); marker.on('click',()=>document.querySelector(`[data-property-id="${property.id}"]`)?.scrollIntoView({behavior:'smooth',block:'center'})); });
   if (mapped.length === 1) map.setView(mapped[0].coordinates, 13); else map.fitBounds(bounds, { padding: [24, 24], maxZoom: 14 });
 }
