@@ -14,6 +14,16 @@ test('dedicated public journeys load and expose working forms', async ({ page })
   await expect(page.locator('form[data-public-enquiry="general"]')).toBeVisible();
 });
 
+test('customer and staff portals fail safely without deployment credentials', async ({ page }) => {
+  await page.goto('/account.html');
+  await expect(page.getByRole('heading', { name: 'Account services are not connected.' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Sign out' })).toHaveCount(0);
+
+  await page.goto('/admin.html');
+  await expect(page.getByRole('heading', { name: 'Connect the staff workspace.' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Sign out' })).toHaveCount(0);
+});
+
 test('public site remains usable without deployment credentials', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
