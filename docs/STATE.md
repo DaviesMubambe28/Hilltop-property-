@@ -15,3 +15,6 @@ Finish baseline browser tests and inspect captured baseline renders; implement h
 
 ## Restrictions
 No push/deploy, remote merge, migration/backend security changes or production data access.
+
+## Discovery implementation checkpoint
+Source Serif 4 official unmodified asset and OFL retained; Manrope official access blocked. Shared typography tokens, responsive hero preload, honest homepage, independent v4 references, shared Ledger cards and category facts, compact catalogue, native mobile filter dialog, optional map mode and URL sorting implemented. CI passed with 63 unit tests. Three focused discovery browser regressions passed. Actual 390/1440 screenshots captured for review. Full visual matrix and full post-change browser/axe run pending. Resources content added to replace placeholder destinations.

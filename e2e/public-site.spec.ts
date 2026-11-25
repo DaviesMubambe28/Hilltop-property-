@@ -55,7 +55,7 @@ test('public site remains usable without deployment credentials', async ({ page 
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Find your place');
-  await expect(page.getByText('Catalogue configuration required')).toBeVisible();
+  await expect(page.getByText('Property search is temporarily unavailable')).toBeVisible();
   await expect(page.locator('main')).toBeVisible();
   expect(errors).toEqual([]);
 });
@@ -103,7 +103,7 @@ test('property alerts only report success after persistence', async ({ page }) =
   await expect(saveSearch).toBeVisible();
   page.once('dialog',(dialog)=>dialog.accept('Lusaka homes'));
   await saveSearch.click();
-  await expect(page.locator('.toast')).toContainText('Supabase is not configured');
+  await expect(page.locator('.toast')).toContainText('Search alerts are unavailable');
   await expect(page.locator('.toast')).not.toContainText('Search saved');
 });
 
