@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(23);
+select plan(32);
 
 insert into public.properties(reference,slug,title,listing_type,status,description,is_available)
 values
@@ -42,6 +42,15 @@ select is((select count(*)::integer from public.property_alert_matches),0,'anony
 select is((select count(*)::integer from public.system_notifications),0,'anonymous users cannot read customer notifications');
 select throws_ok($$insert into public.property_alert_matches(saved_search_id,property_id) values(gen_random_uuid(),gen_random_uuid())$$,'42501',null,'anonymous users cannot create property alert matches');
 select throws_ok($$select public.can_access_enquiry(e) from public.enquiries e limit 1$$,'42501',null,'anonymous users cannot invoke CRM access checks');
+select is((select count(*)::integer from public.property_submissions),0,'anonymous users cannot read owner submissions');
+select is((select count(*)::integer from public.property_submission_documents),0,'anonymous users cannot read owner documents');
+select is((select count(*)::integer from public.property_ownerships),0,'anonymous users cannot read ownership records');
+select is((select count(*)::integer from public.leases),0,'anonymous users cannot read leases');
+select is((select count(*)::integer from public.maintenance_requests),0,'anonymous users cannot read maintenance requests');
+select is((select count(*)::integer from public.property_offers),0,'anonymous users cannot read offers');
+select is((select count(*)::integer from public.transaction_milestones),0,'anonymous users cannot read transaction milestones');
+select throws_ok($$insert into public.property_offers(property_id,buyer_id,amount) values(gen_random_uuid(),gen_random_uuid(),1)$$,'42501',null,'anonymous users cannot create offers');
+select is((select count(*)::integer from public.property_service_requests),0,'anonymous users cannot read private service requests');
 
 select * from finish();
 rollback;

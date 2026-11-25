@@ -47,10 +47,14 @@ test('calculator rejects a deposit greater than the property price', async ({ pa
   await expect(page.locator('#calculator-result')).toContainText('Deposit must be less than the property price');
 });
 
-test('does not claim that unavailable property alerts can be created', async ({ page }) => {
+test('property alerts only report success after persistence', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByText('Property alerts are being prepared.')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Create property alert' })).toHaveCount(0);
+  const saveSearch=page.getByRole('button',{name:'Save search & enable alerts'});
+  await expect(saveSearch).toBeVisible();
+  page.once('dialog',(dialog)=>dialog.accept('Lusaka homes'));
+  await saveSearch.click();
+  await expect(page.locator('.toast')).toContainText('Supabase is not configured');
+  await expect(page.locator('.toast')).not.toContainText('Search saved');
 });
 
 test('advanced search state is shareable and restored by browser navigation', async ({ page }) => {

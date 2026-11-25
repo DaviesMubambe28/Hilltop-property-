@@ -12,6 +12,9 @@
 - WhatsApp links, analytics consent and GA4 adapter, coordinate-ready property data and provider configuration.
 - SEO metadata, structured data, sitemap, robots controls, security headers and responsive optimized imagery.
 - Unit, browser and SQL policy tests plus GitHub Actions, staging build and deployment configuration.
+- Dedicated property pages, comparison, maps, viewing appointments, verification, alerts and grounded natural-language search.
+- Branch-aware CRM assignment, notes, follow-ups and activity auditing.
+- Owner intake, leases, maintenance, offers, transaction milestones and specialist property-service workflows.
 - Security, privacy, database, UAT, staging, production, rollback, backup and maintenance documentation.
 
 ## Executed evidence
@@ -19,15 +22,15 @@
 - `npm run lint` passed.
 - `npm run typecheck` passed.
 - `npm audit --audit-level=high` found 0 vulnerabilities after upgrading Vite, Vitest and Zod.
-- Vitest passed 6 assertions across 2 files.
-- Vite production build passed and generated public, account and admin entry points.
-- Playwright passed 5 browser journeys on mobile and desktop; the desktop copy of the mobile-navigation test was intentionally skipped.
+- Vitest passed 48 assertions across 11 files.
+- Vite production build passed and generated public, property, comparison, account and admin entry points.
+- Playwright passed 17 applicable browser journeys on mobile and desktop; the desktop copy of the mobile-navigation test was intentionally skipped.
 - Final Lighthouse measured 75 performance, 97 accessibility, 100 best practices and 100 SEO. CLS was 0; throttled LCP remained 8.5 seconds and is an open performance defect.
 
 ## External blockers
 
 - No Supabase project URL, anonymous key, project reference or access token was supplied, so remote migrations, RLS and live data workflows were not executed.
-- Local Supabase startup was attempted. The environment blocked required images from `public.ecr.aws`, so SQL policy tests could not run here.
+- The Supabase CLI was acquired and local startup was attempted. Docker exhausted its filesystem while extracting the pinned Supabase images, so the 32 SQL policy assertions could not run here.
 - Email, WhatsApp, analytics, domain and hosting accounts were not supplied. Their adapters and configuration paths are implemented but unconnected.
 - Production was not deployed because no production project, host, DNS access, backup target or UAT approval exists.
 
