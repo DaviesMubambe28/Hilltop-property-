@@ -14,6 +14,32 @@ test('dedicated public journeys load and expose working forms', async ({ page })
   await expect(page.locator('form[data-public-enquiry="general"]')).toBeVisible();
 });
 
+test('about and comparison journeys provide clear recovery paths', async ({ page }) => {
+  await page.goto('/about.html');
+  await expect(page.getByRole('heading', { name: 'Your comfort is our priority.' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Explore properties' })).toHaveAttribute('href', '/properties.html');
+
+  await page.goto('/compare.html');
+  await expect(page.getByRole('heading', { name: 'Connect the property catalogue.' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Browse properties' })).toHaveAttribute('href', '/properties.html');
+});
+
+test('major public pages have no horizontal overflow or broken internal destinations', async ({ page, request }) => {
+  const paths = ['/', '/properties.html', '/sell.html', '/about.html', '/contact.html', '/compare.html', '/property/example-listing'];
+  const destinations = new Set<string>();
+  for (const path of paths) {
+    await page.goto(path);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    expect(overflow, `${path} should not overflow horizontally`).toBeLessThanOrEqual(1);
+    const hrefs = await page.locator('a[href]').evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
+    hrefs.filter((href) => href.startsWith('/') && !href.startsWith('//')).forEach((href) => destinations.add(href.split('#')[0]));
+  }
+  for (const destination of destinations) {
+    const response = await request.get(destination);
+    expect(response.status(), `${destination} should resolve`).toBeLessThan(400);
+  }
+});
+
 test('customer and staff portals fail safely without deployment credentials', async ({ page }) => {
   await page.goto('/account.html');
   await expect(page.getByRole('heading', { name: 'Account services are not connected.' })).toBeVisible();
@@ -115,6 +141,6 @@ test('comparison page fails safely without deployment credentials', async ({ pag
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/compare.html?properties=one,two');
-  await expect(page.getByText('Comparison requires a configured Supabase project.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Connect the property catalogue.' })).toBeVisible();
   expect(errors).toEqual([]);
 });

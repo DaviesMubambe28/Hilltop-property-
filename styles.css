@@ -107,6 +107,30 @@ dialog{border:0;border-radius:10px;padding:30px;box-shadow:0 30px 80px rgba(0,0,
   .search-form label { display: block !important; }
 }
 
+/* Shared finish layer for public and operational journeys. */
+:where(a, button, input, select, textarea):focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+.premium-state { max-width: 54rem; margin-inline: auto; padding: clamp(2rem, 6vw, 4.5rem); text-align: left; border-left: 4px solid var(--yellow); background: var(--cream); }
+.premium-state h1, .premium-state h2 { max-width: 18ch; margin: 0 0 1rem; }
+.premium-state > p:not(.eyebrow) { max-width: 42rem; color: var(--muted); }
+.premium-state > div { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.5rem; }
+.comparison-scroll { border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 8px 24px rgba(6,46,75,.07); }
+.comparison-table thead th { padding-block: 1rem; }
+.comparison-table thead a { text-decoration: underline; text-decoration-color: var(--yellow); text-underline-offset: 4px; }
+.comparison-table tbody tr:nth-child(even) td { background: #f8fafb; }
+.property-page .detail-price { margin: 1rem 0; color: var(--navy); font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 800; }
+.property-page .detail-meta { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1px; margin: 2rem 0; background: var(--line); border: 1px solid var(--line); }
+.property-page .detail-meta div { padding: 1rem; background: #fff; }
+.property-page .detail-meta dt { color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; }
+.property-page .detail-meta dd { margin: .3rem 0 0; font-weight: 800; }
+.property-page .detail-actions { display: flex; flex-wrap: wrap; gap: .65rem; margin: 1.5rem 0 2rem; }
+@media (prefers-reduced-motion: reduce) { *, *:before, *:after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
+@media (max-width: 720px) {
+  .premium-state { padding: 1.5rem; }
+  .property-page .detail-meta { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .property-page .detail-actions { display: grid; grid-template-columns: 1fr; }
+  .property-page .detail-actions .button { width: 100%; }
+}
+
 @media (max-width: 560px) {
   .advanced-search { grid-template-columns: 1fr; }
   .search-form label { display: block !important; }

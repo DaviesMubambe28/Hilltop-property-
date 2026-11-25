@@ -31,6 +31,20 @@ Hilltop should compete through a distinctly Zambian, service-led experience rath
 4. Several public navigation items previously returned to homepage anchors rather than dedicated journeys; catalogue, selling and contact pages now address the highest-value gaps.
 5. Live competitor comparison remains blocked until those domains are available from an approved browser/network environment.
 
+## Implemented visual response
+
+- Introduced dedicated catalogue, selling, contact and About journeys so primary navigation no longer depends on homepage anchors.
+- Extended the approved photographic hero treatment to public service and comparison pages.
+- Rebuilt the property comparison shell with clear hierarchy, full navigation, a complete footer and actionable empty/error states.
+- Added consistent keyboard focus indicators and reduced-motion handling across the public experience.
+- Strengthened property-detail specification grids, action grouping and responsive behavior without changing listing data or business rules.
+- Added safe, designed configuration states for customer and staff portals.
+- Added automated checks for major-page horizontal overflow and broken internal destinations.
+
+## Remaining evidence limitation
+
+The three named competitor domains still cannot be reached from this execution environment. A final side-by-side scoring exercise should be repeated from an approved browser environment before making claims about Hilltop outperforming any competitor's current production interface.
+
 ## Patterns to avoid
 
 - Fake listings, reviews, agents, projects or performance statistics.
