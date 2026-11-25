@@ -1,6 +1,8 @@
 begin;
 
 create extension if not exists btree_gist;
+create extension if not exists citext;
+
 create type public.viewing_mode as enum ('physical','virtual');
 create type public.appointment_status as enum ('requested','confirmed','rejected','proposed','cancelled','completed');
 
@@ -23,7 +25,14 @@ create table public.viewing_appointments (
   idempotency_key uuid not null unique,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
+<<<<<<< Updated upstream
   appointment_slot tstzrange not null,
+=======
+  
+  -- Changed from 'generated always' to a regular column
+  appointment_slot tstzrange not null,
+  
+>>>>>>> Stashed changes
   exclude using gist (assigned_to with =, appointment_slot with &&) where (status = 'confirmed' and assigned_to is not null)
 );
 
@@ -52,9 +61,27 @@ create index viewing_customer_date on public.viewing_appointments(customer_id, p
 create index viewing_staff_queue on public.viewing_appointments(status, assigned_to, preferred_start);
 create index viewing_property_date on public.viewing_appointments(property_id, preferred_start desc);
 
+-- Trigger to automatically update the 'updated_at' column
 create trigger set_viewing_appointments_updated_at before update on public.viewing_appointments
 for each row execute function public.set_updated_at();
 
+-- NEW: Trigger function to calculate the appointment_slot automatically
+create function public.set_appointment_slot() returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  new.appointment_slot := tstzrange(
+    coalesce(new.proposed_start, new.preferred_start),
+    coalesce(new.proposed_start, new.preferred_start) + make_interval(mins => new.duration_minutes),
+    '[)'
+  );
+  return new;
+end $$;
+
+-- NEW: Attach the trigger to fire before insert or when time/duration changes
+create trigger set_viewing_appointment_slot
+before insert or update of proposed_start, preferred_start, duration_minutes on public.viewing_appointments
+for each row execute function public.set_appointment_slot();
+
+-- Trigger to record status changes in the history table
 create function public.record_appointment_status() returns trigger language plpgsql security definer set search_path = '' as $$
 begin
   if tg_op = 'INSERT' or old.status is distinct from new.status then
@@ -68,6 +95,7 @@ for each row execute function public.record_appointment_status();
 
 alter table public.viewing_appointments enable row level security;
 alter table public.appointment_status_history enable row level security;
+
 create policy viewing_customer_read on public.viewing_appointments for select using (customer_id=auth.uid() or public.is_staff());
 create policy viewing_staff_all on public.viewing_appointments for all using (public.is_staff()) with check (public.is_staff());
 create policy viewing_history_read on public.appointment_status_history for select using (

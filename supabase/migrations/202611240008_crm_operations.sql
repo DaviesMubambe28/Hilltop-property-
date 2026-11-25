@@ -1,7 +1,16 @@
 begin;
+<<<<<<< Updated upstream
 alter table public.profiles add column if not exists branch_id uuid references public.branches(id) on delete set null;
 alter table public.agents add column if not exists profile_id uuid unique references public.profiles(id) on delete set null;
 alter table public.enquiries add column if not exists branch_id uuid references public.branches(id) on delete set null;
+=======
+
+-- Added 'if not exists' to all three alter table statements to prevent crashes if columns already exist
+alter table public.profiles add column if not exists branch_id uuid references public.branches(id) on delete set null;
+alter table public.agents add column if not exists profile_id uuid unique references public.profiles(id) on delete set null;
+alter table public.enquiries add column if not exists branch_id uuid references public.branches(id) on delete set null;
+
+>>>>>>> Stashed changes
 create index enquiries_branch_queue on public.enquiries(branch_id,status,created_at desc);
 create index enquiries_assignee_queue on public.enquiries(assigned_to,status,created_at desc);
 create index follow_ups_staff_due on public.follow_ups(staff_id,completed_at,due_at);
@@ -34,4 +43,5 @@ end $$;
 create trigger audit_enquiry_change after update on public.enquiries for each row when(old.status is distinct from new.status or old.assigned_to is distinct from new.assigned_to or old.branch_id is distinct from new.branch_id) execute function public.audit_crm_change();
 create trigger audit_enquiry_note after insert on public.enquiry_notes for each row execute function public.audit_crm_change();
 create trigger audit_follow_up after insert or update on public.follow_ups for each row execute function public.audit_crm_change();
+
 commit;
