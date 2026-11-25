@@ -34,16 +34,6 @@ document.querySelectorAll('.filter-row button').forEach((button) => {
   button.addEventListener('click', () => activateButton(button, '.filter-row button'));
 });
 
-const savedCount = document.querySelector('.icon-button span');
-document.querySelectorAll('.property-image button').forEach((button) => {
-  button.addEventListener('click', () => {
-    const saved = button.classList.toggle('saved');
-    button.textContent = saved ? '♥' : '♡';
-    savedCount.textContent = String(document.querySelectorAll('.property-image button.saved').length);
-    showToast(saved ? 'Property saved' : 'Property removed');
-  });
-});
-
 const toast = document.querySelector('.toast');
 let toastTimer;
 function showToast(message) {
@@ -52,12 +42,6 @@ function showToast(message) {
   toast.classList.add('visible');
   toastTimer = setTimeout(() => toast.classList.remove('visible'), 2400);
 }
-
-document.querySelector('#property-search').addEventListener('submit', (event) => {
-  event.preventDefault();
-  document.querySelector('#properties').scrollIntoView();
-  showToast('Showing properties that match your search');
-});
 
 const dialog = document.querySelector('#tool-dialog');
 const dialogTitle = document.querySelector('#dialog-title');
@@ -112,4 +96,8 @@ document.querySelector('#calculator-form').addEventListener('submit', (event) =>
   } catch (error) {
     output.textContent = error instanceof Error ? error.message : 'Check the values and try again.';
   }
+});
+
+document.addEventListener('keydown', event => {
+  if(event.key === 'Escape' && !mobileMenu.hidden) { mobileMenu.hidden=true; menuButton.setAttribute('aria-expanded','false');menuButton.setAttribute('aria-label','Open menu');document.body.classList.remove('menu-open');menuButton.focus(); }
 });
