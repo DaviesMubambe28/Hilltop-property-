@@ -17,6 +17,9 @@ describe('mortgage calculator', () => {
     { propertyPrice: 100, deposit: 101, annualInterestRate: 15, termYears: 20 },
     { propertyPrice: 100, deposit: 0, annualInterestRate: -1, termYears: 20 },
     { propertyPrice: 100, deposit: 0, annualInterestRate: 15, termYears: 0 },
+    { propertyPrice: Number.POSITIVE_INFINITY, deposit: 0, annualInterestRate: 15, termYears: 20 },
+    { propertyPrice: 100, deposit: 0, annualInterestRate: 101, termYears: 20 },
+    { propertyPrice: 100, deposit: 0, annualInterestRate: 15, termYears: 41 },
   ])('rejects invalid inputs: %o', (input) => {
     expect(() => calculateMortgage(input)).toThrow();
   });
@@ -33,6 +36,16 @@ describe('affordability calculator', () => {
   it('rejects obligations that consume the configured repayment capacity', () => {
     expect(() => calculateAffordability({ monthlyIncome: 10_000, monthlyObligations: 4_000, deposit: 0, annualInterestRate: 15, termYears: 20, repaymentRatio: 0.3 })).toThrow('obligations');
   });
+
+  it('supports a zero-interest affordability estimate', () => {
+    const result = calculateAffordability({ monthlyIncome: 10_000, monthlyObligations: 0, deposit: 50_000, annualInterestRate: 0, termYears: 10, repaymentRatio: 0.3 });
+    expect(result.maximumMonthlyRepayment).toBe(3_000);
+    expect(result.affordablePropertyPrice).toBe(410_000);
+  });
+
+  it('rejects repayment ratios outside the documented 10% to 60% range', () => {
+    expect(() => calculateAffordability({ monthlyIncome: 10_000, monthlyObligations: 0, deposit: 0, annualInterestRate: 15, termYears: 20, repaymentRatio: 0.61 })).toThrow();
+  });
 });
 
 describe('rental yield calculator', () => {
@@ -42,6 +55,10 @@ describe('rental yield calculator', () => {
 
   it('rejects expenses greater than annual rental income', () => {
     expect(() => calculateRentalYield({ purchasePrice: 1_000_000, monthlyRent: 5_000, annualExpenses: 60_001 })).toThrow('expenses');
+  });
+
+  it('returns zero yields when no rent is expected', () => {
+    expect(calculateRentalYield({ purchasePrice: 1_000_000, monthlyRent: 0, annualExpenses: 0 })).toEqual({ annualIncome: 0, grossYield: 0, netYield: 0 });
   });
 });
 

@@ -38,3 +38,7 @@ Create separate synthetic customer, staff and administrator users through Supaba
 4. Take a staging backup, restore it to a disposable project, and verify property, enquiry and user-profile record counts.
 5. Record Lighthouse and axe results for mobile and desktop. Resolve critical findings before production approval.
 
+## Single owner hand-off
+
+The complete owner-supplied inputs and launch gates are maintained in `../PHASE-4-VERIFICATION-REPORT.md` and `../PRODUCTION-READINESS-CHECKLIST.md`. Verify the project reference and hostname verbally or through the provider console before linking the CLI; a plausible project name is not sufficient identity evidence.
+

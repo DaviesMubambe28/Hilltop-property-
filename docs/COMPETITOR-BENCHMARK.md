@@ -4,6 +4,8 @@
 
 Direct inspection of Homes Platinum Zambia, Pam Golding Zambia and Broadleaf Homes was attempted on 25 November 2026. All three domains were blocked by the execution environment's outbound proxy with HTTP 403 responses. No claims about their current rendered interfaces are included here because they could not be verified.
 
+A Phase 4 retry used HTTPS HEAD requests, redirects and a standard browser user agent. The proxy rejected each CONNECT tunnel before the origin site responded. This confirms an environment access limitation, not an outage or behaviour of any competitor website.
+
 ## Evidence used
 
 - The product goals and benchmark criteria supplied by Hilltop.

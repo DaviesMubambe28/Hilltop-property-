@@ -142,7 +142,7 @@ test('development property preview provides an accessible gallery and conversion
   await expect(page.getByRole('note')).toContainText('not public inventory');
   await expect(page.getByRole('heading', { name: '[DEMO] Kabulonga family house' })).toBeVisible();
 
-  await page.getByRole('button', { name: 'Open image 1 of 2' }).click();
+  await page.getByRole('button', { name: /Open image 1 of 2/ }).click();
   const lightbox = page.getByRole('dialog', { name: 'Property image gallery' });
   await expect(lightbox).toBeVisible();
   await expect(page.locator('#gallery-lightbox-caption')).toContainText('Image 1 of 2');
@@ -150,7 +150,7 @@ test('development property preview provides an accessible gallery and conversion
   await expect(page.locator('#gallery-lightbox-caption')).toContainText('Image 2 of 2');
   await page.getByRole('button', { name: 'Close image gallery' }).click();
   await expect(lightbox).toBeHidden();
-  await expect(page.getByRole('button', { name: 'Open image 1 of 2' })).toBeFocused();
+  await expect(page.getByRole('button', { name: /Open image 1 of 2/ })).toBeFocused();
 
   if (testInfo.project.name === 'mobile') {
     await expect(page.getByRole('button', { name: 'Request viewing' }).last()).toBeVisible();

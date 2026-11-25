@@ -11,16 +11,16 @@ Assessment date: 25 November 2026. Scores reflect observable repository and brow
 | Customer conversion experience | 10% | 8.2/10 | 0.82 | Persistent mobile contact actions, concise contextual enquiry/viewing forms, telephone and WhatsApp routes, validation and truthful failure handling. Live persistence remains a staging check. |
 | Trust and credibility | 10% | 8.0/10 | 0.80 | Verified status support, availability enforcement, visible demonstration labels, privacy-aware approximate maps, 32 passing RLS assertions and no fabricated testimonials or awards. |
 | Functional completeness | 10% | 7.8/10 | 0.78 | Broad public, customer, CRM, CMS and operational coverage plus populated public discovery and comparison journeys. Clean migration replay and 41 database assertions pass; API/Auth end-to-end verification remains blocked. |
-| Performance | 5% | 7.7/10 | 0.39 | Optimised WebP assets, lazy-loaded secondary imagery, split page bundles and measured local property-page LCP of 332 ms with CLS 0.000. Formal production Lighthouse and field measurement remain outstanding. |
-| Accessibility | 5% | 8.1/10 | 0.41 | Semantic headings, labelled controls, keyboard-operated dialog, focus restoration, live image counter, reduced-motion support and rendered-control checks. Automated axe coverage is not installed. |
+| Performance | 5% | 8.0/10 | 0.40 | Production-build mobile Lighthouse performance was 96–99 with CLS 0–0.028 across homepage, catalogue and comparison. Catalogue/comparison LCP passed; homepage LCP was 2.7 s and remains above the 2.5 s target. No field INP data exists. |
+| Accessibility | 5% | 8.6/10 | 0.43 | Axe now covers seven representative pages at mobile and desktop; all 14 checks pass with no critical/serious findings after contrast, name and keyboard fixes. Manual screen-reader/device review remains outstanding. |
 
-**Weighted total: 8.10/10**
+**Weighted total: 8.14/10**
 
 ## Highest-priority remaining deficiencies
 
 1. Run populated public and authenticated browser journeys against a complete local Supabase stack or an authorised isolated project.
 2. Capture genuine listing photography in multiple aspect ratios; the current repository has a deliberately small image set.
-3. Execute Lighthouse and axe audits in the deployment environment and resolve measured findings.
+3. Repeat Lighthouse and axe audits on staging, reduce the homepage LCP below 2.5 seconds and complete manual accessibility review.
 4. Verify enquiry, viewing, save and comparison persistence using authorised staging accounts.
 5. Repeat direct competitor inspection when network access is available; no competitor score is currently supportable.
 

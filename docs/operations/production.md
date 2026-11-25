@@ -13,3 +13,9 @@ Production access is intentionally required for release.
 
 Rollback uses the previous immutable frontend deployment. For database failure, stop writes, preserve evidence and restore the verified pre-deployment backup or apply a reviewed forward-fix migration. Never reset the production database.
 
+## Monitoring and incident response
+
+Before launch, assign named owners and escalation contacts for hosting, Supabase, email delivery and customer enquiries. Monitor availability, browser errors, Edge Function failures, database saturation, authentication anomalies and notification delivery without logging message bodies, credentials or customer documents.
+
+For a suspected incident: restrict affected access, preserve audit evidence, rotate compromised credentials through provider consoles, notify the accountable owner, assess affected records and legal notification duties, then restore service using the last verified deployment or backup. Record timestamps, decisions, affected systems and follow-up actions. Never paste production secrets or personal data into issue trackers.
+
