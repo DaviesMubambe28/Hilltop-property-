@@ -8,3 +8,5 @@ test-results/
 coverage/
 .supabase/
 .DS_Store
+
+work/
