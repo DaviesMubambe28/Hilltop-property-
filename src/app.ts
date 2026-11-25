@@ -164,7 +164,8 @@ async function setupAccount() {
   account.textContent = profile ? profile.profile.full_name || 'My account' : 'Sign in';
   account.addEventListener('click', async () => {
     if (profile) { location.href='/account.html'; }
-    else authDialog?.showModal();
+    else if (authDialog) authDialog.showModal();
+    else location.href = '/account.html';
   });
 }
 

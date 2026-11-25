@@ -1,5 +1,19 @@
 import { expect, test } from '@playwright/test';
 
+test('dedicated public journeys load and expose working forms', async ({ page }) => {
+  await page.goto('/properties.html?listing=rent');
+  await expect(page.getByRole('heading', { name: 'Available properties.' })).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'Rent' })).toHaveAttribute('aria-selected', 'true');
+
+  await page.goto('/sell.html');
+  await expect(page.getByRole('heading', { name: 'Tell us about your property.' })).toBeVisible();
+  await expect(page.locator('form[data-public-enquiry="valuation"]')).toBeVisible();
+
+  await page.goto('/contact.html');
+  await expect(page.getByRole('heading', { name: 'How can we help?' })).toBeVisible();
+  await expect(page.locator('form[data-public-enquiry="general"]')).toBeVisible();
+});
+
 test('public site remains usable without deployment credentials', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
