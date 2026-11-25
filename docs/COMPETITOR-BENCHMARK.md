@@ -40,6 +40,7 @@ Hilltop should compete through a distinctly Zambian, service-led experience rath
 - Strengthened property-detail specification grids, action grouping and responsive behavior without changing listing data or business rules.
 - Added safe, designed configuration states for customer and staff portals.
 - Added automated checks for major-page horizontal overflow and broken internal destinations.
+- Added a photography-led property gallery with an accessible full-screen lightbox and persistent mobile conversion actions, verified at six responsive widths.
 
 ## Remaining evidence limitation
 

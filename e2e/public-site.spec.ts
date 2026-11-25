@@ -137,6 +137,27 @@ test('friendly property URLs load the dedicated property page', async ({ page })
   expect(errors).toEqual([]);
 });
 
+test('development property preview provides an accessible gallery and conversion actions', async ({ page }, testInfo) => {
+  await page.goto('/property/demo-kabulonga-family-house?preview=demo');
+  await expect(page.getByRole('note')).toContainText('not public inventory');
+  await expect(page.getByRole('heading', { name: '[DEMO] Kabulonga family house' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Open image 1 of 2' }).click();
+  const lightbox = page.getByRole('dialog', { name: 'Property image gallery' });
+  await expect(lightbox).toBeVisible();
+  await expect(page.locator('#gallery-lightbox-caption')).toContainText('Image 1 of 2');
+  await page.keyboard.press('ArrowRight');
+  await expect(page.locator('#gallery-lightbox-caption')).toContainText('Image 2 of 2');
+  await page.getByRole('button', { name: 'Close image gallery' }).click();
+  await expect(lightbox).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Open image 1 of 2' })).toBeFocused();
+
+  if (testInfo.project.name === 'mobile') {
+    await expect(page.getByRole('button', { name: 'Request viewing' }).last()).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Call' })).toHaveAttribute('href', /^tel:/);
+  }
+});
+
 test('comparison page fails safely without deployment credentials', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));

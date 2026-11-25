@@ -1,5 +1,14 @@
 import type { Property } from './types';
 
+export function galleryIndex(current: number, change: number, total: number): number {
+  if (total < 1) return 0;
+  return (current + change + total) % total;
+}
+
+export function galleryPositionLabel(index: number, total: number): string {
+  return `Image ${index + 1} of ${total}`;
+}
+
 export function propertySlugFromLocation(pathname: string, search: string): string | null {
   const pathMatch = pathname.match(/^\/property\/([a-z0-9-]+)\/?$/);
   const candidate = pathMatch?.[1] ?? new URLSearchParams(search).get('slug');

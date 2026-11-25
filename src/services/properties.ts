@@ -42,6 +42,7 @@ export async function listOptions() {
 }
 
 export function imageUrl(path: string): string {
+  if (path.startsWith('/')) return path;
   return requireSupabase().storage.from('property-media').getPublicUrl(path).data.publicUrl;
 }
 
