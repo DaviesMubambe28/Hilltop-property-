@@ -17,6 +17,7 @@ const propertyDetail = document.querySelector<HTMLElement>('#property-detail');
 const authDialog = document.querySelector<HTMLDialogElement>('#auth-dialog');
 const properties = new Map<string, Property>();
 let authMode: 'signin' | 'signup' = 'signin';
+const demoPreview = import.meta.env.DEV && new URLSearchParams(location.search).get('preview') === 'demo';
 
 function notify(message: string) {
   const toast = document.querySelector<HTMLElement>('.toast');
@@ -26,7 +27,7 @@ function notify(message: string) {
   window.setTimeout(() => toast.classList.remove('visible'), 3000);
 }
 
-function updateComparisonLink(){const selected=parseComparisonSlugs(new URLSearchParams(location.search).get('compare'));const link=document.querySelector<HTMLAnchorElement>('#comparison-link');if(!link)return;link.hidden=!selected.length;link.href=`/compare.html?properties=${encodeURIComponent(selected.join(','))}`;link.textContent=`Compare selected properties (${selected.length}/4)`;}
+function updateComparisonLink(){const selected=parseComparisonSlugs(new URLSearchParams(location.search).get('compare'));const link=document.querySelector<HTMLAnchorElement>('#comparison-link');if(!link)return;link.hidden=!selected.length;const params=new URLSearchParams({properties:selected.join(',')});if(demoPreview)params.set('preview','demo');link.href=`/compare.html?${params}`;link.textContent=`Compare selected properties (${selected.length}/4)`;}
 
 function filtersFromPage(): SearchFilters {
   const params = new URLSearchParams(location.search);
@@ -40,19 +41,24 @@ function formatPrice(property: Property): string {
   return property.price_period && property.price_period !== 'once' ? `${value} / ${property.price_period}` : value;
 }
 
+function propertyHref(property:Property){return `/property/${safeText(property.slug)}${demoPreview?'?preview=demo':''}`;}
+function cardSpecifications(property:Property){const type=property.property_type?.slug;if(type==='plot'||type==='farm'||type==='estate')return `<span>Land ${property.land_size??'—'} ${safeText(property.land_unit??'m²')}</span><span>${safeText(property.property_type?.name??'Property')}</span>`;if(type==='office'||type==='retail')return `<span>${property.floor_size??'—'} m² floor area</span><span>${property.bathrooms??'—'} washrooms</span>`;return `<span>${property.bedrooms??'—'} bedrooms</span><span>${property.bathrooms??'—'} bathrooms</span>`;}
+
 function card(property: Property): string {
   const primary = [...property.images].sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.position - b.position)[0];
   const background = primary ? `style="background-image:linear-gradient(180deg,transparent 60%,rgba(2,31,51,.2)),url('${safeText(imageUrl(primary.storage_path))}')"` : '';
   return `<article class="property-card" data-property-id="${property.id}">
     <div class="property-image" ${background}><span>${safeText(property.listing_type)}${property.verification_status === 'verified' ? ' · Verified' : ''}</span><button data-save="${property.id}" aria-label="Save ${safeText(property.title)}">♡</button></div>
     <div class="property-body"><p class="price">${safeText(formatPrice(property))}</p><h3>${safeText(property.title)}</h3>
-    <p>⌖ ${safeText(property.location?.name ?? 'Zambia')}</p><div class="meta"><span>⌂ ${property.bedrooms ?? '—'} bedrooms</span><span>◫ ${property.bathrooms ?? '—'} bathrooms</span></div>
-    <a class="property-link" href="/property/${safeText(property.slug)}">View property →</a><button class="link-button" data-compare="${safeText(property.slug)}">Compare</button></div></article>`;
+    <p>⌖ ${safeText(property.location?.name ?? 'Zambia')}</p><div class="meta">${cardSpecifications(property)}</div>
+    <a class="property-link" href="${propertyHref(property)}">View property →</a><button class="link-button" data-compare="${safeText(property.slug)}">Compare</button></div></article>`;
 }
+
+function renderActiveFilters(){document.querySelector('#active-filters')?.remove();const params=new URLSearchParams(location.search);const labels:Record<string,string>={q:'Keywords',province:'Province',type:'Property type',price:'Price',minPrice:'Minimum price',maxPrice:'Maximum price',bedrooms:'Bedrooms',bathrooms:'Bathrooms',minLandSize:'Land size',minFloorSize:'Floor size',furnished:'Furnishing',condition:'Condition',verification:'Verification',amenities:'Features',sort:'Sort'};const entries=[...params.entries()].filter(([key,value])=>labels[key]&&value);if(!entries.length)return;const container=document.createElement('div');container.id='active-filters';container.className='active-filters';container.setAttribute('aria-label','Active property filters');container.innerHTML=`<span>Active filters</span>${entries.map(([key,value])=>`<button type="button" data-remove-filter="${safeText(key)}" aria-label="Remove ${safeText(labels[key])}: ${safeText(value)}">${safeText(labels[key])}: ${safeText(value)} <b aria-hidden="true">×</b></button>`).join('')}`;document.querySelector('#catalogue-summary')?.after(container);}
 
 async function loadCatalogue() {
   if (!grid || !pagination) return;
-  if (!config || !supabase) {
+  if ((!config || !supabase) && !demoPreview) {
     grid.innerHTML = '<div class="catalogue-state"><h3>Catalogue configuration required</h3><p>Connect this deployment to Supabase using the public environment variables in <code>.env.example</code>.</p></div>';
     return;
   }
@@ -60,9 +66,11 @@ async function loadCatalogue() {
   grid.innerHTML = '<p class="catalogue-state">Loading available properties…</p>';
   try {
     const filters = filtersFromPage();
-    const result = await listProperties(filters);
+    const result = demoPreview ? (await import('./demo-catalogue')).filterDemoProperties((await import('./demo-catalogue')).demoProperties,filters) : await listProperties(filters);
     properties.clear();
     result.data.forEach((property) => properties.set(property.id, property));
+    let summary=document.querySelector<HTMLElement>('#catalogue-summary');if(!summary){summary=document.createElement('p');summary.id='catalogue-summary';summary.className='catalogue-summary';const layout=grid.closest('.catalogue-layout');(layout??grid).before(summary);}summary.innerHTML=demoPreview?`<b>${result.total} demonstration properties</b><span>Development preview — synthetic inventory, not public listings.</span>`:`<b>${result.total} available propert${result.total===1?'y':'ies'}</b>`;
+    renderActiveFilters();
     grid.innerHTML = result.data.length ? result.data.map(card).join('') : '<div class="catalogue-state"><h3>No matching properties</h3><p>Try removing one or more filters to see available properties.</p><button class="button button-dark" data-clear-search>Clear search</button></div>';
     const pages = Math.ceil(result.total / filters.pageSize);
     pagination.innerHTML = pages > 1 ? Array.from({ length: pages }, (_, index) => `<button data-page="${index + 1}" ${index + 1 === filters.page ? 'aria-current="page"' : ''}>${index + 1}</button>`).join('') : '';
@@ -97,6 +105,7 @@ function showEnquiry(property: Property) {
 }
 
 async function setupOptions() {
+  if(demoPreview){const{demoProperties,demoTypeIds}=await import('./demo-catalogue');const province=document.querySelector<HTMLSelectElement>('#search-province');const type=document.querySelector<HTMLSelectElement>('#search-type');['Lusaka','Southern'].forEach((name)=>province?.insertAdjacentHTML('beforeend',`<option value="${name}">${name}</option>`));[...new Map(demoProperties.map((property)=>[property.property_type?.slug,property.property_type])).values()].filter(Boolean).forEach((item)=>type?.insertAdjacentHTML('beforeend',`<option value="${demoTypeIds[item!.slug]}">${safeText(item!.name)}</option>`));syncSearchForm();return;}
   if (!supabase) return;
   try {
     const { locations, types } = await listOptions();
@@ -173,6 +182,7 @@ document.querySelector('#property-search')?.addEventListener('submit', (event) =
   event.preventDefault();
   const filters = filtersFromForm(event.currentTarget as HTMLFormElement);
   const params = searchParamsFromFilters({ ...filters, page: 1 });
+  if(demoPreview)params.set('preview','demo');
   history.pushState(null, '', `${location.pathname}?${params}#properties`);
   void loadCatalogue();
 });
@@ -188,7 +198,7 @@ document.querySelector('.advanced')?.addEventListener('click', (event) => {
 });
 
 document.querySelector('.clear-search')?.addEventListener('click', () => {
-  history.pushState(null, '', `${location.pathname}#properties`);
+  history.pushState(null, '', `${location.pathname}${demoPreview?'?preview=demo':''}#properties`);
   syncSearchForm();
   void loadCatalogue();
 });
@@ -209,13 +219,15 @@ document.addEventListener('click', async (event) => {
   const save = target.closest<HTMLElement>('[data-save]');
   const page = target.closest<HTMLElement>('[data-page]');
   const compare = target.closest<HTMLElement>('[data-compare]');
+  const removeFilter=target.closest<HTMLElement>('[data-remove-filter]');
+  if(removeFilter){const params=new URLSearchParams(location.search);params.delete(removeFilter.dataset.removeFilter??'');params.delete('page');history.pushState(null,'',`${location.pathname}?${params}#properties`);syncSearchForm();void loadCatalogue();return;}
   if (target.closest('[data-retry]')) void loadCatalogue();
-  if (target.closest('[data-clear-search]')) { history.pushState(null, '', `${location.pathname}#properties`); syncSearchForm(); void loadCatalogue(); }
+  if (target.closest('[data-clear-search]')) { history.pushState(null, '', `${location.pathname}${demoPreview?'?preview=demo':''}#properties`); syncSearchForm(); void loadCatalogue(); }
   if (details) { const property = properties.get(details.dataset.details ?? ''); if (property) openProperty(property); }
-  if (save) { try { const saved = await toggleSaved(save.dataset.save ?? ''); save.textContent = saved ? '♥' : '♡'; notify(saved ? 'Property saved.' : 'Property removed.'); } catch (error) { notify(error instanceof Error ? error.message : 'Unable to save.'); } }
+  if (save) { if(demoPreview){notify('Development preview only — sign in on staging to save properties.');}else try { const saved = await toggleSaved(save.dataset.save ?? ''); save.textContent = saved ? '♥' : '♡'; notify(saved ? 'Property saved.' : 'Property removed.'); } catch (error) { notify(error instanceof Error ? error.message : 'Unable to save.'); } }
   if (page) { const params = new URLSearchParams(location.search); params.set('page', page.dataset.page ?? '1'); history.pushState(null, '', `?${params}#properties`); void loadCatalogue(); }
   if(compare){try{const params=new URLSearchParams(location.search);const selected=toggleComparisonSlug(parseComparisonSlugs(params.get('compare')),compare.dataset.compare!);if(selected.length)params.set('compare',selected.join(','));else params.delete('compare');history.replaceState(null,'',`${location.pathname}?${params}#properties`);updateComparisonLink();notify(selected.length?`${selected.length} propert${selected.length===1?'y':'ies'} selected for comparison.`:'Comparison cleared.');}catch(error){notify(error instanceof Error?error.message:'Unable to compare.');}}
-  if(target.closest('[data-save-search]')){const name=window.prompt('Name this property search');if(name!==null){try{await savePropertySearch(name,filtersFromPage());notify('Search saved. Alerts are enabled for new matching listings.');}catch(error){notify(error instanceof Error?error.message:'Unable to save this search.');}}}
+  if(target.closest('[data-save-search]')){if(demoPreview){notify('Development preview only — search alerts are not persisted.');}else{const name=window.prompt('Name this property search');if(name!==null){try{await savePropertySearch(name,filtersFromPage());notify('Search saved. Alerts are enabled for new matching listings.');}catch(error){notify(error instanceof Error?error.message:'Unable to save this search.');}}}}
   const enquire = target.closest<HTMLElement>('[data-enquire]');
   if (enquire) { const property = properties.get(enquire.dataset.enquire ?? ''); if (property) showEnquiry(property); }
   const viewing = target.closest<HTMLElement>('[data-viewing]');

@@ -14,6 +14,8 @@ export async function renderPropertyMap(properties: Property[], container: HTMLE
   const mapped = properties.map((property) => ({ property, coordinates: publicMapCoordinates(property) })).filter((item): item is { property: Property; coordinates: [number, number] } => item.coordinates !== null);
   container.hidden = false;
   if (!mapped.length) { container.innerHTML = '<div class="catalogue-state"><h3>Map locations unavailable</h3><p>These listings do not have approved public coordinates.</p></div>'; return; }
+  const preview=import.meta.env.DEV&&new URLSearchParams(location.search).get('preview')==='demo';
+  if(preview){(await import('./demo-map')).renderDemoMap(mapped.map(({property})=>property),container);return;}
   container.innerHTML = '<div id="results-map" aria-label="Map of matching properties"></div><p class="map-note">Markers show approximate locations for privacy. Listings without approved coordinates are omitted.</p>';
   const L = await import('leaflet'); await import('leaflet/dist/leaflet.css');
   const map = L.map('results-map', { scrollWheelZoom: false }); activeMap = map;

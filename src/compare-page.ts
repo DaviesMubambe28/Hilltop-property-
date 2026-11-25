@@ -1,6 +1,6 @@
 import { config } from './config';
 import { parseComparisonSlugs } from './comparison';
-import { getPropertiesBySlugs } from './services/properties';
+import { getPropertiesBySlugs, imageUrl } from './services/properties';
 import { safeText } from './validation';
 import type { Property } from './types';
 
@@ -22,7 +22,8 @@ function emptyState(eyebrow: string, title: string, message: string) {
 }
 
 async function init() {
-  if (!config) {
+  const preview=import.meta.env.DEV&&new URLSearchParams(location.search).get('preview')==='demo';
+  if (!config&&!preview) {
     emptyState('Comparison workspace', 'Connect the property catalogue.', 'This deployment needs its public Supabase configuration before live listings can be compared.');
     return;
   }
@@ -32,14 +33,15 @@ async function init() {
     return;
   }
   try {
-    const properties = await getPropertiesBySlugs(slugs);
+    const properties = preview?(await import('./demo-catalogue')).demoProperties.filter((property)=>property.is_available&&slugs.includes(property.slug)):await getPropertiesBySlugs(slugs);
     if (!properties.length) {
       emptyState('Selection unavailable', 'No available properties.', 'The selected listings are unavailable or no longer published.');
       return;
     }
     const rows: [string, string][] = [['Price', 'price'], ['Location', 'location'], ['Type', 'type'], ['Bedrooms', 'bedrooms'], ['Bathrooms', 'bathrooms'], ['Size', 'size'], ['Amenities', 'amenities'], ['Condition', 'condition'], ['Availability', 'availability'], ['Verification', 'verification']];
-    target.innerHTML = `<div class="comparison-scroll"><table class="comparison-table"><thead><tr><th>Feature</th>${properties.map((property) => `<th><a href="/property/${safeText(property.slug)}">${safeText(property.title)}</a></th>`).join('')}</tr></thead><tbody>${rows.map(([label, key]) => `<tr><th>${label}</th>${properties.map((property) => `<td>${safeText(value(property, key))}</td>`).join('')}</tr>`).join('')}</tbody></table></div><p><button class="button button-dark" id="share-comparison">Copy comparison link</button></p>`;
+    target.innerHTML = `${preview?'<p class="demo-notice" role="note"><b>Development preview</b> — synthetic properties; comparison is not saved.</p>':''}<div class="comparison-scroll"><table class="comparison-table"><thead><tr><th>Feature</th>${properties.map((property) => {const image=[...property.images].sort((a,b)=>a.position-b.position)[0];return `<th>${image?`<img class="comparison-image" src="${safeText(imageUrl(image.storage_path))}" alt=""/>`:''}<a href="/property/${safeText(property.slug)}${preview?'?preview=demo':''}">${safeText(property.title)}</a><button class="link-button" data-remove="${safeText(property.slug)}">Remove</button></th>`;}).join('')}</tr></thead><tbody>${rows.map(([label, key]) => `<tr><th>${label}</th>${properties.map((property) => `<td>${safeText(value(property, key))}</td>`).join('')}</tr>`).join('')}</tbody></table></div><p><button class="button button-dark" id="share-comparison">Copy comparison link</button></p>`;
     document.querySelector('#share-comparison')?.addEventListener('click', () => void navigator.clipboard.writeText(location.href));
+    target.querySelectorAll<HTMLElement>('[data-remove]').forEach((button)=>button.addEventListener('click',()=>{const remaining=slugs.filter((slug)=>slug!==button.dataset.remove);const params=new URLSearchParams();if(remaining.length)params.set('properties',remaining.join(','));if(preview)params.set('preview','demo');location.href=`/compare.html?${params}`;}));
   } catch {
     emptyState('Please try again', 'Comparison temporarily unavailable.', 'We could not load the selected properties.');
   }

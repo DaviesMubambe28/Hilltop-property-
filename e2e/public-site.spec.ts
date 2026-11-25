@@ -158,6 +158,28 @@ test('development property preview provides an accessible gallery and conversion
   }
 });
 
+test('development catalogue supports populated filtering and comparison without claiming persistence', async ({ page }) => {
+  await page.goto('/properties.html?preview=demo&listing=sale');
+  await expect(page.locator('#catalogue-summary')).toContainText('3 demonstration properties');
+  await expect(page.locator('.property-card')).toHaveCount(3);
+
+  await page.getByLabel('Keywords').fill('Kabulonga');
+  await page.getByRole('button', { name: 'Find properties' }).click();
+  await expect(page).toHaveURL(/preview=demo/);
+  await expect(page.locator('.property-card')).toHaveCount(1);
+  await expect(page.getByRole('heading', { name: '[DEMO] Kabulonga family house' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Remove Keywords: Kabulonga' }).click();
+  await expect(page.locator('.property-card')).toHaveCount(3);
+  await page.getByRole('button', { name: 'Compare', exact: true }).nth(0).click();
+  await page.getByRole('button', { name: 'Compare', exact: true }).nth(1).click();
+  const comparison = page.getByRole('link', { name: /Compare selected properties \(2\/4\)/ });
+  await expect(comparison).toHaveAttribute('href', /preview=demo/);
+  await comparison.click();
+  await expect(page.getByRole('note')).toContainText('synthetic properties');
+  await expect(page.locator('.comparison-table thead th')).toHaveCount(3);
+});
+
 test('comparison page fails safely without deployment credentials', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
