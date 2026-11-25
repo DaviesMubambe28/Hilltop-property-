@@ -41,7 +41,7 @@ select throws_ok($$insert into public.property_verification_requests(property_id
 select is((select count(*)::integer from public.property_alert_matches),0,'anonymous users cannot read property alert matches');
 select is((select count(*)::integer from public.system_notifications),0,'anonymous users cannot read customer notifications');
 select throws_ok($$insert into public.property_alert_matches(saved_search_id,property_id) values(gen_random_uuid(),gen_random_uuid())$$,'42501',null,'anonymous users cannot create property alert matches');
-select throws_ok($$select public.can_access_enquiry(e) from public.enquiries e limit 1$$,'42501',null,'anonymous users cannot invoke CRM access checks');
+select is(has_function_privilege('anon','public.can_access_enquiry(public.enquiries)','EXECUTE'),false,'anonymous users cannot invoke CRM access checks');
 select is((select count(*)::integer from public.property_submissions),0,'anonymous users cannot read owner submissions');
 select is((select count(*)::integer from public.property_submission_documents),0,'anonymous users cannot read owner documents');
 select is((select count(*)::integer from public.property_ownerships),0,'anonymous users cannot read ownership records');

@@ -23,11 +23,20 @@ create table public.viewing_appointments (
   idempotency_key uuid not null unique,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  appointment_slot tstzrange generated always as (
-    tstzrange(coalesce(proposed_start, preferred_start), coalesce(proposed_start, preferred_start) + make_interval(mins => duration_minutes), '[)')
-  ) stored,
+  appointment_slot tstzrange not null,
   exclude using gist (assigned_to with =, appointment_slot with &&) where (status = 'confirmed' and assigned_to is not null)
 );
+
+create function public.set_appointment_slot() returns trigger language plpgsql set search_path = '' as $$
+declare
+  slot_start timestamptz;
+begin
+  slot_start := coalesce(new.proposed_start, new.preferred_start);
+  new.appointment_slot := tstzrange(slot_start, slot_start + make_interval(mins => new.duration_minutes), '[)');
+  return new;
+end $$;
+create trigger set_viewing_appointment_slot before insert or update of preferred_start,proposed_start,duration_minutes
+on public.viewing_appointments for each row execute function public.set_appointment_slot();
 
 create table public.appointment_status_history (
   id bigint generated always as identity primary key,

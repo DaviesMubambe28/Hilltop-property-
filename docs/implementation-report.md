@@ -30,14 +30,14 @@
 ## External blockers
 
 - No Supabase project URL, anonymous key, project reference or access token was supplied, so remote migrations, RLS and live data workflows were not executed.
-- The Supabase CLI was acquired and local startup was attempted. Docker exhausted its filesystem while extracting the pinned Supabase images, so the 32 SQL policy assertions could not run here.
+- The Supabase CLI was acquired and full local-stack startup was attempted, but the environment proxy denied newer service-image downloads. A disposable Supabase PostgreSQL container was used instead: every migration replayed cleanly, all 32 RLS assertions passed and all 9 Phase 3 demonstration-data assertions passed. API gateway, Auth, Storage service and Edge Function integration still require a complete stack or authorised staging project.
 - Email, WhatsApp, analytics, domain and hosting accounts were not supplied. Their adapters and configuration paths are implemented but unconnected.
 - Production was not deployed because no production project, host, DNS access, backup target or UAT approval exists.
 
 ## Outstanding defects
 
 - Lighthouse LCP remains above the 2.5-second target despite responsive preload and reducing the desktop hero from 248 KB to 100 KB. Production CDN delivery, real-host measurements and a design-approved smaller hero treatment require follow-up.
-- Database migration and RLS execution is unverified because the local Supabase container registry was blocked and no remote project credentials were supplied.
+- Database migrations, constraints, seed integrity and PostgreSQL RLS are verified in an isolated database. Supabase API/Auth/Storage/Edge Function integration remains unverified because the full local service stack and remote project credentials were unavailable.
 
 ## Launch sequence
 

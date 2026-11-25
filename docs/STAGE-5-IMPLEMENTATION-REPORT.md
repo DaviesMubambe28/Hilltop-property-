@@ -20,7 +20,7 @@ The platform does not accept payments, execute conveyancing, issue legal valuati
 - 48 unit tests passed across 11 files.
 - Production build passed with five HTML entry points.
 - Playwright passed 17 applicable mobile/desktop journeys; one desktop copy of the mobile-only navigation test was skipped.
-- The Supabase CLI was acquired successfully. Local stack startup then failed while extracting pinned images because the Docker filesystem had no space. The 32 pgTAP assertions therefore remain unexecuted.
+- The Supabase CLI was acquired successfully, but the full stack could not retrieve newer service images through the environment proxy. A later isolated PostgreSQL replay verified every migration and executed all 32 RLS assertions successfully; API/Auth/Storage service integration remains outstanding.
 
 ## External verification required
 
