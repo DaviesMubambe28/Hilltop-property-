@@ -1,0 +1,64 @@
+<footer class="hilltop-footer">
+  <section class="hilltop-alert-band" {{ALERT_ID}} aria-labelledby="hilltop-alert-title">
+    <div class="container hilltop-alert-inner">
+      <div class="hilltop-alert-icon" aria-hidden="true">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="38" height="28" rx="2"/><path d="m5 12 19 15 19-15"/><path d="M35 5v6M32 8h6"/></svg>
+      </div>
+      <div class="hilltop-alert-copy">
+        <p class="hilltop-footer-eyebrow">Property alerts</p>
+        <h2 id="hilltop-alert-title">Be the first to find your next property.</h2>
+        <p>Save your search and receive alerts when matching properties become available.</p>
+      </div>
+      <a class="button button-yellow hilltop-alert-button" href="{{ALERT_HREF}}">Create a property alert <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+  <div class="hilltop-footer-main">
+    <div class="container hilltop-footer-grid">
+      <div class="hilltop-footer-brand-column">
+        <a class="hilltop-footer-logo" href="/" aria-label="Hilltop Properties Zambia home"><img src="/assets/brand/hilltop-logo.png" alt="Hilltop Properties Zambia" loading="lazy" decoding="async" /></a>
+        <p class="hilltop-footer-slogan">Your Comfort Is Our Priority.</p>
+        <p class="hilltop-footer-description">Connecting buyers, tenants, property owners and investors with property opportunities across Zambia.</p>
+        <div class="hilltop-footer-social"><p>Connect with us</p>{{SOCIAL_LINKS}}</div>
+      </div>
+      <nav class="hilltop-footer-column" aria-label="Explore properties">
+        <h3>Explore</h3>
+        <a href="/properties.html">All properties</a>
+        <a href="/properties.html?listing=sale">Properties for sale</a>
+        <a href="/properties.html?listing=rent">Properties to rent</a>
+        <a href="/properties.html?q=land">Land &amp; plots</a>
+        <a href="/properties.html?listing=investment">Investment properties</a>
+        <a href="/#featured-properties">Featured properties</a>
+        <a href="/#property-types">Explore by property type</a>
+      </nav>
+      <nav class="hilltop-footer-column" aria-label="Company and services">
+        <h3>Company &amp; Services</h3>
+        <a href="/about.html">About Hilltop</a>
+        <a href="/sell.html">Sell your property</a>
+        <a href="/resources.html">Property guides</a>
+        {{CALCULATORS}}
+        <a href="/account.html">My account</a>
+        <a href="/account.html#saved-list">Saved properties</a>
+        <a href="/contact.html">Contact us</a>
+      </nav>
+      <div class="hilltop-footer-column hilltop-footer-contact">
+        <h3>Get in Touch</h3>
+        <div class="hilltop-footer-contact-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7l.5 3.1a2 2 0 0 1-.6 2.1L7.7 10.2a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 1.7-.6l3.2.6a2 2 0 0 1 1.7 2Z"/></svg>
+          <div><small>Call our team</small><a href="tel:{{PHONE_URI}}">{{PHONE_LABEL}}</a></div>
+        </div>
+        <div class="hilltop-footer-contact-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          <div><small>Email enquiries</small><a href="mailto:{{EMAIL}}">{{EMAIL}}</a></div>
+        </div>
+        <div class="hilltop-footer-contact-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          <div><small>Our offices</small><p>Lusaka · Livingstone</p><a class="hilltop-footer-offices" href="/contact.html">Contact our offices <span aria-hidden="true">→</span></a></div>
+        </div>
+      </div>
+    </div>
+    <div class="container hilltop-footer-bottom">
+      <p>© {{YEAR}} Hilltop Properties Zambia. All rights reserved.</p>
+      <nav aria-label="Legal information"><a href="/resources.html#privacy">Privacy Policy</a><a href="/resources.html#terms">Terms of Use</a></nav>
+    </div>
+  </div>
+</footer>

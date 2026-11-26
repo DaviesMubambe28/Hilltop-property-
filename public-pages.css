@@ -63,3 +63,11 @@
 .resource-layout li { margin-block: .75rem; }
 .resource-layout section { scroll-margin-top: 6rem; }
 @media (max-width: 720px) { .resource-layout { grid-template-columns: 1fr; gap: 2rem; } .resource-layout > nav { position: static; } }
+
+@media (min-width:801px) {
+  .public-site .public-form { top:calc(var(--public-header-offset) + 16px); }
+}
+@media (min-width:721px) {
+  .public-site .resource-layout > nav { top:calc(var(--public-header-offset) + 16px); }
+  .public-site .resource-layout section { scroll-margin-top:calc(var(--public-header-offset) + 16px); }
+}
