@@ -1,0 +1,7 @@
+d9fb0b99051c9f0391b756771d13a27629d160dc docs: establish explicitly reconstructed v4 design baseline
+19dbeb28aa43cb2a17eecbad873ab306c93f4c82 feat: reconstruct honest search-first public discovery
+179041572cb430b0072e35ca53f97e7893544e63 feat: complete property decisions and guarded customer conversion
+e93948be9b4b27c2f2627cba4e3a8ebdb73bbb00 feat: unify company services and portal presentation
+3435b517288f04f5ff7381a919fb796970516174 fix: harden map accessibility and catalogue recovery states
+f8422a90c5b1734ce3079c5df45d8650903fce97 feat: finish category filters and accessible dialog recovery
+609ca1aa3817152aa046800387fe226101bfa8a9 fix: isolate related-property failures and remove redundant reads

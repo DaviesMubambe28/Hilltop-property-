@@ -1,0 +1,86 @@
+[
+  {
+    "path": "/",
+    "messages": [],
+    "errors": [],
+    "failedRequests": []
+  },
+  {
+    "path": "/?preview=demo",
+    "messages": [],
+    "errors": [],
+    "failedRequests": []
+  },
+  {
+    "path": "/properties.html",
+    "messages": [],
+    "errors": [],
+    "failedRequests": []
+  },
+  {
+    "path": "/properties.html?preview=demo",
+    "messages": [],
+    "errors": [],
+    "failedRequests": []
+  },
+  {
+    "path": "/properties.html?preview=demo&view=map",
+    "messages": [],
+    "errors": [],
+    "failedRequests": []
+  },
+  {
+    "path": "/property/demo-kabulonga-family-house?preview=demo",
+    "messages": [],
+    "errors": [],
+    "failedRequests": []
+  },
+  {
+    "path": "/property/example-listing",
+    "messages": [],
+    "errors": [],
+    "failedRequests": []
+  },
+  {
+    "path": "/compare.html?preview=demo&properties=demo-kabulonga-family-house,demo-foxdale-apartment",
+    "messages": [],
+    "errors": [],
+    "failedRequests": []
+  },
+  {
+    "path": "/about.html",
+    "messages": [],
+    "errors": [],
+    "failedRequests": []
+  },
+  {
+    "path": "/sell.html",
+    "messages": [],
+    "errors": [],
+    "failedRequests": []
+  },
+  {
+    "path": "/contact.html",
+    "messages": [],
+    "errors": [],
+    "failedRequests": []
+  },
+  {
+    "path": "/resources.html",
+    "messages": [],
+    "errors": [],
+    "failedRequests": []
+  },
+  {
+    "path": "/account.html",
+    "messages": [],
+    "errors": [],
+    "failedRequests": []
+  },
+  {
+    "path": "/admin.html",
+    "messages": [],
+    "errors": [],
+    "failedRequests": []
+  }
+]

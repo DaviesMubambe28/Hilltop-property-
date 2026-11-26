@@ -1,0 +1,323 @@
+[
+  {
+    "name": "home",
+    "run": 1,
+    "errors": [],
+    "cls": 0,
+    "lcp": 1996,
+    "navigationTransfer": 6150,
+    "resources": [
+      {
+        "name": "http://127.0.0.1:4177/assets/hero-villa-D4iCrgev.webp",
+        "transfer": 101994,
+        "encoded": 101694,
+        "decoded": 101694
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/main-r5uwlbsw.js",
+        "transfer": 3135,
+        "encoded": 2835,
+        "decoded": 9624
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/styles-BGuLcC4d.js",
+        "transfer": 689,
+        "encoded": 389,
+        "decoded": 670
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/config-DGdKASog.js",
+        "transfer": 24608,
+        "encoded": 24308,
+        "decoded": 85491
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/rolldown-runtime-WkwZ5CU-.js",
+        "transfer": 668,
+        "encoded": 368,
+        "decoded": 599
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/validation-B8PSDYe0.js",
+        "transfer": 56728,
+        "encoded": 56428,
+        "decoded": 219184
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/auth-D74BfCHR.js",
+        "transfer": 718,
+        "encoded": 418,
+        "decoded": 638
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/enquiries-CwEBXg-K.js",
+        "transfer": 661,
+        "encoded": 361,
+        "decoded": 796
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/properties-Dq1TFYi-.js",
+        "transfer": 1826,
+        "encoded": 1526,
+        "decoded": 4017
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/search-CquRwHa6.js",
+        "transfer": 1593,
+        "encoded": 1293,
+        "decoded": 2969
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/comparison-WNiZwke1.js",
+        "transfer": 560,
+        "encoded": 260,
+        "decoded": 325
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/preload-helper-7y9sWmk5.js",
+        "transfer": 1128,
+        "encoded": 828,
+        "decoded": 1615
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/app-CUH_sj18.js",
+        "transfer": 7435,
+        "encoded": 7135,
+        "decoded": 21046
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/styles-DdJwlEHT.css",
+        "transfer": 7653,
+        "encoded": 7353,
+        "decoded": 33017
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/hero-villa-mobile-DuOiaGx0.webp",
+        "transfer": 49864,
+        "encoded": 49564,
+        "decoded": 49564
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/team-portraits-DfaeyMUJ.webp",
+        "transfer": 155958,
+        "encoded": 155658,
+        "decoded": 155658
+      }
+    ],
+    "fontLoaded": true
+  },
+  {
+    "name": "home",
+    "run": 2,
+    "errors": [],
+    "cls": 0,
+    "lcp": 1984,
+    "navigationTransfer": 6150,
+    "resources": [
+      {
+        "name": "http://127.0.0.1:4177/assets/hero-villa-D4iCrgev.webp",
+        "transfer": 101994,
+        "encoded": 101694,
+        "decoded": 101694
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/main-r5uwlbsw.js",
+        "transfer": 3135,
+        "encoded": 2835,
+        "decoded": 9624
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/styles-BGuLcC4d.js",
+        "transfer": 689,
+        "encoded": 389,
+        "decoded": 670
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/rolldown-runtime-WkwZ5CU-.js",
+        "transfer": 668,
+        "encoded": 368,
+        "decoded": 599
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/config-DGdKASog.js",
+        "transfer": 24608,
+        "encoded": 24308,
+        "decoded": 85491
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/validation-B8PSDYe0.js",
+        "transfer": 56728,
+        "encoded": 56428,
+        "decoded": 219184
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/auth-D74BfCHR.js",
+        "transfer": 718,
+        "encoded": 418,
+        "decoded": 638
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/enquiries-CwEBXg-K.js",
+        "transfer": 661,
+        "encoded": 361,
+        "decoded": 796
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/properties-Dq1TFYi-.js",
+        "transfer": 1826,
+        "encoded": 1526,
+        "decoded": 4017
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/search-CquRwHa6.js",
+        "transfer": 1593,
+        "encoded": 1293,
+        "decoded": 2969
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/comparison-WNiZwke1.js",
+        "transfer": 560,
+        "encoded": 260,
+        "decoded": 325
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/preload-helper-7y9sWmk5.js",
+        "transfer": 1128,
+        "encoded": 828,
+        "decoded": 1615
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/app-CUH_sj18.js",
+        "transfer": 7435,
+        "encoded": 7135,
+        "decoded": 21046
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/styles-DdJwlEHT.css",
+        "transfer": 7653,
+        "encoded": 7353,
+        "decoded": 33017
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/hero-villa-mobile-DuOiaGx0.webp",
+        "transfer": 49864,
+        "encoded": 49564,
+        "decoded": 49564
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/team-portraits-DfaeyMUJ.webp",
+        "transfer": 155958,
+        "encoded": 155658,
+        "decoded": 155658
+      }
+    ],
+    "fontLoaded": true
+  },
+  {
+    "name": "home",
+    "run": 3,
+    "errors": [],
+    "cls": 0,
+    "lcp": 2028,
+    "navigationTransfer": 6150,
+    "resources": [
+      {
+        "name": "http://127.0.0.1:4177/assets/hero-villa-D4iCrgev.webp",
+        "transfer": 101994,
+        "encoded": 101694,
+        "decoded": 101694
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/main-r5uwlbsw.js",
+        "transfer": 3135,
+        "encoded": 2835,
+        "decoded": 9624
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/styles-BGuLcC4d.js",
+        "transfer": 689,
+        "encoded": 389,
+        "decoded": 670
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/config-DGdKASog.js",
+        "transfer": 24608,
+        "encoded": 24308,
+        "decoded": 85491
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/rolldown-runtime-WkwZ5CU-.js",
+        "transfer": 668,
+        "encoded": 368,
+        "decoded": 599
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/validation-B8PSDYe0.js",
+        "transfer": 56728,
+        "encoded": 56428,
+        "decoded": 219184
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/auth-D74BfCHR.js",
+        "transfer": 718,
+        "encoded": 418,
+        "decoded": 638
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/enquiries-CwEBXg-K.js",
+        "transfer": 661,
+        "encoded": 361,
+        "decoded": 796
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/properties-Dq1TFYi-.js",
+        "transfer": 1826,
+        "encoded": 1526,
+        "decoded": 4017
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/search-CquRwHa6.js",
+        "transfer": 1593,
+        "encoded": 1293,
+        "decoded": 2969
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/comparison-WNiZwke1.js",
+        "transfer": 560,
+        "encoded": 260,
+        "decoded": 325
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/preload-helper-7y9sWmk5.js",
+        "transfer": 1128,
+        "encoded": 828,
+        "decoded": 1615
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/app-CUH_sj18.js",
+        "transfer": 7435,
+        "encoded": 7135,
+        "decoded": 21046
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/styles-DdJwlEHT.css",
+        "transfer": 7653,
+        "encoded": 7353,
+        "decoded": 33017
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/hero-villa-mobile-DuOiaGx0.webp",
+        "transfer": 49864,
+        "encoded": 49564,
+        "decoded": 49564
+      },
+      {
+        "name": "http://127.0.0.1:4177/assets/team-portraits-DfaeyMUJ.webp",
+        "transfer": 155958,
+        "encoded": 155658,
+        "decoded": 155658
+      }
+    ],
+    "fontLoaded": true
+  }
+]

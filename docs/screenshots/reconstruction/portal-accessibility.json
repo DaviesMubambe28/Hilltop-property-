@@ -1,0 +1,44 @@
+[
+  {
+    "path": "/account.html",
+    "width": 390,
+    "state": "unconfigured",
+    "errors": [],
+    "violations": []
+  },
+  {
+    "path": "/account.html",
+    "width": 1440,
+    "state": "unconfigured",
+    "errors": [],
+    "violations": []
+  },
+  {
+    "path": "/admin.html",
+    "width": 390,
+    "state": "unconfigured",
+    "errors": [],
+    "violations": []
+  },
+  {
+    "path": "/admin.html",
+    "width": 1440,
+    "state": "unconfigured",
+    "errors": [],
+    "violations": []
+  },
+  {
+    "path": "/property/example-listing",
+    "width": 390,
+    "state": "unconfigured",
+    "errors": [],
+    "violations": []
+  },
+  {
+    "path": "/property/example-listing",
+    "width": 1440,
+    "state": "unconfigured",
+    "errors": [],
+    "violations": []
+  }
+]

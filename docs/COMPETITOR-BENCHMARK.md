@@ -21,3 +21,5 @@ No authenticated current property inventory, launch photography package or authe
 
 ## Customer testing
 No participants were available or recruited. CUSTOMER-TESTING.md contains the protocol and blank evidence template. No results or participant feedback are invented.
+
+Shared-browser visual inspection was also attempted through the Cloud desktop tool. It failed before a page could be opened with “the gaas-browser node_repl sandbox cannot be disabled”. No competitor screenshot, mobile audit or visual conclusion is claimed from that attempt.
