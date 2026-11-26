@@ -80,3 +80,28 @@ test('catalogue listing tabs support arrow keys and reflect the selected listing
   await expect(page).toHaveURL(/listing=rent/);
   await expect(page.locator('.property-card')).toHaveCount(2);
 });
+
+test('gallery recovers when a photograph cannot be retrieved', async ({ page }, testInfo) => {
+  await page.route('**/assets/hero-villa.webp', route => route.abort());
+  await page.goto('/property/demo-kabulonga-family-house?preview=demo');
+  await expect(page.getByRole('button',{name:/Open image 1 of 2/})).toBeDisabled();
+  await page.getByRole('button',{name:/Open image 2 of 2/}).click();
+  await page.keyboard.press('ArrowLeft');
+  await expect(page.locator('#gallery-lightbox-caption')).toContainText('photograph is unavailable');
+  await page.screenshot({path:`docs/screenshots/reconstruction/dialogs/gallery-error-${testInfo.project.name}.png`});
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('button',{name:/Open image 2 of 2/})).toBeFocused();
+});
+
+test('land filtering removes inapplicable residential criteria', async ({ page }) => {
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('/properties.html?preview=demo');
+  await page.getByRole('button',{name:/Advanced search/}).click();
+  await page.getByLabel('Minimum bedrooms').fill('3');
+  await page.getByRole('combobox',{name:'Property type',exact:true}).selectOption({label:'Plot'});
+  await expect(page.getByLabel('Minimum bedrooms')).toBeHidden();
+  await page.getByRole('button',{name:'Apply filters'}).click();
+  await expect(page).not.toHaveURL(/bedrooms=/);
+  await expect(page.locator('.property-card')).toHaveCount(1);
+  await expect(page.getByRole('heading',{name:'[DEMO] Chongwe residential plot'})).toBeVisible();
+});

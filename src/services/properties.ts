@@ -34,7 +34,7 @@ export async function listOptions() {
   const client = requireSupabase();
   const [locations, types] = await Promise.all([
     client.from('locations').select('id,name,province,parent_id').eq('is_published', true).order('name'),
-    client.from('property_types').select('id,name').order('name'),
+    client.from('property_types').select('id,name,slug').order('name'),
   ]);
   if (locations.error) throw new Error(locations.error.message);
   if (types.error) throw new Error(types.error.message);

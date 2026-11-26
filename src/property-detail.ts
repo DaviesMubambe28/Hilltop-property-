@@ -20,7 +20,7 @@ let activeProperty: Property | null = null;
 const preview = import.meta.env.DEV && new URLSearchParams(location.search).get('preview') === 'demo';
 let galleryTrigger:HTMLElement|null=null;
 
-function showGalleryImage(index:number){activeImage=galleryIndex(index,0,galleryImages.length);const image=galleryImages[activeImage];if(!image)return;lightboxImage.src=image.url;lightboxImage.alt=image.alt;lightboxCaption.textContent=`${galleryPositionLabel(activeImage,galleryImages.length)} — ${image.alt}`;}
+function showGalleryImage(index:number){activeImage=galleryIndex(index,0,galleryImages.length);const image=galleryImages[activeImage];if(!image)return;lightboxImage.hidden=false;lightboxImage.src=image.url;lightboxImage.alt=image.alt;lightboxCaption.textContent=`${galleryPositionLabel(activeImage,galleryImages.length)} — ${image.alt}`;}
 function openGallery(index:number,trigger:HTMLElement){galleryTrigger=trigger;showGalleryImage(index);lightbox.showModal();document.querySelector<HTMLButtonElement>('[data-gallery-close]')?.focus();}
 function closeGallery(){lightbox.close();galleryTrigger?.focus();}
 

@@ -1,3 +1,4 @@
+import { updateCategoryFilters } from './catalogue-filters';
 import { installPropertyImageFallbacks } from './property-images';
 import { config } from './config';
 import { supabase } from './supabase';
@@ -120,7 +121,7 @@ function showEnquiry(property: Property) {
 }
 
 async function setupOptions() {
-  if(demoPreview){const{demoProperties,demoTypeIds}=await import('./demo-catalogue');const province=document.querySelector<HTMLSelectElement>('#search-province');const type=document.querySelector<HTMLSelectElement>('#search-type');['Lusaka','Southern'].forEach((name)=>province?.insertAdjacentHTML('beforeend',`<option value="${name}">${name}</option>`));[...new Map(demoProperties.map((property)=>[property.property_type?.slug,property.property_type])).values()].filter(Boolean).forEach((item)=>type?.insertAdjacentHTML('beforeend',`<option value="${demoTypeIds[item!.slug]}">${safeText(item!.name)}</option>`));syncSearchForm();return;}
+  if(demoPreview){const{demoProperties,demoTypeIds}=await import('./demo-catalogue');const province=document.querySelector<HTMLSelectElement>('#search-province');const type=document.querySelector<HTMLSelectElement>('#search-type');['Lusaka','Southern'].forEach((name)=>province?.insertAdjacentHTML('beforeend',`<option value="${name}">${name}</option>`));[...new Map(demoProperties.map((property)=>[property.property_type?.slug,property.property_type])).values()].filter(Boolean).forEach((item)=>type?.insertAdjacentHTML('beforeend',`<option value="${demoTypeIds[item!.slug]}" data-category="${safeText(item!.slug)}">${safeText(item!.name)}</option>`));syncSearchForm();return;}
   if (!supabase) return;
   try {
     const { locations, types } = await listOptions();
@@ -138,7 +139,7 @@ async function setupOptions() {
       neighbourhood.value = selected;
     };
     city?.addEventListener('change', renderNeighbourhoods);
-    types?.forEach((item) => type?.insertAdjacentHTML('beforeend', `<option value="${item.id}">${safeText(item.name)}</option>`));
+    types?.forEach((item) => type?.insertAdjacentHTML('beforeend', `<option value="${item.id}" data-category="${safeText(item.slug)}">${safeText(item.name)}</option>`));
     syncSearchForm();
     renderNeighbourhoods();
   } catch { notify('Search options could not be loaded.'); }
@@ -160,6 +161,7 @@ function syncSearchForm() {
   form.querySelectorAll<HTMLInputElement>('input[name="amenity"]').forEach((input) => { input.checked = amenities.has(input.value); });
   const listing = params.get('listing') ?? 'sale';
   document.querySelectorAll<HTMLButtonElement>('.search-tabs [data-listing]').forEach((button) => { const active = button.dataset.listing === listing; button.classList.toggle('active', active); button.setAttribute('aria-selected', String(active)); });
+  updateCategoryFilters();
   const advancedKeys = ['city','neighbourhood','minPrice','maxPrice','bedrooms','bathrooms','minLandSize','minFloorSize','furnished','condition','verification','amenities','sort'];
   const panel = document.querySelector<HTMLElement>('#advanced-search');
   const advancedButton = document.querySelector<HTMLButtonElement>('.advanced');
@@ -341,3 +343,5 @@ listingTabs.forEach((tab,index)=>tab.addEventListener('keydown',event=>{
   const next=event.key==='Home'?0:event.key==='End'?listingTabs.length-1:(index+(event.key==='ArrowRight'?1:-1)+listingTabs.length)%listingTabs.length;
   listingTabs[next].focus();listingTabs[next].click();
 }));
+
+document.querySelector('#search-type')?.addEventListener('change', () => updateCategoryFilters(true));

@@ -458,3 +458,11 @@ footer a:hover { text-decoration: underline; text-underline-offset: 4px; }
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+/* Unavailable detail pages retain a useful compact state, without empty related results. */
+body:has(.property-page) { min-height:100vh; display:flex; flex-direction:column; }
+body:has(.property-page) > main { flex:1; }
+.property-page:has(#property-page-content > .catalogue-state) #property-page-content { min-height:0; }
+.property-page:has(#property-page-content > .catalogue-state) > .section { display:none; }
+.catalogue-state a:not(.button) { text-decoration:underline; text-underline-offset:3px; }
+#filter-dialog .filter-dialog-header { position:sticky; top:0; z-index:2; background:var(--paper); }
+#filter-dialog > .button { position:sticky; bottom:0; width:100%; }

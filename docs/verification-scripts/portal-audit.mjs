@@ -5,7 +5,7 @@ import { writeFileSync } from 'node:fs';
 const browser = await chromium.launch({ executablePath: '/usr/bin/chromium', args: ['--no-sandbox'] });
 const records = [];
 try {
-  for (const path of ['/account.html', '/admin.html']) {
+  for (const path of ['/account.html', '/admin.html', '/property/example-listing']) {
     for (const width of [390, 1440]) {
       const context = await browser.newContext({ viewport: { width, height: width === 390 ? 844 : 900 } });
       const page = await context.newPage();
