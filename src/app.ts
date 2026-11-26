@@ -2,7 +2,7 @@ import { updateCategoryFilters } from './catalogue-filters';
 import { installPropertyImageFallbacks } from './property-images';
 import { config } from './config';
 import { supabase } from './supabase';
-import { currentProfile, resetPassword, signIn, signUp } from './services/auth';
+import { currentProfile } from './services/auth';
 import { submitEnquiry, submitViewingRequest } from './services/enquiries';
 import { imageUrl, listOptions, listProperties, listFeaturedProperties, recordPropertyView, savePropertySearch, toggleSaved } from './services/properties';
 import type { ListingType, Property, SearchFilters } from './types';
@@ -12,14 +12,13 @@ import { parseSearchFilters, searchParamsFromFilters } from './search';
 import { parseComparisonSlugs, toggleComparisonSlug } from './comparison';
 import { renderPropertyMap } from './property-map';
 import { renderPropertyCard, renderFeaturedPropertyTile } from './property-presentation';
+import './public-widgets';
 
 const grid = document.querySelector<HTMLElement>('.property-grid');
 const pagination = document.querySelector<HTMLElement>('.catalogue-pagination');
 const propertyDialog = document.querySelector<HTMLDialogElement>('#property-dialog');
 const propertyDetail = document.querySelector<HTMLElement>('#property-detail');
-const authDialog = document.querySelector<HTMLDialogElement>('#auth-dialog');
 const properties = new Map<string, Property>();
-let authMode: 'signin' | 'signup' = 'signin';
 const demoPreview = import.meta.env.DEV && new URLSearchParams(location.search).get('preview') === 'demo';
 
 function notify(message: string) {
@@ -270,33 +269,15 @@ async function setupAccount() {
   const account = document.querySelector<HTMLButtonElement>('[data-account-entry]');
   if (!account) return;
   const label = account.querySelector<HTMLElement>('[data-account-label]') ?? account;
-  const status = document.querySelector<HTMLElement>('#hilltop-account-status');
   const accountRequested = new URLSearchParams(location.search).get('account') === 'required';
-  account.disabled = true;
-  if (!supabase) {
-    label.textContent = 'Login';
-    account.title = 'Account service is temporarily unavailable';
-    if (accountRequested && status) status.hidden = false;
-    return;
-  }
-  const profile = await currentProfile().catch(() => null);
-  label.textContent = profile ? 'My account' : 'Login';
+  const profile = supabase ? await currentProfile().catch(() => null) : null;
+  const destination = profile
+    ? '/account.html'
+    : `/sign-in.html?returnTo=${encodeURIComponent(location.pathname + location.search)}`;
+  label.textContent = profile ? profile.profile.full_name || 'My account' : 'Sign in';
   account.disabled = false;
-  account.removeAttribute('title');
-  if (status) status.hidden = true;
-  function openAccount() {
-    if (profile) { location.href = '/account.html'; return; }
-    if (authDialog) {
-      if (!authDialog.open) authDialog.showModal();
-    } else if (status) {
-      status.hidden = false;
-    }
-  }
-  account.addEventListener('click', openAccount);
-  if (accountRequested) {
-    if (profile) location.replace('/account.html');
-    else openAccount();
-  }
+  account.addEventListener('click', () => { location.href = destination; });
+  if (accountRequested) location.replace(destination);
 }
 
 document.querySelector('#property-search')?.addEventListener('submit', (event) => {
@@ -385,7 +366,6 @@ document.addEventListener('click', async (event) => {
   if (viewing) { const property = properties.get(viewing.dataset.viewing ?? ''); if (property) showViewing(property); }
   const close = target.closest<HTMLElement>('[data-close]');
   if (close?.dataset.close === 'property') propertyDialog?.close();
-  if (close?.dataset.close === 'auth') authDialog?.close();
 });
 
 document.addEventListener('submit', async (event) => {
@@ -415,10 +395,6 @@ document.addEventListener('submit', async (event) => {
     if (submit) { submit.disabled = false; submit.textContent = 'Send enquiry'; }
   }
 });
-
-document.querySelector('#auth-mode')?.addEventListener('click', () => { authMode = authMode === 'signin' ? 'signup' : 'signin'; const title = document.querySelector('#auth-title'); if (title) title.textContent = authMode === 'signup' ? 'Create an account' : 'Sign in'; document.querySelector<HTMLElement>('#auth-name')?.parentElement?.classList.toggle('hidden', authMode === 'signin'); });
-document.querySelector('#auth-reset')?.addEventListener('click', async () => { const email = document.querySelector<HTMLInputElement>('#auth-email')?.value; if (email) { await resetPassword(email); notify('Password recovery email requested.'); } });
-document.querySelector('#auth-form')?.addEventListener('submit', async (event) => { event.preventDefault(); const email = document.querySelector<HTMLInputElement>('#auth-email')?.value ?? ''; const password = document.querySelector<HTMLInputElement>('#auth-password')?.value ?? ''; const name = document.querySelector<HTMLInputElement>('#auth-name')?.value ?? ''; const result = authMode === 'signup' ? await signUp(email, password, name) : await signIn(email, password); const feedback = document.querySelector('#auth-feedback'); if (result.error) { if (feedback) feedback.textContent = result.error.message; } else location.reload(); });
 
 initializeAnalytics();
 syncSearchForm();

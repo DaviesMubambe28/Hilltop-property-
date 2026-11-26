@@ -1,5 +1,6 @@
 import { submitEnquiry } from './services/enquiries';
 import type { EnquiryInput } from './types';
+import './public-widgets';
 
 document.querySelectorAll<HTMLFormElement>('[data-public-enquiry]').forEach((form) => {
   form.dataset.idempotencyKey = crypto.randomUUID();

@@ -45,7 +45,20 @@ async function saveProperty(form:HTMLFormElement) {
   const data=new FormData(form); const id=String(data.get('id')||'');
   const payload={reference:String(data.get('reference')),title:String(data.get('title')),slug:String(data.get('slug')),listing_type:String(data.get('listing_type')),status:String(data.get('status')),price:data.get('price')?Number(data.get('price')):null,bedrooms:data.get('bedrooms')?Number(data.get('bedrooms')):null,bathrooms:data.get('bathrooms')?Number(data.get('bathrooms')):null,summary:String(data.get('summary')),description:String(data.get('description')),is_featured:data.get('is_featured')==='on',is_available:data.get('is_available')==='on',published_at:data.get('status')==='published'?new Date().toISOString():null};
   const result=id?await client.from('properties').update(payload).eq('id',id).select('id').single():await client.from('properties').insert(payload).select('id').single(); if(result.error) throw result.error;
-  const files=data.getAll('images').filter((file):file is File=>file instanceof File&&file.size>0); for(const [index,file] of files.entries()){if(file.size>10*1024*1024||!['image/jpeg','image/png','image/webp','image/avif'].includes(file.type))throw new Error('Images must be JPG, PNG, WebP or AVIF and under 10 MB.');const path=`${result.data.id}/${crypto.randomUUID()}-${file.name.replace(/[^a-zA-Z0-9.-]/g,'_')}`;const upload=await client.storage.from('property-media').upload(path,file,{contentType:file.type});if(upload.error)throw upload.error;const image=await client.from('property_images').insert({property_id:result.data.id,storage_path:path,alt_text:`${payload.title} property image`,position:index,is_primary:index===0});if(image.error)throw image.error;}
+  const files=data.getAll('images').filter((file):file is File=>file instanceof File&&file.size>0);
+  const existingImages=files.length?await client.from('property_images').select('id,position,is_primary').eq('property_id',result.data.id):null;
+  if(existingImages?.error)throw existingImages.error;
+  const existingRows=existingImages?.data??[];
+  const nextPosition=existingRows.reduce((highest,image)=>Math.max(highest,image.position),-1)+1;
+  const hasPrimary=existingRows.some((image)=>image.is_primary);
+  for(const [index,file] of files.entries()){
+    if(file.size>10*1024*1024||!['image/jpeg','image/png','image/webp','image/avif'].includes(file.type))throw new Error('Images must be JPG, PNG, WebP or AVIF and under 10 MB.');
+    const path=`${result.data.id}/${crypto.randomUUID()}-${file.name.replace(/[^a-zA-Z0-9.-]/g,'_')}`;
+    const upload=await client.storage.from('property-media').upload(path,file,{contentType:file.type});
+    if(upload.error)throw upload.error;
+    const image=await client.from('property_images').insert({property_id:result.data.id,storage_path:path,alt_text:`${payload.title} property image`,position:nextPosition+index,is_primary:!hasPrimary&&index===0});
+    if(image.error){await client.storage.from('property-media').remove([path]);throw image.error;}
+  }
   form.reset();form.hidden=true;message('Property saved.');await loadProperties();await loadDashboard();
 }
 
