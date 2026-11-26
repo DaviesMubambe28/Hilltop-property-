@@ -41,3 +41,12 @@
 .admin-form>*{grid-column:1!important}
 .inline-form{display:grid}
 }
+/* Shared v4 tokens, without changing portal workflows or role boundaries. */
+.admin-body { background: var(--cream); }
+.portal-state, .stat, .content-card, .account-main > section { box-shadow: none; border-radius: var(--radius); }
+.portal-state { border: 1px solid var(--line); border-top: 4px solid var(--yellow); }
+.admin-form input, .admin-form textarea, .admin-form select, .content-card input, .content-card textarea { border-radius: var(--radius); font: inherit; }
+.admin-main { min-width: 0; }
+.admin-table button { min-height: 44px; }
+.admin-nav { gap: .5rem; }
+@media(max-width:720px) { .admin-header { padding-inline:1rem; gap:.5rem; } .admin-header > div { gap:.5rem; } .admin-form { padding:1rem; } .stat { padding:1rem; } }

@@ -13,7 +13,7 @@ const propertyRoutes = {
 
 export default defineConfig({
   plugins: [propertyRoutes],
-  server: { port: 4173 },
+  server: { port: 4173, watch: { ignored: ['**/work/**', '**/docs/screenshots/**', '**/test-results/**', '**/playwright-report/**'] } },
   preview: { port: 4173 },
-  build: { target: 'es2022', sourcemap: true, rollupOptions: { input: { main: resolve(import.meta.dirname, 'index.html'), properties: resolve(import.meta.dirname, 'properties.html'), sell: resolve(import.meta.dirname, 'sell.html'), about: resolve(import.meta.dirname, 'about.html'), contact: resolve(import.meta.dirname, 'contact.html'), admin: resolve(import.meta.dirname, 'admin.html'), account: resolve(import.meta.dirname, 'account.html'), property: resolve(import.meta.dirname, 'property.html'), compare: resolve(import.meta.dirname, 'compare.html') } } },
+  build: { target: 'es2022', sourcemap: true, rollupOptions: { input: { main: resolve(import.meta.dirname, 'index.html'), resources: resolve(import.meta.dirname, 'resources.html'), properties: resolve(import.meta.dirname, 'properties.html'), sell: resolve(import.meta.dirname, 'sell.html'), about: resolve(import.meta.dirname, 'about.html'), contact: resolve(import.meta.dirname, 'contact.html'), admin: resolve(import.meta.dirname, 'admin.html'), account: resolve(import.meta.dirname, 'account.html'), property: resolve(import.meta.dirname, 'property.html'), compare: resolve(import.meta.dirname, 'compare.html') } } },
 });

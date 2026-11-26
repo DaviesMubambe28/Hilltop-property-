@@ -1,0 +1,27 @@
+
+> hilltop-properties-zambia@1.0.0 test:integration
+> playwright test --config playwright.integration.config.ts
+
+[WebServer] (node:75851) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 12 tests using 1 worker
+
+(node:75869) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [mobile] › e2e-integration/customer-journey.spec.ts:8:3 › customer journey with successful mocked persistence (3.5s)
+  ✓   2 [mobile] › e2e-integration/customer-journey.spec.ts:8:3 › customer journey with failed mocked persistence (2.7s)
+  ✓   3 [mobile] › e2e-integration/customer-journey.spec.ts:64:1 › missing photos, empty, loading and backend errors have honest recovery states (1.7s)
+  ✓   4 [mobile] › e2e-integration/customer-journey.spec.ts:102:1 › tile failures preserve catalogue browsing and explain recovery (2.4s)
+  ✓   5 [mobile] › e2e-integration/customer-journey.spec.ts:115:3 › related properties use the selected category alias (1.0s)
+  ✓   6 [mobile] › e2e-integration/customer-journey.spec.ts:115:3 › related properties fail independently (2.1s)
+(node:76247) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 [desktop] › e2e-integration/customer-journey.spec.ts:8:3 › customer journey with successful mocked persistence (2.6s)
+  ✓   8 [desktop] › e2e-integration/customer-journey.spec.ts:8:3 › customer journey with failed mocked persistence (2.6s)
+  ✓   9 [desktop] › e2e-integration/customer-journey.spec.ts:64:1 › missing photos, empty, loading and backend errors have honest recovery states (1.9s)
+  ✓  10 [desktop] › e2e-integration/customer-journey.spec.ts:102:1 › tile failures preserve catalogue browsing and explain recovery (2.2s)
+  ✓  11 [desktop] › e2e-integration/customer-journey.spec.ts:115:3 › related properties use the selected category alias (1.0s)
+  ✓  12 [desktop] › e2e-integration/customer-journey.spec.ts:115:3 › related properties fail independently (2.2s)
+
+  12 passed (29.7s)

@@ -1,0 +1,35 @@
+
+> hilltop-properties-zambia@1.0.0 test
+> vitest run --config vitest.config.ts tests/property-presentation.mutation.test.ts
+
+
+ RUN  v5.1.1 /workspace/Hilltop-property-
+
+ ❯ tests/property-presentation.mutation.test.ts (4 tests | 1 failed) 53ms
+   ❯ category-aware property presentation (4)
+     × includes the period in rent and preserves price on enquiry 41ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  01:55:19
+   Duration  2.30s (import 75%, transform 21%, tests 3%, worker 1%)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/property-presentation.mutation.test.ts > category-aware property presentation > includes the period in rent and preserves price on enquiry
+AssertionError: expected 'Price on enquiry' to contain '/ month'
+
+Expected: "/ month"
+Received: "Price on enquiry"
+
+ ❯ tests/property-presentation.mutation.test.ts:21:71
+     19|   });
+     20|   it('includes the period in rent and preserves price on enquiry', () …
+     21|     expect(propertyPrice({ ...demoProperty, price_period: 'month' })).…
+       |                                                                       ^
+     22|     expect(propertyPrice({ ...demoProperty, price: null })).toBe('Pric…
+     23|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

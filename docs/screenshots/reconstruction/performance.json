@@ -1,0 +1,821 @@
+[
+  {
+    "name": "home",
+    "run": 1,
+    "errors": [],
+    "cls": 0.0002721284267536668,
+    "lcp": 1524,
+    "navigationTransfer": 5525,
+    "resources": [
+      {
+        "name": "http://127.0.0.1:4175/assets/hero-villa-mobile-DuOiaGx0.webp",
+        "transfer": 49864,
+        "encoded": 49564,
+        "decoded": 49564
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/main-63ZEP6px.js",
+        "transfer": 2973,
+        "encoded": 2673,
+        "decoded": 9174
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/styles-CviQGCWH.js",
+        "transfer": 689,
+        "encoded": 389,
+        "decoded": 670
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/config-DGdKASog.js",
+        "transfer": 24608,
+        "encoded": 24308,
+        "decoded": 85491
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/rolldown-runtime-WkwZ5CU-.js",
+        "transfer": 668,
+        "encoded": 368,
+        "decoded": 599
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/validation-B8PSDYe0.js",
+        "transfer": 56728,
+        "encoded": 56428,
+        "decoded": 219184
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/property-presentation-Cglf9DsQ.js",
+        "transfer": 3278,
+        "encoded": 2978,
+        "decoded": 7297
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/auth-D74BfCHR.js",
+        "transfer": 718,
+        "encoded": 418,
+        "decoded": 638
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/enquiries-CwEBXg-K.js",
+        "transfer": 661,
+        "encoded": 361,
+        "decoded": 796
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/search-CquRwHa6.js",
+        "transfer": 1593,
+        "encoded": 1293,
+        "decoded": 2969
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/preload-helper-7y9sWmk5.js",
+        "transfer": 1128,
+        "encoded": 828,
+        "decoded": 1615
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/app-orHcECAT.js",
+        "transfer": 8373,
+        "encoded": 8073,
+        "decoded": 24743
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/styles-GZ2Ilphc.css",
+        "transfer": 10298,
+        "encoded": 9998,
+        "decoded": 47808
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/source-serif-4-regular-BNbBs0kC.woff2",
+        "transfer": 76560,
+        "encoded": 76260,
+        "decoded": 76260
+      }
+    ],
+    "fontLoaded": true
+  },
+  {
+    "name": "home",
+    "run": 2,
+    "errors": [],
+    "cls": 0.0002721284267536668,
+    "lcp": 1276,
+    "navigationTransfer": 5525,
+    "resources": [
+      {
+        "name": "http://127.0.0.1:4175/assets/hero-villa-mobile-DuOiaGx0.webp",
+        "transfer": 49864,
+        "encoded": 49564,
+        "decoded": 49564
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/main-63ZEP6px.js",
+        "transfer": 2973,
+        "encoded": 2673,
+        "decoded": 9174
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/styles-CviQGCWH.js",
+        "transfer": 689,
+        "encoded": 389,
+        "decoded": 670
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/rolldown-runtime-WkwZ5CU-.js",
+        "transfer": 668,
+        "encoded": 368,
+        "decoded": 599
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/config-DGdKASog.js",
+        "transfer": 24608,
+        "encoded": 24308,
+        "decoded": 85491
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/validation-B8PSDYe0.js",
+        "transfer": 56728,
+        "encoded": 56428,
+        "decoded": 219184
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/property-presentation-Cglf9DsQ.js",
+        "transfer": 3278,
+        "encoded": 2978,
+        "decoded": 7297
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/auth-D74BfCHR.js",
+        "transfer": 718,
+        "encoded": 418,
+        "decoded": 638
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/enquiries-CwEBXg-K.js",
+        "transfer": 661,
+        "encoded": 361,
+        "decoded": 796
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/search-CquRwHa6.js",
+        "transfer": 1593,
+        "encoded": 1293,
+        "decoded": 2969
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/preload-helper-7y9sWmk5.js",
+        "transfer": 1128,
+        "encoded": 828,
+        "decoded": 1615
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/app-orHcECAT.js",
+        "transfer": 8373,
+        "encoded": 8073,
+        "decoded": 24743
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/styles-GZ2Ilphc.css",
+        "transfer": 10298,
+        "encoded": 9998,
+        "decoded": 47808
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/source-serif-4-regular-BNbBs0kC.woff2",
+        "transfer": 76560,
+        "encoded": 76260,
+        "decoded": 76260
+      }
+    ],
+    "fontLoaded": true
+  },
+  {
+    "name": "home",
+    "run": 3,
+    "errors": [],
+    "cls": 0.0002721284267536668,
+    "lcp": 1300,
+    "navigationTransfer": 5525,
+    "resources": [
+      {
+        "name": "http://127.0.0.1:4175/assets/hero-villa-mobile-DuOiaGx0.webp",
+        "transfer": 49864,
+        "encoded": 49564,
+        "decoded": 49564
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/main-63ZEP6px.js",
+        "transfer": 2973,
+        "encoded": 2673,
+        "decoded": 9174
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/styles-CviQGCWH.js",
+        "transfer": 689,
+        "encoded": 389,
+        "decoded": 670
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/config-DGdKASog.js",
+        "transfer": 24608,
+        "encoded": 24308,
+        "decoded": 85491
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/rolldown-runtime-WkwZ5CU-.js",
+        "transfer": 668,
+        "encoded": 368,
+        "decoded": 599
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/validation-B8PSDYe0.js",
+        "transfer": 56728,
+        "encoded": 56428,
+        "decoded": 219184
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/property-presentation-Cglf9DsQ.js",
+        "transfer": 3278,
+        "encoded": 2978,
+        "decoded": 7297
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/auth-D74BfCHR.js",
+        "transfer": 718,
+        "encoded": 418,
+        "decoded": 638
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/enquiries-CwEBXg-K.js",
+        "transfer": 661,
+        "encoded": 361,
+        "decoded": 796
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/search-CquRwHa6.js",
+        "transfer": 1593,
+        "encoded": 1293,
+        "decoded": 2969
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/preload-helper-7y9sWmk5.js",
+        "transfer": 1128,
+        "encoded": 828,
+        "decoded": 1615
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/styles-GZ2Ilphc.css",
+        "transfer": 10298,
+        "encoded": 9998,
+        "decoded": 47808
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/app-orHcECAT.js",
+        "transfer": 8373,
+        "encoded": 8073,
+        "decoded": 24743
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/source-serif-4-regular-BNbBs0kC.woff2",
+        "transfer": 76560,
+        "encoded": 76260,
+        "decoded": 76260
+      }
+    ],
+    "fontLoaded": true
+  },
+  {
+    "name": "catalogue",
+    "run": 1,
+    "errors": [],
+    "cls": 0.03056791958753691,
+    "lcp": 1196,
+    "navigationTransfer": 3231,
+    "resources": [
+      {
+        "name": "http://127.0.0.1:4175/assets/styles-CviQGCWH.js",
+        "transfer": 689,
+        "encoded": 389,
+        "decoded": 670
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/rolldown-runtime-WkwZ5CU-.js",
+        "transfer": 668,
+        "encoded": 368,
+        "decoded": 599
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/config-DGdKASog.js",
+        "transfer": 24608,
+        "encoded": 24308,
+        "decoded": 85491
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/validation-B8PSDYe0.js",
+        "transfer": 56728,
+        "encoded": 56428,
+        "decoded": 219184
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/property-presentation-Cglf9DsQ.js",
+        "transfer": 3278,
+        "encoded": 2978,
+        "decoded": 7297
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/auth-D74BfCHR.js",
+        "transfer": 718,
+        "encoded": 418,
+        "decoded": 638
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/enquiries-CwEBXg-K.js",
+        "transfer": 661,
+        "encoded": 361,
+        "decoded": 796
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/search-CquRwHa6.js",
+        "transfer": 1593,
+        "encoded": 1293,
+        "decoded": 2969
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/preload-helper-7y9sWmk5.js",
+        "transfer": 1128,
+        "encoded": 828,
+        "decoded": 1615
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/app-orHcECAT.js",
+        "transfer": 8373,
+        "encoded": 8073,
+        "decoded": 24743
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/public-enquiry-C7yv9w4M.js",
+        "transfer": 1137,
+        "encoded": 837,
+        "decoded": 1880
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/styles-GZ2Ilphc.css",
+        "transfer": 10298,
+        "encoded": 9998,
+        "decoded": 47808
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/public-pages-6V-p6c5Z.css",
+        "transfer": 1763,
+        "encoded": 1463,
+        "decoded": 4469
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/source-serif-4-regular-BNbBs0kC.woff2",
+        "transfer": 76560,
+        "encoded": 76260,
+        "decoded": 76260
+      },
+      {
+        "name": "http://127.0.0.1:4175/favicon.svg",
+        "transfer": 460,
+        "encoded": 160,
+        "decoded": 175
+      }
+    ],
+    "fontLoaded": true
+  },
+  {
+    "name": "catalogue",
+    "run": 2,
+    "errors": [],
+    "cls": 0.03056791958753691,
+    "lcp": 1268,
+    "navigationTransfer": 3231,
+    "resources": [
+      {
+        "name": "http://127.0.0.1:4175/assets/styles-CviQGCWH.js",
+        "transfer": 689,
+        "encoded": 389,
+        "decoded": 670
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/rolldown-runtime-WkwZ5CU-.js",
+        "transfer": 668,
+        "encoded": 368,
+        "decoded": 599
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/config-DGdKASog.js",
+        "transfer": 24608,
+        "encoded": 24308,
+        "decoded": 85491
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/validation-B8PSDYe0.js",
+        "transfer": 56728,
+        "encoded": 56428,
+        "decoded": 219184
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/auth-D74BfCHR.js",
+        "transfer": 718,
+        "encoded": 418,
+        "decoded": 638
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/property-presentation-Cglf9DsQ.js",
+        "transfer": 3278,
+        "encoded": 2978,
+        "decoded": 7297
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/enquiries-CwEBXg-K.js",
+        "transfer": 661,
+        "encoded": 361,
+        "decoded": 796
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/search-CquRwHa6.js",
+        "transfer": 1593,
+        "encoded": 1293,
+        "decoded": 2969
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/preload-helper-7y9sWmk5.js",
+        "transfer": 1128,
+        "encoded": 828,
+        "decoded": 1615
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/app-orHcECAT.js",
+        "transfer": 8373,
+        "encoded": 8073,
+        "decoded": 24743
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/public-enquiry-C7yv9w4M.js",
+        "transfer": 1137,
+        "encoded": 837,
+        "decoded": 1880
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/styles-GZ2Ilphc.css",
+        "transfer": 10298,
+        "encoded": 9998,
+        "decoded": 47808
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/public-pages-6V-p6c5Z.css",
+        "transfer": 1763,
+        "encoded": 1463,
+        "decoded": 4469
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/source-serif-4-regular-BNbBs0kC.woff2",
+        "transfer": 76560,
+        "encoded": 76260,
+        "decoded": 76260
+      },
+      {
+        "name": "http://127.0.0.1:4175/favicon.svg",
+        "transfer": 460,
+        "encoded": 160,
+        "decoded": 175
+      }
+    ],
+    "fontLoaded": true
+  },
+  {
+    "name": "catalogue",
+    "run": 3,
+    "errors": [],
+    "cls": 0.03056791958753691,
+    "lcp": 1144,
+    "navigationTransfer": 3231,
+    "resources": [
+      {
+        "name": "http://127.0.0.1:4175/assets/styles-CviQGCWH.js",
+        "transfer": 689,
+        "encoded": 389,
+        "decoded": 670
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/rolldown-runtime-WkwZ5CU-.js",
+        "transfer": 668,
+        "encoded": 368,
+        "decoded": 599
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/config-DGdKASog.js",
+        "transfer": 24608,
+        "encoded": 24308,
+        "decoded": 85491
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/validation-B8PSDYe0.js",
+        "transfer": 56728,
+        "encoded": 56428,
+        "decoded": 219184
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/property-presentation-Cglf9DsQ.js",
+        "transfer": 3278,
+        "encoded": 2978,
+        "decoded": 7297
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/auth-D74BfCHR.js",
+        "transfer": 718,
+        "encoded": 418,
+        "decoded": 638
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/enquiries-CwEBXg-K.js",
+        "transfer": 661,
+        "encoded": 361,
+        "decoded": 796
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/search-CquRwHa6.js",
+        "transfer": 1593,
+        "encoded": 1293,
+        "decoded": 2969
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/preload-helper-7y9sWmk5.js",
+        "transfer": 1128,
+        "encoded": 828,
+        "decoded": 1615
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/app-orHcECAT.js",
+        "transfer": 8373,
+        "encoded": 8073,
+        "decoded": 24743
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/public-enquiry-C7yv9w4M.js",
+        "transfer": 1137,
+        "encoded": 837,
+        "decoded": 1880
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/styles-GZ2Ilphc.css",
+        "transfer": 10298,
+        "encoded": 9998,
+        "decoded": 47808
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/public-pages-6V-p6c5Z.css",
+        "transfer": 1763,
+        "encoded": 1463,
+        "decoded": 4469
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/source-serif-4-regular-BNbBs0kC.woff2",
+        "transfer": 76560,
+        "encoded": 76260,
+        "decoded": 76260
+      },
+      {
+        "name": "http://127.0.0.1:4175/favicon.svg",
+        "transfer": 460,
+        "encoded": 160,
+        "decoded": 175
+      }
+    ],
+    "fontLoaded": true
+  },
+  {
+    "name": "comparison",
+    "run": 1,
+    "errors": [],
+    "cls": 0,
+    "lcp": 740,
+    "navigationTransfer": 1718,
+    "resources": [
+      {
+        "name": "http://127.0.0.1:4175/assets/compare-DoYgZX1v.js",
+        "transfer": 2055,
+        "encoded": 1755,
+        "decoded": 3795
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/styles-CviQGCWH.js",
+        "transfer": 689,
+        "encoded": 389,
+        "decoded": 670
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/config-DGdKASog.js",
+        "transfer": 24608,
+        "encoded": 24308,
+        "decoded": 85491
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/validation-B8PSDYe0.js",
+        "transfer": 56728,
+        "encoded": 56428,
+        "decoded": 219184
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/property-presentation-Cglf9DsQ.js",
+        "transfer": 3278,
+        "encoded": 2978,
+        "decoded": 7297
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/enquiries-CwEBXg-K.js",
+        "transfer": 661,
+        "encoded": 361,
+        "decoded": 796
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/public-enquiry-C7yv9w4M.js",
+        "transfer": 1137,
+        "encoded": 837,
+        "decoded": 1880
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/styles-GZ2Ilphc.css",
+        "transfer": 10298,
+        "encoded": 9998,
+        "decoded": 47808
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/public-pages-6V-p6c5Z.css",
+        "transfer": 1763,
+        "encoded": 1463,
+        "decoded": 4469
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/source-serif-4-regular-BNbBs0kC.woff2",
+        "transfer": 76560,
+        "encoded": 76260,
+        "decoded": 76260
+      },
+      {
+        "name": "http://127.0.0.1:4175/favicon.svg",
+        "transfer": 460,
+        "encoded": 160,
+        "decoded": 175
+      }
+    ],
+    "fontLoaded": true
+  },
+  {
+    "name": "comparison",
+    "run": 2,
+    "errors": [],
+    "cls": 0,
+    "lcp": 752,
+    "navigationTransfer": 1718,
+    "resources": [
+      {
+        "name": "http://127.0.0.1:4175/assets/compare-DoYgZX1v.js",
+        "transfer": 2055,
+        "encoded": 1755,
+        "decoded": 3795
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/styles-CviQGCWH.js",
+        "transfer": 689,
+        "encoded": 389,
+        "decoded": 670
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/config-DGdKASog.js",
+        "transfer": 24608,
+        "encoded": 24308,
+        "decoded": 85491
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/enquiries-CwEBXg-K.js",
+        "transfer": 661,
+        "encoded": 361,
+        "decoded": 796
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/property-presentation-Cglf9DsQ.js",
+        "transfer": 3278,
+        "encoded": 2978,
+        "decoded": 7297
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/validation-B8PSDYe0.js",
+        "transfer": 56728,
+        "encoded": 56428,
+        "decoded": 219184
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/styles-GZ2Ilphc.css",
+        "transfer": 10298,
+        "encoded": 9998,
+        "decoded": 47808
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/public-enquiry-C7yv9w4M.js",
+        "transfer": 1137,
+        "encoded": 837,
+        "decoded": 1880
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/public-pages-6V-p6c5Z.css",
+        "transfer": 1763,
+        "encoded": 1463,
+        "decoded": 4469
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/source-serif-4-regular-BNbBs0kC.woff2",
+        "transfer": 76560,
+        "encoded": 76260,
+        "decoded": 76260
+      },
+      {
+        "name": "http://127.0.0.1:4175/favicon.svg",
+        "transfer": 460,
+        "encoded": 160,
+        "decoded": 175
+      }
+    ],
+    "fontLoaded": true
+  },
+  {
+    "name": "comparison",
+    "run": 3,
+    "errors": [],
+    "cls": 0,
+    "lcp": 820,
+    "navigationTransfer": 1718,
+    "resources": [
+      {
+        "name": "http://127.0.0.1:4175/assets/compare-DoYgZX1v.js",
+        "transfer": 2055,
+        "encoded": 1755,
+        "decoded": 3795
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/styles-CviQGCWH.js",
+        "transfer": 689,
+        "encoded": 389,
+        "decoded": 670
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/config-DGdKASog.js",
+        "transfer": 24608,
+        "encoded": 24308,
+        "decoded": 85491
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/validation-B8PSDYe0.js",
+        "transfer": 56728,
+        "encoded": 56428,
+        "decoded": 219184
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/property-presentation-Cglf9DsQ.js",
+        "transfer": 3278,
+        "encoded": 2978,
+        "decoded": 7297
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/enquiries-CwEBXg-K.js",
+        "transfer": 661,
+        "encoded": 361,
+        "decoded": 796
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/public-enquiry-C7yv9w4M.js",
+        "transfer": 1137,
+        "encoded": 837,
+        "decoded": 1880
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/styles-GZ2Ilphc.css",
+        "transfer": 10298,
+        "encoded": 9998,
+        "decoded": 47808
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/public-pages-6V-p6c5Z.css",
+        "transfer": 1763,
+        "encoded": 1463,
+        "decoded": 4469
+      },
+      {
+        "name": "http://127.0.0.1:4175/assets/source-serif-4-regular-BNbBs0kC.woff2",
+        "transfer": 76560,
+        "encoded": 76260,
+        "decoded": 76260
+      },
+      {
+        "name": "http://127.0.0.1:4175/favicon.svg",
+        "transfer": 460,
+        "encoded": 160,
+        "decoded": 175
+      }
+    ],
+    "fontLoaded": true
+  }
+]

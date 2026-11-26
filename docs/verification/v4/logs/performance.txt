@@ -1,0 +1,83 @@
+[
+  {
+    name: 'home',
+    run: 1,
+    cls: 0.0002721284267536668,
+    lcp: 1524,
+    bytes: 243664,
+    fonts: [ 76260 ],
+    errors: []
+  },
+  {
+    name: 'home',
+    run: 2,
+    cls: 0.0002721284267536668,
+    lcp: 1276,
+    bytes: 243664,
+    fonts: [ 76260 ],
+    errors: []
+  },
+  {
+    name: 'home',
+    run: 3,
+    cls: 0.0002721284267536668,
+    lcp: 1300,
+    bytes: 243664,
+    fonts: [ 76260 ],
+    errors: []
+  },
+  {
+    name: 'catalogue',
+    run: 1,
+    cls: 0.03056791958753691,
+    lcp: 1196,
+    bytes: 191893,
+    fonts: [ 76260 ],
+    errors: []
+  },
+  {
+    name: 'catalogue',
+    run: 2,
+    cls: 0.03056791958753691,
+    lcp: 1268,
+    bytes: 191893,
+    fonts: [ 76260 ],
+    errors: []
+  },
+  {
+    name: 'catalogue',
+    run: 3,
+    cls: 0.03056791958753691,
+    lcp: 1144,
+    bytes: 191893,
+    fonts: [ 76260 ],
+    errors: []
+  },
+  {
+    name: 'comparison',
+    run: 1,
+    cls: 0,
+    lcp: 740,
+    bytes: 179955,
+    fonts: [ 76260 ],
+    errors: []
+  },
+  {
+    name: 'comparison',
+    run: 2,
+    cls: 0,
+    lcp: 752,
+    bytes: 179955,
+    fonts: [ 76260 ],
+    errors: []
+  },
+  {
+    name: 'comparison',
+    run: 3,
+    cls: 0,
+    lcp: 820,
+    bytes: 179955,
+    fonts: [ 76260 ],
+    errors: []
+  }
+]

@@ -1,0 +1,68 @@
+[
+  {
+    "state": "calculator-mortgage",
+    "width": 390,
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "state": "calculator-affordability",
+    "width": 390,
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "state": "calculator-rental",
+    "width": 390,
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "state": "calculator-cost",
+    "width": 390,
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "state": "lightbox",
+    "width": 390,
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "state": "filters",
+    "width": 390,
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "state": "calculator-mortgage",
+    "width": 1440,
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "state": "calculator-affordability",
+    "width": 1440,
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "state": "calculator-rental",
+    "width": 1440,
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "state": "calculator-cost",
+    "width": 1440,
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "state": "lightbox",
+    "width": 1440,
+    "overflow": 0,
+    "violations": []
+  }
+]

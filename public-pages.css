@@ -51,3 +51,15 @@
 }
 
 .desktop-nav a:after{display:none}
+/* Reconstructed shared public presentation: editorial, without unrelated property imagery. */
+.page-hero { background: var(--navy); }
+.page-hero-about { min-height: 0; }
+.page-hero h1 { max-width: 19ch; letter-spacing: -.025em; }
+.branch-card h3, .value-grid h3 { font-family: var(--font-editorial); }
+.resource-layout { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 4rem; }
+.resource-layout > nav { position: sticky; top: 6rem; display: grid; gap: .5rem; align-self: start; }
+.resource-layout > nav a { min-height: 44px; padding-block: .5rem; border-bottom: 1px solid var(--line); }
+.resource-layout .content-stack { gap: 4rem; max-width: 48rem; }
+.resource-layout li { margin-block: .75rem; }
+.resource-layout section { scroll-margin-top: 6rem; }
+@media (max-width: 720px) { .resource-layout { grid-template-columns: 1fr; gap: 2rem; } .resource-layout > nav { position: static; } }

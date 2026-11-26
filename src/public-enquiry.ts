@@ -43,9 +43,16 @@ document.querySelectorAll<HTMLFormElement>('[data-public-enquiry]').forEach((for
       form.dataset.idempotencyKey = crypto.randomUUID();
       if (status) status.textContent = `Thank you. Your reference is ${result.id.slice(0, 8)}. Our team will contact you.`;
       if (button) { button.disabled = false; button.textContent = form.dataset.submitLabel ?? 'Send another enquiry'; }
-    } catch (error) {
-      if (status) status.textContent = error instanceof Error ? error.message : 'Unable to send your enquiry.';
+    } catch {
+      if (status) status.textContent = 'Your enquiry was not sent. Please try again or contact Hilltop directly.';
       if (button) { button.disabled = false; button.textContent = form.dataset.submitLabel ?? 'Send enquiry'; }
     }
   });
+});
+
+// Close mobile navigation predictably with the keyboard.
+document.addEventListener('keydown', event => {
+  if(event.key === 'Escape' && mobileMenu && !mobileMenu.hidden) {
+    mobileMenu.hidden=true; menuButton?.setAttribute('aria-expanded','false'); menuButton?.setAttribute('aria-label','Open menu'); document.body.classList.remove('menu-open'); menuButton?.focus();
+  }
 });

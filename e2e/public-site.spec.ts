@@ -20,7 +20,7 @@ test('about and comparison journeys provide clear recovery paths', async ({ page
   await expect(page.getByRole('link', { name: 'Explore properties' })).toHaveAttribute('href', '/properties.html');
 
   await page.goto('/compare.html');
-  await expect(page.getByRole('heading', { name: 'Connect the property catalogue.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Comparison is temporarily unavailable.' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Browse properties' })).toHaveAttribute('href', '/properties.html');
 });
 
@@ -55,7 +55,7 @@ test('public site remains usable without deployment credentials', async ({ page 
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Find your place');
-  await expect(page.getByText('Catalogue configuration required')).toBeVisible();
+  await expect(page.getByText('Property search is temporarily unavailable')).toBeVisible();
   await expect(page.locator('main')).toBeVisible();
   expect(errors).toEqual([]);
 });
@@ -103,7 +103,7 @@ test('property alerts only report success after persistence', async ({ page }) =
   await expect(saveSearch).toBeVisible();
   page.once('dialog',(dialog)=>dialog.accept('Lusaka homes'));
   await saveSearch.click();
-  await expect(page.locator('.toast')).toContainText('Supabase is not configured');
+  await expect(page.locator('.toast')).toContainText('Search alerts are unavailable');
   await expect(page.locator('.toast')).not.toContainText('Search saved');
 });
 
@@ -184,6 +184,6 @@ test('comparison page fails safely without deployment credentials', async ({ pag
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/compare.html?properties=one,two');
-  await expect(page.getByRole('heading', { name: 'Connect the property catalogue.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Comparison is temporarily unavailable.' })).toBeVisible();
   expect(errors).toEqual([]);
 });

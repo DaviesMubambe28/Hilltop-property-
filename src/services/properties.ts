@@ -34,7 +34,7 @@ export async function listOptions() {
   const client = requireSupabase();
   const [locations, types] = await Promise.all([
     client.from('locations').select('id,name,province,parent_id').eq('is_published', true).order('name'),
-    client.from('property_types').select('id,name').order('name'),
+    client.from('property_types').select('id,name,slug').order('name'),
   ]);
   if (locations.error) throw new Error(locations.error.message);
   if (types.error) throw new Error(types.error.message);
@@ -73,8 +73,9 @@ export async function getPropertyBySlug(slug: string): Promise<Property | null> 
 }
 
 export async function listSimilarProperties(property: Property): Promise<Property[]> {
-  let query = requireSupabase().from('properties').select(select).eq('status', 'published').eq('is_available', true).neq('id', property.id).eq('listing_type', property.listing_type);
-  if (property.property_type?.slug) query = query.eq('property_types.slug', property.property_type.slug);
+  const relatedSelect = property.property_type?.slug ? select.replace('property_type:property_types(name,slug)', 'property_type:property_types!inner(name,slug)') : select;
+  let query = requireSupabase().from('properties').select(relatedSelect).eq('status', 'published').eq('is_available', true).neq('id', property.id).eq('listing_type', property.listing_type);
+  if (property.property_type?.slug) query = query.eq('property_type.slug', property.property_type.slug);
   const result = await query.limit(3);
   if (result.error) throw new Error(result.error.message);
   return (result.data ?? []) as unknown as Property[];
