@@ -466,3 +466,4 @@ body:has(.property-page) > main { flex:1; }
 .catalogue-state a:not(.button) { text-decoration:underline; text-underline-offset:3px; }
 #filter-dialog .filter-dialog-header { position:sticky; top:0; z-index:2; background:var(--paper); }
 #filter-dialog > .button { position:sticky; bottom:0; width:100%; }
+.property-page p a:not(.button) { text-decoration:underline; text-underline-offset:3px; }

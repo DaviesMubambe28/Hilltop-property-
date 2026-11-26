@@ -17,3 +17,6 @@
 | R11 | Two selected properties remain readable on mobile | Comparison requirement | 320px screenshots and browser assertions |
 
 No row records a historical design approval. New decisions are authorised reconstruction choices and remain subject to actual verification.
+
+## R12 — Related-listing query and failure boundary
+Use the selected `property_type` alias and an inner join when filtering recommendations by type. An optional recommendation failure must not discard the main property record or conversion actions. The change is a frontend read-query correction, with no backend policy/schema changes. Sources: https://supabase.com/docs/reference/javascript/select and https://supabase.com/docs/guides/database/joins-and-nesting (26 November 2026). Focused mocked request-contract and failure-isolation regressions guard the boundary; live staging remains unverified.

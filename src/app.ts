@@ -121,6 +121,7 @@ function showEnquiry(property: Property) {
 }
 
 async function setupOptions() {
+  if (!document.querySelector('#property-search')) return;
   if(demoPreview){const{demoProperties,demoTypeIds}=await import('./demo-catalogue');const province=document.querySelector<HTMLSelectElement>('#search-province');const type=document.querySelector<HTMLSelectElement>('#search-type');['Lusaka','Southern'].forEach((name)=>province?.insertAdjacentHTML('beforeend',`<option value="${name}">${name}</option>`));[...new Map(demoProperties.map((property)=>[property.property_type?.slug,property.property_type])).values()].filter(Boolean).forEach((item)=>type?.insertAdjacentHTML('beforeend',`<option value="${demoTypeIds[item!.slug]}" data-category="${safeText(item!.slug)}">${safeText(item!.name)}</option>`));syncSearchForm();return;}
   if (!supabase) return;
   try {
