@@ -2,23 +2,6 @@ import { submitEnquiry } from './services/enquiries';
 import type { EnquiryInput } from './types';
 import './public-widgets';
 
-const menuButton = document.querySelector<HTMLButtonElement>('.menu-button');
-const mobileMenu = document.querySelector<HTMLElement>('#mobile-menu');
-
-menuButton?.addEventListener('click', () => {
-  const open = menuButton.getAttribute('aria-expanded') !== 'true';
-  menuButton.setAttribute('aria-expanded', String(open));
-  menuButton.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-  if (mobileMenu) mobileMenu.hidden = !open;
-  document.body.classList.toggle('menu-open', open);
-});
-
-mobileMenu?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
-  if (mobileMenu) mobileMenu.hidden = true;
-  menuButton?.setAttribute('aria-expanded', 'false');
-  document.body.classList.remove('menu-open');
-}));
-
 document.querySelectorAll<HTMLFormElement>('[data-public-enquiry]').forEach((form) => {
   form.dataset.idempotencyKey = crypto.randomUUID();
   form.addEventListener('submit', async (event) => {
@@ -51,9 +34,3 @@ document.querySelectorAll<HTMLFormElement>('[data-public-enquiry]').forEach((for
   });
 });
 
-// Close mobile navigation predictably with the keyboard.
-document.addEventListener('keydown', event => {
-  if(event.key === 'Escape' && mobileMenu && !mobileMenu.hidden) {
-    mobileMenu.hidden=true; menuButton?.setAttribute('aria-expanded','false'); menuButton?.setAttribute('aria-label','Open menu'); document.body.classList.remove('menu-open'); menuButton?.focus();
-  }
-});

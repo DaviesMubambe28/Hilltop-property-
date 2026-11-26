@@ -30,6 +30,20 @@ export async function listProperties(filters: SearchFilters): Promise<{ data: Pr
   return { data: ids.map((id) => byId.get(id)).filter((property): property is Property => Boolean(property)), total: Number(rows[0].total_count) };
 }
 
+export async function listFeaturedProperties(): Promise<Property[]> {
+  const client = requireSupabase();
+  const result = await client
+    .from('properties')
+    .select(select)
+    .eq('status', 'published')
+    .eq('is_available', true)
+    .eq('is_featured', true)
+    .order('slug', { ascending: true })
+    .limit(8);
+  if (result.error) throw new Error(result.error.message);
+  return (result.data ?? []) as unknown as Property[];
+}
+
 export async function listOptions() {
   const client = requireSupabase();
   const [locations, types] = await Promise.all([

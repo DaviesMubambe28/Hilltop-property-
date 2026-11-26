@@ -50,3 +50,22 @@
 .admin-table button { min-height: 44px; }
 .admin-nav { gap: .5rem; }
 @media(max-width:720px) { .admin-header { padding-inline:1rem; gap:.5rem; } .admin-header > div { gap:.5rem; } .admin-form { padding:1rem; } .stat { padding:1rem; } }
+
+/* ================================================
+   OFFICIAL HILLTOP PORTAL BRANDING
+   ================================================ */
+.admin-header .portal-official-brand { display:flex;align-items:center;gap:.85rem;min-width:0; }
+.admin-header .portal-official-brand img { display:block;width:118px;height:60px;object-fit:contain; }
+.admin-header .portal-brand-label {
+  padding-left:.85rem;border-left:1px solid var(--line);color:var(--navy);
+  font-family:var(--font-body,Arial,sans-serif);font-size:.8rem;font-weight:700;line-height:1.4;
+}
+@media (max-width:560px) {
+  .admin-header { padding-inline:12px; }
+  .admin-header .portal-official-brand { gap:.5rem; }
+  .admin-header .portal-official-brand img { width:90px;height:52px; }
+  .admin-header .portal-brand-label { padding-left:.5rem;font-size:.7rem; }
+}
+@media (max-width:360px) {
+  .admin-header .portal-brand-label { display:none; }
+}
