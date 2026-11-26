@@ -57,3 +57,17 @@ No broader creative change is justified. The strongest next improvement is authe
 3. **Mobile experience:** internally ready for real-device and participant validation; the 320–430 px layouts are coherent and task-focused.
 4. **Competitive superiority:** unproven. Available text evidence supports feature comparison, not visual or usability superiority.
 5. **Production readiness:** not ready. Genuine content, verified operations, authenticated workflows, security review and launch controls remain open.
+
+## Final presentation refinement — 26 November 2026
+
+A focused follow-up corrected the remaining independently actionable presentation weaknesses without changing content claims or protected systems:
+
+- strengthened the home hero's editorial scale, image contrast and search-to-hero composition;
+- upgraded shared property cards with a consistent 4:3 image stage, clearer price/title hierarchy, aligned facts and stable action placement;
+- replaced the technical-looking advanced-search trigger with a clearer “More filters” affordance while preserving its accessible name;
+- improved catalogue result context and mobile list/sort continuity; and
+- gave the property overview and conversion panel slightly stronger reading rhythm and separation.
+
+Representative before/after evidence is retained in `docs/screenshots/refinement-v4/` for home, catalogue and property detail at 390 px and 1440 px. All six final renders reported no page errors or horizontal overflow.
+
+Updated internal assessment: **82/100**. The three-point increase reflects stronger typography/composition (9/10), property discovery presentation (9/10) and cross-page consistency (9/10). Photography/listing credibility remains 4/10, and conversion confidence remains 7/10; styling cannot legitimately raise those dimensions without genuine property media, advisor identity and verified operations. The 95/100 aspiration and competitive superiority therefore remain unproven.
