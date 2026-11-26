@@ -64,6 +64,11 @@ async function updateMapView() {
 
 async function loadCatalogue() {
   if (!grid || !pagination) return;
+  properties.clear();
+  document.querySelector('#catalogue-summary')?.remove();
+  pagination.replaceChildren();
+  const previousMap=document.querySelector<HTMLElement>('#property-map-panel');
+  if(previousMap)previousMap.hidden=true;
   if ((!config || !supabase) && !demoPreview) {
     grid.innerHTML = '<div class="catalogue-state premium-state"><p class="eyebrow">Let’s find your next move</p><h3>Property search is temporarily unavailable</h3><p>We cannot show current listings here yet. Talk to Hilltop about what you are looking for.</p><a class="button button-dark" href="/contact.html">Ask about properties →</a></div>';
     return;

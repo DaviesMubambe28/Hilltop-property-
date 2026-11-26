@@ -453,3 +453,8 @@ footer a:hover { text-decoration: underline; text-underline-offset: 4px; }
   .catalogue-layout:has(.property-map-panel:not([hidden])) > * { width:100%; }
   .catalogue-layout .property-map-panel:not([hidden]) { order:-1; }
 }
+.property-map-panel .leaflet-control-attribution a {
+  color: var(--navy);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

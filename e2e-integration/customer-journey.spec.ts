@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright';
 import { mkdirSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import { demoProperty } from '../src/demo-property';
@@ -46,7 +47,7 @@ for (const failure of [false, true]) {
     await page.getByRole('button', { name: 'Request viewing', exact: true }).first().click();
     await page.getByLabel('Name', { exact: true }).fill('Synthetic Customer');
     await page.getByLabel('Email', { exact: true }).fill('synthetic@example.invalid');
-    await page.getByLabel('Preferred date and time').fill('2027-12-01T10:00');
+    await page.getByLabel('Preferred date and time').fill(new Date(Date.now() + 7 * 86_400_000).toISOString().slice(0,16));
     await page.getByLabel('I consent to being contacted.').check();
     await page.locator('#detail-viewing button').click();
     await expect(page.locator('#property-action [role="status"]')).toContainText(failure ? 'not sent' : 'is pending');
@@ -88,6 +89,7 @@ test('missing photos, empty, loading and backend errors have honest recovery sta
   await expect(page.getByRole('heading',{name:'Properties are temporarily unavailable'})).toBeVisible();
   await capture('error');
   await expect(page.locator('body')).not.toContainText('internal_table');
+  await expect(page.locator('#catalogue-summary')).toHaveCount(0);
   state='populated';
   await page.getByRole('button',{name:'Retry',exact:true}).click();
   await expect(page.locator('.property-card')).toHaveCount(1);
@@ -98,6 +100,8 @@ test('tile failures preserve catalogue browsing and explain recovery', async ({ 
   await page.route('https://*.tile.openstreetmap.org/**', route => route.abort());
   await page.goto('/properties.html?view=map');
   await expect(page.locator('.map-note')).toContainText('Map imagery is temporarily unavailable');
+  const audit=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze();
+  expect(audit.violations.filter(item=>item.impact==='critical'||item.impact==='serious')).toEqual([]);
   await expect(page.locator('.property-card')).toHaveCount(1);
   await page.getByRole('button',{name:'List',exact:true}).click();
   await expect(page.locator('#property-map-panel')).toBeHidden();
