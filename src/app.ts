@@ -2,7 +2,7 @@ import { updateCategoryFilters } from './catalogue-filters';
 import { installPropertyImageFallbacks } from './property-images';
 import { config } from './config';
 import { supabase } from './supabase';
-import { currentProfile, resetPassword, signIn, signUp } from './services/auth';
+import { currentProfile } from './services/auth';
 import { submitEnquiry, submitViewingRequest } from './services/enquiries';
 import { imageUrl, listOptions, listProperties, recordPropertyView, savePropertySearch, toggleSaved } from './services/properties';
 import type { ListingType, Property, SearchFilters } from './types';
@@ -12,14 +12,13 @@ import { parseSearchFilters, searchParamsFromFilters } from './search';
 import { parseComparisonSlugs, toggleComparisonSlug } from './comparison';
 import { renderPropertyMap } from './property-map';
 import { renderPropertyCard } from './property-presentation';
+import './public-widgets';
 
 const grid = document.querySelector<HTMLElement>('.property-grid');
 const pagination = document.querySelector<HTMLElement>('.catalogue-pagination');
 const propertyDialog = document.querySelector<HTMLDialogElement>('#property-dialog');
 const propertyDetail = document.querySelector<HTMLElement>('#property-detail');
-const authDialog = document.querySelector<HTMLDialogElement>('#auth-dialog');
 const properties = new Map<string, Property>();
-let authMode: 'signin' | 'signup' = 'signin';
 const demoPreview = import.meta.env.DEV && new URLSearchParams(location.search).get('preview') === 'demo';
 
 function notify(message: string) {
@@ -182,18 +181,13 @@ function filtersFromForm(form: HTMLFormElement): SearchFilters {
 async function setupAccount() {
   const actions = document.querySelector('.nav-actions');
   if (!actions) return;
-  const account = document.createElement('button');
+  const account = document.createElement('a');
   account.className = 'account-button';
   account.textContent = 'Account';
   actions.insertBefore(account, actions.querySelector('.header-cta'));
-  if (!supabase) account.disabled = true;
   const profile = supabase ? await currentProfile().catch(() => null) : null;
   account.textContent = profile ? profile.profile.full_name || 'My account' : 'Sign in';
-  account.addEventListener('click', async () => {
-    if (profile) { location.href='/account.html'; }
-    else if (authDialog) authDialog.showModal();
-    else location.href = '/account.html';
-  });
+  account.href = profile ? '/account.html' : `/sign-in.html?returnTo=${encodeURIComponent(location.pathname + location.search)}`;
 }
 
 document.querySelector('#property-search')?.addEventListener('submit', (event) => {
@@ -276,7 +270,6 @@ document.addEventListener('click', async (event) => {
   if (viewing) { const property = properties.get(viewing.dataset.viewing ?? ''); if (property) showViewing(property); }
   const close = target.closest<HTMLElement>('[data-close]');
   if (close?.dataset.close === 'property') propertyDialog?.close();
-  if (close?.dataset.close === 'auth') authDialog?.close();
 });
 
 document.addEventListener('submit', async (event) => {
@@ -306,10 +299,6 @@ document.addEventListener('submit', async (event) => {
     if (submit) { submit.disabled = false; submit.textContent = 'Send enquiry'; }
   }
 });
-
-document.querySelector('#auth-mode')?.addEventListener('click', () => { authMode = authMode === 'signin' ? 'signup' : 'signin'; const title = document.querySelector('#auth-title'); if (title) title.textContent = authMode === 'signup' ? 'Create an account' : 'Sign in'; document.querySelector<HTMLElement>('#auth-name')?.parentElement?.classList.toggle('hidden', authMode === 'signin'); });
-document.querySelector('#auth-reset')?.addEventListener('click', async () => { const email = document.querySelector<HTMLInputElement>('#auth-email')?.value; if (email) { await resetPassword(email); notify('Password recovery email requested.'); } });
-document.querySelector('#auth-form')?.addEventListener('submit', async (event) => { event.preventDefault(); const email = document.querySelector<HTMLInputElement>('#auth-email')?.value ?? ''; const password = document.querySelector<HTMLInputElement>('#auth-password')?.value ?? ''; const name = document.querySelector<HTMLInputElement>('#auth-name')?.value ?? ''; const result = authMode === 'signup' ? await signUp(email, password, name) : await signIn(email, password); const feedback = document.querySelector('#auth-feedback'); if (result.error) { if (feedback) feedback.textContent = result.error.message; } else location.reload(); });
 
 initializeAnalytics();
 syncSearchForm();

@@ -1,5 +1,6 @@
 import { submitEnquiry } from './services/enquiries';
 import type { EnquiryInput } from './types';
+import './public-widgets';
 
 const menuButton = document.querySelector<HTMLButtonElement>('.menu-button');
 const mobileMenu = document.querySelector<HTMLElement>('#mobile-menu');

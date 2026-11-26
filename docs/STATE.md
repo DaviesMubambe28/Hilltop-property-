@@ -33,3 +33,9 @@ The portable recovery archive manifest records the final commit/tree, complete l
 An independent visual review was completed against the actual 98-render matrix and the reconstructed schematic references. The public design is assessed at 79/100: a strong editorial and mobile foundation, below premium-market acceptance while listing media, inventory, agent identity and delivery operations remain synthetic or unverified. Automated results are supporting evidence rather than a substitute for visual or customer judgment.
 
 Two independently actionable credibility defects were corrected. Contact guidance now conditions message delivery on a successful submission instead of claiming a message is “securely recorded,” and the shared footer names the existing resource destination “Property guides” instead of implying an unpublished journal. The full static/unit/build pipeline passed, the contact page was rerendered at all seven widths, the 98-entry runtime matrix remains clean, and a fourteen-route console audit remains clear. The refreshed recovery and visual-review packages identify the final remediation commit.
+
+## Full-stack integration addendum
+
+On branch `work`, dedicated authentication pages, public support widgets, reliable property-alert processing, and safer admin image uploads were added. `npm run ci` passes with 66 unit tests. The full browser suite passes 83 tests with one expected desktop skip for a mobile-only navigation case. Browser automation found and prompted correction of two accessibility regressions in the new UI.
+
+Resume with isolated Supabase migration/pgTAP execution and staging end-to-end journeys. The hero slideshow remains blocked until the approved photo set is supplied; the repository contains only one hero image and its mobile crop. See `DEPLOYMENT-READINESS-REPORT.md` for the current evidence-based score.

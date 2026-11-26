@@ -60,6 +60,25 @@ test('public site remains usable without deployment credentials', async ({ page 
   expect(errors).toEqual([]);
 });
 
+test('dedicated authentication pages fail safely without credentials', async ({ page }) => {
+  for (const [path,heading] of [['/sign-in.html','Welcome back.'],['/sign-up.html','Create your account.'],['/forgot-password.html','Reset your password.'],['/reset-password.html','Choose a new password.'],['/sign-out.html','Sign out?']] as const) {
+    await page.goto(path);
+    await expect(page.getByRole('heading',{name:heading})).toBeVisible();
+    await expect(page.getByRole('status')).toContainText('Account services are not connected');
+  }
+});
+
+test('public support widgets are accessible and configuration-aware', async ({ page }) => {
+  await page.goto('/');
+  const launcher=page.getByRole('button',{name:'Chat: open Hilltop Property Assistant'});
+  await launcher.click();
+  await expect(page.getByRole('region',{name:'Hilltop Property Assistant'})).toBeVisible();
+  await expect(page.getByRole('link',{name:'Find a rental'})).toHaveAttribute('href','/properties.html?listing=rent');
+  await page.getByRole('button',{name:'Close property assistant'}).click();
+  await expect(launcher).toBeFocused();
+  await expect(page.getByRole('link',{name:'Chat with Hilltop on WhatsApp'})).toHaveCount(0);
+});
+
 test('mobile navigation is keyboard and touch operable', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'mobile', 'mobile navigation only');
   await page.goto('/');
