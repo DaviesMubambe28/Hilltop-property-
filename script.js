@@ -119,7 +119,7 @@ async function initializeHeroSlideshow() {
   ];
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const slides = [];
-  const delay = 7000;
+  const delay = 6000;
   let currentIndex = 0;
   let timer = null;
   let userPaused = reducedMotion.matches;

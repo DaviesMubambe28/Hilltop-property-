@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Agent workspace | Hilltop Properties Zambia</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/workspace.css" />
+  <script type="module" src="/src/staff-workspace.ts"></script>
+</head>
+<body class="workspace-body" data-workspace="agent">
+  <a class="skip-link" href="#workspace-main">Skip to workspace</a>
+  <header class="workspace-header">
+    <a href="/" class="workspace-brand"><img src="/assets/brand/hilltop-logo.png" alt="Hilltop Properties Zambia" /><span>Agent workspace</span></a>
+    <div><span id="workspace-user"></span><a href="/sign-out.html?returnTo=/agent.html">Sign out</a></div>
+  </header>
+  <div class="workspace-layout">
+    <nav class="workspace-nav" aria-label="Agent workspace">
+      <button class="active" data-workspace-view="overview">Overview</button>
+      <button data-workspace-view="properties">My properties</button>
+      <button data-workspace-view="property-form">Add property</button>
+      <button data-workspace-view="enquiries">Assigned enquiries</button>
+      <button data-workspace-view="profile">Profile</button>
+    </nav>
+    <main id="workspace-main" class="workspace-main">
+      <p id="workspace-feedback" role="status" aria-live="polite"></p>
+      <section data-workspace-panel="overview"><p class="eyebrow">Agent workspace</p><h1>Your property desk.</h1><div class="workspace-stats" id="workspace-stats"></div><div class="workspace-card"><h2>Listing workflow</h2><p>Save work as a draft, submit it for review, respond to requested changes, and track approval without administrator access.</p></div></section>
+      <section data-workspace-panel="properties" hidden><div class="workspace-title"><div><p class="eyebrow">Portfolio</p><h1>My properties</h1></div><button class="button button-yellow" data-open-property-form>Add property</button></div><div id="workspace-properties"></div></section>
+      <section data-workspace-panel="property-form" hidden><p class="eyebrow">Listing workspace</p><h1 id="workspace-property-title">Add property</h1><form id="workspace-property-form" class="workspace-form"><input type="hidden" name="id"/><div class="form-section"><h2>Property identity</h2><label>Reference<input name="reference" required minlength="3" maxlength="30"/></label><label>Title<input name="title" required minlength="5" maxlength="180"/></label><label>URL slug<input name="slug" required pattern="[a-z0-9]+(?:-[a-z0-9]+)*"/></label><label>Listing type<select name="listing_type" required><option value="sale">For sale</option><option value="rent">To rent</option><option value="investment">Investment</option></select></label><label>Property type<select name="property_type_id" id="workspace-property-type" required></select></label><label>Location<select name="location_id" id="workspace-location" required></select></label></div><div class="form-section"><h2>Price and specifications</h2><label>Price<input name="price" type="number" min="0" step="0.01"/></label><label>Currency<select name="currency"><option>ZMW</option><option>USD</option></select></label><label>Bedrooms<input name="bedrooms" type="number" min="0" max="100"/></label><label>Bathrooms<input name="bathrooms" type="number" min="0" max="100"/></label><label>Parking spaces<input name="parking_spaces" type="number" min="0" max="100"/></label><label>Floor size (m²)<input name="floor_size" type="number" min="0" step="0.01"/></label><label>Land size<input name="land_size" type="number" min="0" step="0.01"/></label><label>Land unit<select name="land_unit"><option value="sqm">m²</option><option value="hectares">Hectares</option><option value="acres">Acres</option></select></label></div><div class="form-section full"><h2>Presentation</h2><label>Summary<textarea name="summary" maxlength="500"></textarea></label><label>Description<textarea name="description" required minlength="20" maxlength="10000"></textarea></label><fieldset id="workspace-amenities"><legend>Amenities</legend></fieldset></div><div class="form-section full"><h2>Photography</h2><label>Upload photographs<input name="images" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple/></label><p>JPG, PNG, WebP or AVIF. Maximum 10 MB each. Drag previews to reorder, then choose the primary image.</p><div id="workspace-image-previews" class="image-order" aria-live="polite"></div></div><div class="workspace-form-actions"><button class="button button-dark" type="submit" name="intent" value="draft">Save draft</button><button class="button button-yellow" type="submit" name="intent" value="submitted">Submit for review</button><button type="button" class="button" data-preview-property>Preview</button></div></form></section>
+      <section data-workspace-panel="enquiries" hidden><p class="eyebrow">Customer care</p><h1>Assigned enquiries</h1><div id="workspace-enquiries"></div></section>
+      <section data-workspace-panel="profile" hidden><p class="eyebrow">Public profile</p><h1>Agent profile</h1><form id="workspace-profile-form" class="workspace-form"><label>Full name<input name="name" required maxlength="120"/></label><label>Professional title<input name="title" maxlength="120"/></label><label>Phone<input name="phone" maxlength="30"/></label><label>Biography<textarea name="bio" maxlength="2000"></textarea></label><button class="button button-yellow">Save profile</button></form></section>
+    </main>
+  </div>
+</body>
+</html>

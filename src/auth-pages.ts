@@ -9,10 +9,10 @@ import { requireSupabase } from './supabase';
 import {
   resetPassword,
   signIn,
-  signOut,
   signUp,
   signOutCurrentSession,
   updatePassword,
+  currentProfile,
 } from './services/auth';
 import { applyRecoveryEvent, type RecoveryState } from './auth-recovery';
 import {
@@ -172,6 +172,23 @@ if (!config) {
 }
 
 showRegistrationNotice();
+
+if (page === 'sign-out' && config) {
+  void currentProfile().then(session => {
+    const cancel = document.querySelector<HTMLAnchorElement>('#signout-cancel');
+    if (!cancel || !session) return;
+    cancel.href = session.profile.role === 'admin'
+      ? '/admin.html'
+      : session.profile.role === 'editor'
+        ? '/editor.html'
+        : session.profile.role === 'agent'
+          ? '/agent.html'
+          : returnTo;
+  }).catch(() => {
+    const cancel = document.querySelector<HTMLAnchorElement>('#signout-cancel');
+    if (cancel) cancel.href = returnTo;
+  });
+}
 
 if (page === 'reset-password') {
   setRecoveryFormAvailable(false);
@@ -334,10 +351,9 @@ form?.addEventListener('submit', async (event) => {
         showPasswordCleanupRetry();
       }
     } else if (page === 'sign-out') {
-      const result = await signOut();
-      if (result.error) throw result.error;
+      await signOutCurrentSession();
       navigationPending = true;
-      location.replace('/sign-in.html');
+      location.replace('/');
     }
   } catch (error) {
     if (page === 'reset-password' && recoveryState === 'submitting') {

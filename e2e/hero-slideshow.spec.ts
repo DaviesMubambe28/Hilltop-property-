@@ -93,7 +93,7 @@ test.describe('Homepage hero slideshow', () => {
     await expect(activeSlide).toHaveAttribute(
       'data-hero-slide',
       'family-home',
-      { timeout: 15000 },
+      { timeout: 9000 },
     );
   });
 });
