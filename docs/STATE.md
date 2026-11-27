@@ -63,3 +63,25 @@ Property and general enquiry forms now distinguish confirmed persistence, malfor
 Edge handlers now reject mismatched idempotency payload reuse and use pinned Supabase SDK npm imports. Existing database idempotency, CRM RLS, audit triggers and appointment exclusion constraints remain untouched.
 
 Final evidence: 105 unit tests pass across 17 files, 107 public browser tests pass with 1 expected skip, 30 integration tests pass including 10 lead-generation cases, ESLint, TypeScript and production build pass. Real Docker/Supabase/Edge execution remains blocked because Docker Desktop is unavailable and Deno is not installed.
+
+## Hosted authentication hardening — 27 November 2026
+
+The hosted-authentication source correction is implemented on the `work` branch without commits, pushes or hosted configuration changes. Registration redirects to sign-in, automatic sessions are cleaned locally, safe return destinations are retained, and centralized Supabase error-code mapping replaces broad message substring handling.
+
+Verified locally: 116 unit tests pass across 18 files, 18 targeted public authentication-navigation tests pass, 8 targeted mocked authentication integration tests pass across mobile and desktop, ESLint passes, TypeScript passes, and the production build passes.
+
+Real hosted email confirmation, Supabase Auth settings, SMTP delivery and profile/role policy behavior remain manual owner-verification tasks. Mocked browser success is not production-authentication evidence.
+
+## Customer account and authentication slideshow — 27 November 2026
+
+The confirmed hosted profile evidence is preserved without recreating or modifying the user. The customer account now uses one verified `getUser()`/profile read and separates account import/initialization errors. Individual account sections are isolated and protected content stays hidden until authorization completes.
+
+Both authentication pages use `/assets/brand/hilltop-logo.png` and five existing local real-estate photographs in a desktop-only 6-second slideshow.
+
+Verified locally: 121 unit tests pass, 22 authentication/slideshow public browser tests pass, 8 mocked authentication integration tests pass, ESLint passes, TypeScript passes and the production build passes. Owner-authorized browser sign-in and hosted profile Data API access remain the final account-resolution evidence.
+
+## Authentication routing correction — 27 November 2026
+
+General My Account entry now targets `/account.html` rather than the current public page or homepage. Legacy `returnTo=/` values are normalized to `/account.html`. Property-specific saved-property and alert actions continue preserving their action page.
+
+Owner-hosted evidence confirmed that `public.profiles` has RLS enabled but authenticated table-level SELECT and UPDATE grants are missing. A least-privilege SELECT migration was prepared without execution or migration-history modification.

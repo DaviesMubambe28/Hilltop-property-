@@ -1,1 +1,70 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="robots" content="noindex,nofollow"/><title>Sign in | Hilltop Properties Zambia</title><link rel="stylesheet" href="/styles.css"/><link rel="stylesheet" href="/auth.css"/><script type="module" src="/src/auth-pages.ts"></script><link rel="icon" href="/favicon.svg"/></head><body class="auth-body" data-auth-page="sign-in"><header class="auth-header"><div class="container"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"><span></span></span><span><b>HILLTOP</b><small>PROPERTIES ZAMBIA</small></span></a><a href="/">Return home</a></div></header><main class="auth-main"><section class="auth-card"><p class="eyebrow">Hilltop account</p><h1>Welcome back.</h1><p>Sign in to manage saved properties, searches and enquiries.</p><form class="auth-form" data-auth-form><label>Email address<input name="email" type="email" autocomplete="email" required/></label><label>Password<span class="password-field"><input id="sign-in-password" name="password" type="password" autocomplete="current-password" minlength="8" required/><button type="button" data-toggle-password="sign-in-password" aria-pressed="false">Show</button></span></label><button class="button button-yellow" type="submit">Sign in</button></form><p class="auth-status" role="status" aria-live="polite"></p><div class="auth-links"><a href="/forgot-password.html">Forgot your password?</a><a href="/sign-up.html">Create an account</a></div></section></main><footer class="auth-footer">© 2026 Hilltop Properties Zambia · <a href="/resources.html#privacy">Privacy</a></footer></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="robots" content="noindex,nofollow"/>
+  <title>Sign in | Hilltop Properties Zambia</title>
+  <link rel="stylesheet" href="/styles.css"/>
+  <link rel="stylesheet" href="/auth.css"/>
+  <link rel="icon" href="/favicon.svg"/>
+  <script type="module" src="/src/auth-pages.ts"></script>
+  <script type="module" src="/src/auth-slideshow.ts"></script>
+</head>
+<body class="auth-body" data-auth-page="sign-in">
+  <header class="auth-header">
+    <div class="container">
+      <a class="brand auth-official-brand" href="/" aria-label="Hilltop Properties Zambia home">
+        <img src="/assets/brand/hilltop-logo.png" alt="Hilltop Properties Zambia"/>
+      </a>
+      <a class="auth-home-link" href="/">Return home</a>
+    </div>
+  </header>
+  <main class="auth-main">
+    <div class="auth-layout">
+      <section class="auth-editorial">
+        <div class="auth-photo-stage" data-auth-slideshow aria-hidden="true">
+          <span data-auth-photo data-src="/assets/hero-villa.webp" hidden></span>
+          <span data-auth-photo data-src="/assets/hero/family-home.webp" hidden></span>
+          <span data-auth-photo data-src="/assets/hero/apartments.webp" hidden></span>
+          <span data-auth-photo data-src="/assets/hero/country-estate.webp" hidden></span>
+          <span data-auth-photo data-src="/assets/hero/victoria-falls.webp" hidden></span>
+        </div>
+        <div class="auth-editorial-content">
+          <p class="auth-editorial-label">MY HILLTOP</p>
+          <h2>Your next move starts here.</h2>
+          <p>Discover properties, save your favourites and manage your enquiries in one place.</p>
+          <span class="auth-editorial-slogan">Your Comfort Is Our Priority.</span>
+          <div class="auth-slideshow-controls" hidden>
+            <div class="auth-slide-indicators" data-auth-slide-indicators aria-hidden="true"></div>
+            <button class="auth-slideshow-toggle" data-auth-slideshow-toggle type="button" aria-label="Pause slideshow">Pause</button>
+          </div>
+        </div>
+      </section>
+      <section class="auth-card" aria-labelledby="auth-heading">
+        <p class="eyebrow">YOUR HILLTOP ACCOUNT</p>
+        <h1 id="auth-heading">Welcome back.</h1>
+        <p class="auth-description">Sign in to continue your property journey.</p>
+        <noscript><p>Please enable JavaScript to sign in securely.</p></noscript>
+        <form class="auth-form" data-auth-form method="post" hidden>
+          <label for="sign-in-email">Email address</label>
+          <input id="sign-in-email" name="email" type="email" autocomplete="email" required/>
+          <label for="sign-in-password">Password</label>
+          <div class="password-field">
+            <input id="sign-in-password" name="password" type="password" autocomplete="current-password" required/>
+            <button type="button" data-toggle-password="sign-in-password" aria-pressed="false" aria-label="Reveal characters">Show</button>
+          </div>
+          <div class="auth-form-assistance"><a href="/forgot-password.html">Forgot your password?</a></div>
+          <button class="button button-yellow auth-submit" type="submit">Sign in</button>
+        </form>
+        <p class="auth-status" role="status" aria-live="polite" aria-atomic="true"></p>
+        <div class="auth-alternative">
+          <span>New to Hilltop?</span>
+          <a href="/sign-up.html" data-auth-sign-up> Create an account</a>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer class="auth-footer"><span>© 2026 Hilltop Properties Zambia</span><a href="/resources.html#privacy">Privacy</a></footer>
+</body>
+</html>

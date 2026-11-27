@@ -14,6 +14,8 @@ import { renderPropertyMap } from './property-map';
 import { renderPropertyCard, renderFeaturedPropertyTile } from './property-presentation';
 import './public-widgets';
 import { lusakaLocalToIso, lusakaMinimumLocal } from './lead-submission';
+import { buildAccountSignInUrl } from './auth-navigation';
+import { AccountAccessError } from './account-access';
 
 const grid = document.querySelector<HTMLElement>('.property-grid');
 const pagination = document.querySelector<HTMLElement>('.catalogue-pagination');
@@ -268,12 +270,37 @@ async function setupAccount() {
   const account = document.querySelector<HTMLAnchorElement>('[data-account-entry]');
   if (!account) return;
   const label = account.querySelector<HTMLElement>('[data-account-label]') ?? account;
-  const profile = supabase ? await currentProfile().catch(() => null) : null;
-  const destination = profile
-    ? '/account.html'
-    : `/sign-in.html?returnTo=${encodeURIComponent(location.pathname + location.search + location.hash)}`;
-  label.textContent = profile ? profile.profile.full_name || 'My account' : 'Sign in';
-  account.href = destination;
+  if (!supabase) {
+    label.textContent = 'Sign in';
+    account.href = buildAccountSignInUrl();
+    return;
+  }
+  try {
+    const profile = await currentProfile();
+    if (!profile) {
+      label.textContent = 'Sign in';
+      account.href = buildAccountSignInUrl();
+    } else if (!profile.profile.is_active) {
+      label.textContent = 'My account';
+      account.href = '/account.html';
+    } else {
+      label.textContent = profile.profile.full_name || 'My account';
+      account.href = '/account.html';
+    }
+  } catch (error) {
+    if (error instanceof AccountAccessError) {
+      if (error.stage === 'auth-user') {
+        label.textContent = 'Sign in';
+        account.href = buildAccountSignInUrl();
+      } else {
+        label.textContent = 'My account';
+        account.href = '/account.html';
+      }
+    } else {
+      label.textContent = 'My account';
+      account.href = '/account.html';
+    }
+  }
 }
 
 document.querySelector('#property-search')?.addEventListener('submit', (event) => {

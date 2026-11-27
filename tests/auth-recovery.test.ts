@@ -26,4 +26,12 @@ describe('password recovery state', () => {
   it('preserves a matching recovery user through token refresh', () => {
     expect(applyRecoveryEvent('verified', 'TOKEN_REFRESHED', 'user-1', 'user-1')).toEqual({ state: 'verified', userId: 'user-1' });
   });
+
+  it('does not reopen a completed recovery', () => {
+    expect(applyRecoveryEvent('completed', 'PASSWORD_RECOVERY', 'user-1', null)).toEqual({ state: 'completed', userId: null });
+  });
+
+  it('does not reopen a submitting recovery', () => {
+    expect(applyRecoveryEvent('submitting', 'PASSWORD_RECOVERY', 'user-1', 'user-1')).toEqual({ state: 'submitting', userId: 'user-1' });
+  });
 });

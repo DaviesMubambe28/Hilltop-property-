@@ -31,3 +31,31 @@ export function buildSignInUrl(destination?: string | null): string {
   const returnTo = safeReturnPath(destination);
   return `/sign-in.html?${new URLSearchParams({ returnTo }).toString()}`;
 }
+
+export function buildAccountSignInUrl(): string {
+  return buildSignInUrl('/account.html');
+}
+
+export function resolveAuthReturnPath(destination?: string | null): string {
+  const safeDestination = safeReturnPath(destination, '/account.html');
+  if (safeDestination === '/') return '/account.html';
+  return safeDestination;
+}
+
+export type RegistrationNotice = 'complete' | 'check-email';
+
+export function buildSignUpUrl(destination?: string | null): string {
+  const returnTo = safeReturnPath(destination);
+  return `/sign-up.html?${new URLSearchParams({ returnTo }).toString()}`;
+}
+
+export function buildRegistrationSignInUrl(
+  destination: string | null | undefined,
+  notice: RegistrationNotice,
+): string {
+  const params = new URLSearchParams({
+    returnTo: safeReturnPath(destination),
+    registration: notice,
+  });
+  return `/sign-in.html?${params.toString()}`;
+}

@@ -69,3 +69,9 @@
 @media (max-width:360px) {
   .admin-header .portal-brand-label { display:none; }
 }
+ .account-body .account-entry-state { width:min(640px,calc(100% - 40px)); margin:clamp(40px,8vh,100px) auto; padding:clamp(24px,5vw,44px); background:#fff; border:1px solid #dfe4e6; }
+ .account-body .account-entry-state h1 { max-width:none; font-size:clamp(30px,4vw,42px); line-height:1.15; margin:12px 0 18px; }
+ .account-body .account-entry-state p { line-height:1.6; }
+ .account-body .account-state-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:24px; }
+ .account-body .account-state-actions .button { min-height:44px; }
+ .account-body .account-section-error { color:#84231e; padding:14px; border-left:3px solid #84231e; background:#fdf1ef; }

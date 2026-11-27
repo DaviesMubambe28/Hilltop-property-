@@ -13,6 +13,17 @@ export function applyRecoveryEvent(
   sessionUserId: string | null,
   verifiedUserId: string | null,
 ): { state: RecoveryState; userId: string | null } {
+  if (state === 'completed' || state === 'submitting') {
+    return { state, userId: verifiedUserId };
+  }
+
+  if (state === 'invalid' || state === 'unavailable' || state === 'error') {
+    if (event === 'PASSWORD_RECOVERY' && sessionUserId) {
+      return { state: 'verified', userId: sessionUserId };
+    }
+    return { state, userId: null };
+  }
+
   if (event === 'PASSWORD_RECOVERY' && sessionUserId) {
     return { state: 'verified', userId: sessionUserId };
   }

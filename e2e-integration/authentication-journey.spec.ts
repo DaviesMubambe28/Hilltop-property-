@@ -62,6 +62,61 @@ test.describe('Mocked authentication journeys', () => {
     await expect(page).toHaveURL(/account\.html/);
   });
 
+  test('authenticated customer fixture renders the account profile', async ({ page }) => {
+    const syntheticUserId = '10000000-0000-4000-8000-000000000001';
+    await page.route('https://hilltop-test.invalid/**', async (route) => {
+      const url = route.request().url();
+      if (url.includes('/auth/v1/token')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            access_token: 'synthetic-access-token',
+            refresh_token: 'synthetic-refresh-token',
+            expires_in: 3600,
+            token_type: 'bearer',
+            user: { id: syntheticUserId, email: 'customer@example.invalid' },
+          }),
+        });
+        return;
+      }
+      if (url.includes('/auth/v1/user')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ id: syntheticUserId, email: 'customer@example.invalid' }),
+        });
+        return;
+      }
+      if (url.includes('/rest/v1/profiles')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            id: syntheticUserId,
+            full_name: 'Test Customer',
+            phone: null,
+            role: 'customer',
+            is_active: true,
+          }),
+        });
+        return;
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: '[]',
+      });
+    });
+
+    await page.goto('/sign-in.html');
+    await page.getByLabel('Email address').fill('customer@example.invalid');
+    await page.getByLabel('Password').fill('Synthetic123');
+    await page.getByRole('button', { name: 'Sign in' }).click();
+    await expect(page).toHaveURL(/account\.html/);
+    await expect(page.getByRole('heading', { name: 'My profile' })).toBeVisible();
+  });
+
   test('opening sign-out does not terminate a session', async ({ page }) => {
     let logoutRequests = 0;
     await page.route('https://hilltop-test.invalid/**', async (route) => {

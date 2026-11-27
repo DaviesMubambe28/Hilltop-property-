@@ -1,7 +1,8 @@
 import { config } from './config';
 import { supabase } from './supabase';
 import { currentProfile } from './services/auth';
-import { buildSignInUrl } from './auth-navigation';
+import { buildAccountSignInUrl } from './auth-navigation';
+import { AccountAccessError } from './account-access';
 
 export function whatsappUrl(number: string, message: string): string {
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
@@ -76,10 +77,23 @@ export function installPublicWidgets(): void {
 }
 
 async function updateAccountLinks() {
-  const profile=supabase?await currentProfile().catch(()=>null):null;
+  let profile = null;
+  let accountUnavailable = false;
+  if (supabase) {
+    try {
+      profile = await currentProfile();
+    } catch (error) {
+      accountUnavailable = error instanceof AccountAccessError &&
+        error.stage !== 'auth-user';
+    }
+  }
   document.querySelectorAll<HTMLAnchorElement>('a[href="/account.html"]').forEach((link)=>{
-    if(profile){if(/account|saved/i.test(link.textContent??''))link.textContent='My account';return;}
-    link.href=buildSignInUrl(location.pathname+location.search+location.hash);
+    if(profile || accountUnavailable){
+      if(/account|saved/i.test(link.textContent??''))link.textContent='My account';
+      link.href='/account.html';
+      return;
+    }
+    link.href=buildAccountSignInUrl();
     if(/account|saved/i.test(link.textContent??''))link.textContent='Sign in';
   });
 }
