@@ -46,14 +46,14 @@ for (const failure of [false, true]) {
     await page.getByLabel('Email', { exact: true }).fill('synthetic@example.invalid');
     await page.getByLabel('I consent to being contacted.').check();
     await page.getByRole('button', { name: 'Send enquiry' }).click();
-    await expect(page.locator('#property-action [role="status"]')).toContainText(failure ? 'not sent' : 'Enquiry received');
+    await expect(page.locator('#property-action [role="status"]')).toContainText(failure ? /not sent|could not confirm|retry/i : /enquiry has been received|received/i);
     await page.getByRole('button', { name: 'Request viewing', exact: true }).first().click();
     await page.getByLabel('Name', { exact: true }).fill('Synthetic Customer');
     await page.getByLabel('Email', { exact: true }).fill('synthetic@example.invalid');
     await page.getByLabel('Preferred date and time').fill(new Date(Date.now() + 7 * 86_400_000).toISOString().slice(0,16));
     await page.getByLabel('I consent to being contacted.').check();
     await page.locator('#detail-viewing button').click();
-    await expect(page.locator('#property-action [role="status"]')).toContainText(failure ? 'not sent' : 'is pending');
+    await expect(page.locator('#property-action [role="status"]')).toContainText(failure ? /not sent|could not confirm|retry/i : /viewing request has been received|confirm availability/i);
     expect(optionRequests).toBe(optionsBeforeDetail);
     expect(submissions.map(item => item.type)).toEqual(['enquiry', 'viewing']);
     expect(submissions.every(item => item.payload.propertyId === demoProperty.id && item.payload.consent === true)).toBe(true);

@@ -1,4 +1,4 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2.47.10';
 import { z } from 'npm:zod@4.1.12';
 import { consumeRateLimit, hmac, originAllowed, requestIp } from '../_shared/security.ts';
 
@@ -38,8 +38,20 @@ Deno.serve(async (request) => {
     if (!parsed.success) return response({ error: { code: 'VALIDATION_ERROR', message: 'Please check the enquiry details.', details: parsed.error.flatten().fieldErrors } }, 422);
     const input = parsed.data;
     const client = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
-    const existing = await client.from('enquiries').select('id').eq('idempotency_key', input.idempotencyKey).maybeSingle();
-    if (existing.data) return response({ id: existing.data.id, duplicate: true });
+    const existing = await client.from('enquiries').select('id,type,property_id,name,email,phone,message,preferred_date').eq('idempotency_key', input.idempotencyKey).maybeSingle();
+    if (existing.error) throw existing.error;
+    if (existing.data) {
+      const samePayload =
+        existing.data.type === input.type &&
+        (existing.data.property_id ?? null) === (input.propertyId ?? null) &&
+        existing.data.name === input.name &&
+        existing.data.email === input.email.toLowerCase() &&
+        (existing.data.phone ?? null) === (input.phone || null) &&
+        existing.data.message === input.message &&
+        (existing.data.preferred_date ?? null) === (input.preferredDate ?? null);
+      if (!samePayload) return response({ error: { code: 'CONFLICT', message: 'This submission key belongs to different enquiry details.' } }, 409);
+      return response({ id: existing.data.id, duplicate: true });
+    }
 
     const rateLimitSecret = Deno.env.get('RATE_LIMIT_SECRET');
     if (!rateLimitSecret || rateLimitSecret.length < 32) throw new Error('rate_limit_secret_not_configured');

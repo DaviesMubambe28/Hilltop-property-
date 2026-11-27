@@ -1,4 +1,4 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'npm:@supabase/supabase-js@2.47.10';
 import { z } from 'npm:zod@4.1.12';
 import { consumeRateLimit, hmac, originAllowed, requestIp } from '../_shared/security.ts';
 
@@ -18,8 +18,19 @@ Deno.serve(async(request)=>{
     const input=parsed.data;
     const secret=Deno.env.get('RATE_LIMIT_SECRET');if(!secret||secret.length<32)throw new Error('rate_limit_secret_not_configured');
     const client=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false}});
-    const existing=await client.from('viewing_appointments').select('id,status').eq('idempotency_key',input.idempotencyKey).maybeSingle();
-    if(existing.error)throw existing.error;if(existing.data)return respond(existing.data);
+    const existing=await client.from('viewing_appointments').select('id,status,property_id,name,email,phone,preferred_start,mode').eq('idempotency_key',input.idempotencyKey).maybeSingle();
+    if(existing.error)throw existing.error;
+    if(existing.data){
+      const samePayload=
+        existing.data.property_id===input.propertyId &&
+        existing.data.name===input.name &&
+        existing.data.email===input.email.toLowerCase() &&
+        (existing.data.phone??null)===(input.phone||null) &&
+        existing.data.mode===input.mode &&
+        new Date(existing.data.preferred_start).toISOString()===new Date(input.preferredStart).toISOString();
+      if(!samePayload)return respond({error:{code:'CONFLICT',message:'This submission key belongs to different viewing details.'}},409);
+      return respond(existing.data);
+    }
     const property=await client.from('properties').select('id,reference,title').eq('id',input.propertyId).eq('status','published').eq('is_available',true).maybeSingle();
     if(property.error)throw property.error;if(!property.data)return respond({error:{code:'INVALID_PROPERTY',message:'This property is not available for viewing.'}},422);
     const key=await hmac(`viewing:${requestIp(request)}:${input.email.toLowerCase()}`,secret);

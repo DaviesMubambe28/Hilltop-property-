@@ -1,6 +1,7 @@
 import { config } from './config';
 import { supabase } from './supabase';
 import { currentProfile } from './services/auth';
+import { buildSignInUrl } from './auth-navigation';
 
 export function whatsappUrl(number: string, message: string): string {
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
@@ -78,7 +79,7 @@ async function updateAccountLinks() {
   const profile=supabase?await currentProfile().catch(()=>null):null;
   document.querySelectorAll<HTMLAnchorElement>('a[href="/account.html"]').forEach((link)=>{
     if(profile){if(/account|saved/i.test(link.textContent??''))link.textContent='My account';return;}
-    link.href=`/sign-in.html?returnTo=${encodeURIComponent(location.pathname+location.search)}`;
+    link.href=buildSignInUrl(location.pathname+location.search+location.hash);
     if(/account|saved/i.test(link.textContent??''))link.textContent='Sign in';
   });
 }

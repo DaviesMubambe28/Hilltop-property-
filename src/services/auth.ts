@@ -1,9 +1,14 @@
 import { requireSupabase } from '../supabase';
+import { config } from '../config';
 
 export const signUp = (email: string, password: string, fullName: string) => requireSupabase().auth.signUp({ email, password, options: { data: { full_name: fullName } } });
 export const signIn = (email: string, password: string) => requireSupabase().auth.signInWithPassword({ email, password });
 export const signOut = () => requireSupabase().auth.signOut();
-export const resetPassword = (email: string) => requireSupabase().auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/reset-password.html` });
+export const resetPassword = (email: string) => {
+  const siteUrl = config?.VITE_SITE_URL ?? location.origin;
+  const redirectTo = new URL('/reset-password.html', siteUrl).toString();
+  return requireSupabase().auth.resetPasswordForEmail(email.trim(), { redirectTo });
+};
 export const updatePassword = (password: string) => requireSupabase().auth.updateUser({ password });
 
 export async function currentProfile() {

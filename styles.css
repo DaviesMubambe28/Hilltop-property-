@@ -2667,7 +2667,7 @@ body:has(.property-page) > main { flex:1; }
    ================================================== */
 .homepage #homepage-hero .hero-slides { position:absolute;inset:0;z-index:0;overflow:hidden;background:var(--navy);pointer-events:none; }
 .homepage #homepage-hero .hero-slide { position:absolute;inset:0;display:block;width:100%;height:100%;opacity:0;overflow:hidden;transition:opacity 1200ms ease-in-out; }
-.homepage #homepage-hero .hero-slide:first-child,.homepage #homepage-hero .hero-slide.is-active { opacity:1; }
+.homepage #homepage-hero .hero-slide.is-active { opacity:1; }
 .homepage #homepage-hero .hero-slide img { display:block;width:100%;height:100%;object-fit:cover;object-position:center 55%;transform:scale(1.01); }
 .homepage #homepage-hero [data-hero-slide="villa"] img { object-position:center 58%; }
 .homepage #homepage-hero [data-hero-slide="family-home"] img { object-position:55% 50%; }
@@ -2681,6 +2681,8 @@ body:has(.property-page) > main { flex:1; }
 .homepage #homepage-hero .hero-content { position:relative;z-index:2; }
 .homepage #homepage-hero.has-slideshow .hero-content { padding-bottom:78px; }
 .homepage #homepage-hero .hero-slideshow-controls { display:flex;align-items:center;justify-content:center;gap:4px;max-width:100%;min-height:44px;margin-top:10px; }
+/* Respect the slideshow's hidden control state. */
+.homepage #homepage-hero .hero-slideshow-controls[hidden] { display:none; }
 .homepage #homepage-hero .hero-control { display:grid;place-items:center;flex:none;width:44px;height:44px;padding:10px;border:1px solid rgba(255,255,255,.7);border-radius:50%;background:rgba(3,31,53,.55);color:#fff;cursor:pointer;transition:background .2s,border-color .2s,color .2s; }
 .homepage #homepage-hero .hero-control svg { width:21px;height:21px; }
 .homepage #homepage-hero .hero-playback span { font-size:17px;line-height:1;font-weight:700; }

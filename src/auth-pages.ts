@@ -2,11 +2,14 @@ import { safeReturnPath } from './auth-navigation';
 import { config } from './config';
 import { requireSupabase } from './supabase';
 import { resetPassword, signIn, signOut, signUp, updatePassword } from './services/auth';
+import { applyRecoveryEvent, type RecoveryState } from './auth-recovery';
 
 const form = document.querySelector<HTMLFormElement>('[data-auth-form]');
 const feedback = document.querySelector<HTMLElement>('[role="status"]');
 const submit = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
 const page = document.body.dataset.authPage;
+let recoveryState: RecoveryState = 'checking';
+let recoveryUserId: string | null = null;
 
 function message(text: string, error = false) {
   if (!feedback) return;
@@ -35,6 +38,66 @@ if (!config) {
   if (submit) submit.disabled = true;
 }
 
+function friendlyAuthError(error: unknown): string {
+  if (!(error instanceof Error)) return 'The request could not be completed. Please try again.';
+  const text = error.message.toLowerCase();
+  if (text.includes('invalid login credentials')) return 'The email or password is incorrect.';
+  if (text.includes('email rate limit')) return 'Too many requests. Please wait before trying again.';
+  if (text.includes('network') || text.includes('fetch')) return 'The authentication service is temporarily unavailable.';
+  if (text.includes('password')) return 'The password could not be updated. Choose a valid password and try again.';
+  if (text.includes('email')) return 'The email address is invalid or the service could not process it.';
+  return 'The request could not be completed. Please try again.';
+}
+
+function setRecoveryFormAvailable(available: boolean) {
+  if (form) form.hidden = !available;
+  if (submit) submit.disabled = !available;
+  form?.querySelectorAll<HTMLInputElement>('input').forEach((input) => { input.disabled = !available; });
+  form?.querySelectorAll<HTMLButtonElement>('button').forEach((button) => { button.disabled = !available; });
+}
+
+if (page === 'reset-password') {
+  setRecoveryFormAvailable(false);
+  if (!config) {
+    recoveryState = 'unavailable';
+    message('Account services are not connected. Password recovery is unavailable until authentication services are configured.', true);
+  } else {
+    const supabase = requireSupabase();
+    const { data: authSubscription } = supabase.auth.onAuthStateChange((event, session) => {
+      const transition = applyRecoveryEvent(
+        recoveryState,
+        event,
+        session?.user?.id ?? null,
+        recoveryUserId,
+      );
+      recoveryState = transition.state;
+      recoveryUserId = transition.userId;
+
+      if (recoveryState === 'verified') {
+        setRecoveryFormAvailable(true);
+        message('Recovery verified. Choose a new password.');
+        const url = new URL(location.href);
+        ['code', 'type', 'token_hash', 'access_token', 'refresh_token', 'error', 'error_code', 'error_description'].forEach((key) => url.searchParams.delete(key));
+        url.hash = '';
+        history.replaceState({}, '', `${url.pathname}${url.search}`);
+      } else if (recoveryState === 'invalid') {
+        setRecoveryFormAvailable(false);
+        message('This recovery link is invalid or has expired. Request a new link.', true);
+      }
+    });
+
+    window.setTimeout(() => {
+      if (recoveryState === 'checking') {
+        recoveryState = 'invalid';
+        setRecoveryFormAvailable(false);
+        message('This recovery link is invalid or has expired. Request a new link.', true);
+      }
+    }, 2500);
+
+    window.addEventListener('beforeunload', () => authSubscription.subscription.unsubscribe(), { once: true });
+  }
+}
+
 form?.addEventListener('submit', async (event) => {
   event.preventDefault();
   if (!config) return;
@@ -55,26 +118,45 @@ form?.addEventListener('submit', async (event) => {
       form.reset();
       message('Account created. Check your email to confirm your address, then sign in.');
     } else if (page === 'forgot-password') {
-      await resetPassword(String(data.get('email')));
+      const result = await resetPassword(String(data.get('email')));
+      if (result.error) throw result.error;
       form.reset();
-      message('If an account can receive recovery email, a reset link has been sent.');
+      message('If an account exists for this email address, password reset instructions will be sent.');
     } else if (page === 'reset-password') {
       const password = String(data.get('password'));
       if (password !== String(data.get('confirm_password'))) throw new Error('The passwords do not match.');
-      const { data: session } = await requireSupabase().auth.getSession();
-      if (!session.session) throw new Error('This recovery link is invalid or has expired. Request a new link.');
+      if (password.length < 8) throw new Error('The password must be at least 8 characters.');
+      if (recoveryState !== 'verified' || !recoveryUserId) throw new Error('This recovery link is invalid or has expired. Request a new link.');
+      const expectedUserId = recoveryUserId;
+      recoveryState = 'submitting';
+      setBusy(true);
+      setRecoveryFormAvailable(false);
+      const { data: userData, error: userError } = await requireSupabase().auth.getUser();
+      if (userError || !userData.user || userData.user.id !== expectedUserId || recoveryUserId !== expectedUserId) {
+        recoveryUserId = null;
+        recoveryState = 'invalid';
+        setRecoveryFormAvailable(false);
+        throw new Error('Your recovery session is no longer valid.');
+      }
       const result = await updatePassword(password);
       if (result.error) throw result.error;
       form.reset();
-      message('Your password has been updated. You can now continue to your account.');
-      window.setTimeout(() => { location.href = '/account.html'; }, 1200);
+      recoveryUserId = null;
+      recoveryState = 'completed';
+      setRecoveryFormAvailable(false);
+      message('Your password has been updated. Sign in again to continue.');
+      window.setTimeout(() => { location.href = '/sign-in.html'; }, 1200);
     } else if (page === 'sign-out') {
       const result = await signOut();
       if (result.error) throw result.error;
       location.href = '/sign-in.html';
     }
   } catch (error) {
-    message(error instanceof Error ? error.message : 'The request could not be completed. Please try again.', true);
+    if (page === 'reset-password' && recoveryState === 'submitting') {
+      recoveryState = recoveryUserId ? 'verified' : 'invalid';
+      setRecoveryFormAvailable(recoveryState === 'verified');
+    }
+    message(friendlyAuthError(error), true);
   } finally {
     setBusy(false);
   }

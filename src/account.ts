@@ -5,7 +5,7 @@ import { searchParamsFromFilters } from './search';
 import type { SearchFilters } from './types';
 import { validatePrivateDocument } from './ecosystem';
 
-const client=requireSupabase();const session=await currentProfile();if(!session){location.href='/?account=required';throw new Error('Authentication required.');}
+const client=requireSupabase();const session=await currentProfile();if(!session){throw new Error('Authentication required.');}
 const feedback=document.querySelector('#account-feedback');const form=document.querySelector<HTMLFormElement>('#profile-form')!;(form.elements.namedItem('full_name') as HTMLInputElement).value=session.profile.full_name??'';(form.elements.namedItem('phone') as HTMLInputElement).value=session.profile.phone??'';
 form.addEventListener('submit',async(event)=>{event.preventDefault();const data=new FormData(form);const{error}=await client.from('profiles').update({full_name:String(data.get('full_name')),phone:String(data.get('phone')||'')}).eq('id',session.user.id);if(feedback)feedback.textContent=error?error.message:'Profile saved.';});
 document.querySelector('#account-signout')?.addEventListener('click',()=>{location.href='/sign-out.html';});

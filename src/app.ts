@@ -13,6 +13,7 @@ import { parseComparisonSlugs, toggleComparisonSlug } from './comparison';
 import { renderPropertyMap } from './property-map';
 import { renderPropertyCard, renderFeaturedPropertyTile } from './property-presentation';
 import './public-widgets';
+import { lusakaLocalToIso, lusakaMinimumLocal } from './lead-submission';
 
 const grid = document.querySelector<HTMLElement>('.property-grid');
 const pagination = document.querySelector<HTMLElement>('.catalogue-pagination');
@@ -157,8 +158,7 @@ function openProperty(property: Property) {
 
 function showViewing(property: Property) {
   const slot=document.querySelector<HTMLElement>('#enquiry-slot');if(!slot)return;
-  const minimum=new Date(Date.now()+60*60_000);minimum.setMinutes(0,0,0);
-  slot.innerHTML=`<form id="viewing-form" class="enquiry-form" data-property-id="${property.id}" data-idempotency-key="${crypto.randomUUID()}"><h3>Request a viewing</h3><label>Name<input name="name" autocomplete="name" required minlength="2" maxlength="120" /></label><label>Email<input name="email" type="email" autocomplete="email" required /></label><label>Phone<input name="phone" type="tel" autocomplete="tel" maxlength="30" /></label><label>Viewing type<select name="mode"><option value="physical">In person</option><option value="virtual">Virtual viewing</option></select></label><label>Preferred date and time<input name="preferredStart" type="datetime-local" min="${minimum.toISOString().slice(0,16)}" required /></label><label class="hp-field" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off" /></label><label class="consent"><input name="consent" type="checkbox" required /> I consent to Hilltop contacting me about this viewing.</label><button class="button button-yellow" type="submit">Request viewing</button><p role="status"></p></form>`;
+  slot.innerHTML=`<form id="viewing-form" class="enquiry-form" data-property-id="${property.id}" data-idempotency-key="${crypto.randomUUID()}"><h3>Request a viewing</h3><label>Name<input name="name" autocomplete="name" required minlength="2" maxlength="120" /></label><label>Email<input name="email" type="email" autocomplete="email" required /></label><label>Phone<input name="phone" type="tel" autocomplete="tel" maxlength="30" /></label><label>Viewing type<select name="mode"><option value="physical">In person</option><option value="virtual">Virtual viewing</option></select></label><label>Preferred date and time (Africa/Lusaka)<input name="preferredStart" type="datetime-local" min="${lusakaMinimumLocal()}" required /></label><label class="hp-field" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off" /></label><label class="consent"><input name="consent" type="checkbox" required /> I consent to Hilltop contacting me about this viewing.</label><button class="button button-yellow" type="submit">Request viewing</button><p role="status" aria-live="polite"></p></form>`;
 }
 
 function showEnquiry(property: Property) {
@@ -265,19 +265,15 @@ function filtersFromForm(form: HTMLFormElement): SearchFilters {
 }
 
 async function setupAccount() {
-  if (!document.body.classList.contains('homepage')) return;
-  const account = document.querySelector<HTMLButtonElement>('[data-account-entry]');
+  const account = document.querySelector<HTMLAnchorElement>('[data-account-entry]');
   if (!account) return;
   const label = account.querySelector<HTMLElement>('[data-account-label]') ?? account;
-  const accountRequested = new URLSearchParams(location.search).get('account') === 'required';
   const profile = supabase ? await currentProfile().catch(() => null) : null;
   const destination = profile
     ? '/account.html'
-    : `/sign-in.html?returnTo=${encodeURIComponent(location.pathname + location.search)}`;
+    : `/sign-in.html?returnTo=${encodeURIComponent(location.pathname + location.search + location.hash)}`;
   label.textContent = profile ? profile.profile.full_name || 'My account' : 'Sign in';
-  account.disabled = false;
-  account.addEventListener('click', () => { location.href = destination; });
-  if (accountRequested) location.replace(destination);
+  account.href = destination;
 }
 
 document.querySelector('#property-search')?.addEventListener('submit', (event) => {
@@ -373,7 +369,7 @@ document.addEventListener('submit', async (event) => {
   if (form.id === 'viewing-form') {
     event.preventDefault();const data=new FormData(form);const status=form.querySelector<HTMLElement>('[role="status"]');const submit=form.querySelector<HTMLButtonElement>('button[type="submit"]');
     if(submit?.disabled)return;if(submit){submit.disabled=true;submit.textContent='Sending…';}
-    try{const preferred=new Date(String(data.get('preferredStart'))).toISOString();const result=await submitViewingRequest({propertyId:form.dataset.propertyId??'',name:String(data.get('name')),email:String(data.get('email')),phone:String(data.get('phone')||''),preferredStart:preferred,mode:String(data.get('mode')) as 'physical'|'virtual',consent:data.get('consent')==='on',idempotencyKey:form.dataset.idempotencyKey??crypto.randomUUID(),website:String(data.get('website')||'')});if(status)status.textContent=`Viewing request ${result.id.slice(0,8)} is ${result.status}. Hilltop will confirm the time.`;if(submit)submit.textContent='Request sent';}
+    try{const preferred=lusakaLocalToIso(String(data.get('preferredStart')));const result=await submitViewingRequest({propertyId:form.dataset.propertyId??'',name:String(data.get('name')),email:String(data.get('email')),phone:String(data.get('phone')||''),preferredStart:preferred,mode:String(data.get('mode')) as 'physical'|'virtual',consent:data.get('consent')==='on',idempotencyKey:form.dataset.idempotencyKey??crypto.randomUUID(),website:String(data.get('website')||'')});if(status)status.textContent=`Your viewing request has been received. Our team will contact you to confirm availability. Reference: ${result.id.slice(0,8)}.`;if(submit)submit.textContent='Request sent';}
     catch(error){if(status)status.textContent=error instanceof Error?error.message:'Unable to request a viewing.';if(submit){submit.disabled=false;submit.textContent='Request viewing';}}
     return;
   }
@@ -388,7 +384,7 @@ document.addEventListener('submit', async (event) => {
   try {
     const result = await submitEnquiry({ type: 'property', propertyId, name: String(data.get('name')), email: String(data.get('email')), phone: String(data.get('phone') || ''), message: String(data.get('message')), consent: data.get('consent') === 'on', idempotencyKey: form.dataset.idempotencyKey ?? crypto.randomUUID(), website: String(data.get('website') || '') });
     track('generate_lead', { property_id: propertyId ?? 'general' });
-    form.reset(); if (status) status.textContent = `Thank you. Your enquiry reference is ${result.id.slice(0, 8)}.`;
+    form.reset(); if (status) status.textContent = `Thank you. Your enquiry has been received. A Hilltop Properties representative will contact you. Reference: ${result.id.slice(0, 8)}.`;
     if (submit) submit.textContent = 'Enquiry sent';
   } catch (error) {
     if (status) status.textContent = error instanceof Error ? error.message : 'Unable to submit your enquiry.';

@@ -18,8 +18,7 @@ const publicPages = new Set(['index.html','properties.html','property.html','abo
 const companyContact = { phoneUri: '+260979972019', phoneLabel: '+260 979 972 019', email: 'probbymalyango@gmail.com' };
 const componentsDirectory = resolve(import.meta.dirname, 'src/components');
 const accountIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="9" r="3"/><path d="M6 18c1-4 11-4 12 0"/></svg>`;
-const homepageAccountControl = `<button class="button button-dark account-button hilltop-login" type="button" data-account-entry disabled>${accountIcon}<span data-account-label>Login</span></button>`;
-const publicAccountControl = `<a class="button button-dark account-button hilltop-login" href="/?account=required">${accountIcon}<span>Login</span></a>`;
+const accountControl = (destination: string) => `<a class="button button-dark account-button hilltop-login" href="/sign-in.html?returnTo=${encodeURIComponent(destination)}" data-account-entry>${accountIcon}<span data-account-label>Login</span></a>`;
 const homepageCalculators = `<details class="footer-calculators" id="tools" open><summary>Calculators</summary><div class="footer-calculator-links"><button type="button" data-tool="mortgage">Mortgage calculator</button><button type="button" data-tool="affordability">Affordability calculator</button><button type="button" data-tool="rental">Rental yield calculator</button><button type="button" data-tool="cost">Buying cost estimator</button></div></details>`;
 
 function readComponent(name: string): string {
@@ -59,7 +58,8 @@ function sharedSiteComponents(): Plugin {
         }
         const socialLinks = readComponent('social-links.html');
         const common = { PHONE_URI: companyContact.phoneUri, PHONE_LABEL: companyContact.phoneLabel, EMAIL: companyContact.email, SOCIAL_LINKS: socialLinks };
-        const header = fillComponent(readComponent('site-header.html'), { ...common, ACCOUNT_CONTROL: isHomepage ? homepageAccountControl : publicAccountControl });
+        const pageDestination = isHomepage ? '/' : `/${filename}`;
+        const header = fillComponent(readComponent('site-header.html'), { ...common, ACCOUNT_CONTROL: accountControl(pageDestination) });
         const footer = fillComponent(readComponent('site-footer.html'), {
           ...common,
           YEAR: String(new Date().getFullYear()),
